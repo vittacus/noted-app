@@ -4,6 +4,11 @@ create extension if not exists "uuid-ossp";
 -- MIGRATION: run this if you already created the songs table without spotify_album_id
 alter table public.songs add column if not exists spotify_album_id text;
 
+-- MIGRATION: ELO rating system (run once on existing DB)
+-- Adds elo_score to ratings. Legacy rows get ELO derived from their existing overall_score.
+alter table public.ratings add column if not exists elo_score integer;
+update public.ratings set elo_score = round(overall_score * 200) where elo_score is null;
+
 -- USERS
 create table if not exists public.users (
   id uuid references auth.users(id) on delete cascade primary key,
