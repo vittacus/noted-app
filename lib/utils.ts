@@ -34,9 +34,26 @@ export function vibeLabel(vibe: VibeOption): string {
   return "Didn't like it";
 }
 
+export function calculateStreak(dates: string[]): number {
+  if (!dates.length) return 0;
+  const unique = [...new Set(dates)].sort().reverse();
+  const today = new Date().toISOString().split("T")[0];
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
+  if (unique[0] !== today && unique[0] !== yesterday) return 0;
+  let streak = 1;
+  for (let i = 1; i < unique.length; i++) {
+    const prev = new Date(unique[i - 1] + "T12:00:00");
+    const curr = new Date(unique[i] + "T12:00:00");
+    const diff = Math.round((prev.getTime() - curr.getTime()) / 86400000);
+    if (diff === 1) streak++;
+    else break;
+  }
+  return streak;
+}
+
 export function scoreColor(score: number): string {
-  if (score >= 8) return "text-emerald-500";
-  if (score >= 6) return "text-sky-500";
-  if (score >= 4) return "text-amber-500";
-  return "text-rose-500";
+  if (score >= 8) return "text-[#4ade80]";   // green
+  if (score >= 6) return "text-[#fbbf24]";   // yellow
+  if (score >= 4) return "text-[#fb923c]";   // orange
+  return "text-[#f87171]";                    // red
 }

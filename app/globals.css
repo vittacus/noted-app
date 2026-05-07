@@ -1,12 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0f0f13;
+  --background: #1a2332;
   --foreground: #f1f5f9;
-  --card: #1a1a24;
-  --card-border: #2a2a38;
-  --muted: #94a3b8;
-  --primary: #3b82f6;
+  --card: #1e2d3d;
+  --primary: #4fc3f7;
 }
 
 @theme inline {
@@ -25,12 +23,8 @@ body {
 .rating-circle {
   transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.rating-circle:active {
-  transform: scale(0.88);
-}
-.rating-circle.selected {
-  transform: scale(1.1);
-}
+.rating-circle:active   { transform: scale(0.88); }
+.rating-circle.selected { transform: scale(1.1); }
 
 /* Score reveal */
 @keyframes scoreReveal {
@@ -44,9 +38,7 @@ body {
 }
 
 /* Vibe buttons */
-.vibe-btn {
-  transition: all 0.18s ease;
-}
+.vibe-btn { transition: all 0.18s ease; }
 .vibe-btn:hover  { transform: translateY(-2px); }
 .vibe-btn:active { transform: translateY(0) scale(0.97); }
 
@@ -55,6 +47,9 @@ body {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.page-enter {
-  animation: fadeUp 0.28s ease forwards;
+.page-enter { animation: fadeUp 0.28s ease forwards; }
+
+/* Bar chart / dimension bars */
+.taste-bar {
+  transition: width 0.6s cubic-bezier(0.34, 1.1, 0.64, 1);
 }

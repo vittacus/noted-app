@@ -31,11 +31,11 @@ export default function LoginPage() {
     <div className="min-h-[70vh] flex flex-col items-center justify-center page-enter">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <span className="text-4xl font-black text-blue-400 tracking-tight">noted</span>
+          <span className="text-4xl font-black text-[#4fc3f7] tracking-tight">noted</span>
           <p className="text-slate-500 text-sm mt-2">Rate the music you love</p>
         </div>
 
-        <form onSubmit={handleLogin} className="bg-[#1a1a24] rounded-3xl border border-white/5 p-6 space-y-4">
+        <form onSubmit={handleLogin} className="bg-[#1e2d3d] rounded-3xl border border-white/5 p-6 space-y-4">
           <h1 className="text-lg font-bold text-slate-100">Sign in</h1>
 
           {error && (
@@ -50,7 +50,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-[#4fc3f7]/50"
             />
           </div>
 
@@ -62,14 +62,14 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-[#4fc3f7]/50"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 rounded-2xl bg-blue-500 text-white font-semibold text-sm hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50"
+            className="w-full h-12 rounded-2xl bg-[#4fc3f7]/50 text-white font-semibold text-sm hover:bg-[#3ab0d8] transition-colors shadow-lg shadow-[#4fc3f7]/20 disabled:opacity-50"
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
@@ -77,7 +77,7 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-slate-500 mt-5">
           Don&apos;t have an account?{" "}
-          <Link href="/auth/signup" className="text-blue-400 font-semibold hover:underline">
+          <Link href="/auth/signup" className="text-[#4fc3f7] font-semibold hover:underline">
             Sign up
           </Link>
         </p>
