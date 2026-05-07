@@ -82,14 +82,44 @@ export default async function HomePage({
 
   return (
     <div className="page-enter">
-      {/* Hero — logged-out */}
+      {/* Hero — logged-out, full-width ~40vh */}
       {!user && (
-        <div className="bg-gradient-to-br from-[#1a4e78] to-[#0f3a5c] rounded-3xl p-6 mb-8 text-white shadow-xl shadow-[#050e1a]/50">
-          <h1 className="text-3xl font-black tracking-tight mb-1">noted</h1>
-          <p className="text-[#93e4f7] text-sm mb-5">Rate and discover music you love</p>
-          <div className="flex gap-2">
-            <Link href="/auth/signup" className="px-5 py-2.5 bg-white text-[#4fc3f7] font-semibold text-sm rounded-full hover:bg-[#4fc3f7]/5 transition-colors">Get started</Link>
-            <Link href="/auth/login" className="px-5 py-2.5 bg-white/10 text-white font-semibold text-sm rounded-full hover:bg-white/30 transition-colors">Sign in</Link>
+        <div className="-mx-4 mb-10">
+          <div className="min-h-[42vh] flex flex-col items-center justify-center text-center bg-gradient-to-b from-[#0d2a45] via-[#1a2332] to-[#1a2332] px-6 py-12 relative overflow-hidden">
+            {/* Subtle radial glow */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_20%,rgba(79,195,247,0.12),transparent)] pointer-events-none" />
+
+            <div className="relative">
+              <h1 className="text-6xl font-black tracking-tighter text-[#4fc3f7] mb-4 leading-none">
+                noted
+              </h1>
+              <p className="text-xl font-semibold text-white mb-2 leading-tight">
+                Rate and discover the music you love
+              </p>
+              <p className="text-sm text-slate-400 mb-8 max-w-xs mx-auto leading-relaxed">
+                Track every song. Build your taste. Find your top 100.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Link href="/auth/signup"
+                  className="px-7 py-3.5 bg-[#4fc3f7] text-[#0d1f35] font-bold text-sm rounded-2xl hover:bg-[#7dd8f0] transition-colors shadow-lg shadow-[#4fc3f7]/25"
+                >
+                  Get started
+                </Link>
+                <Link href="/auth/login"
+                  className="px-7 py-3.5 border-2 border-white/20 text-white font-bold text-sm rounded-2xl hover:bg-white/10 transition-colors"
+                >
+                  Sign in
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA between hero and feed */}
+          <div className="text-center py-5 bg-[#1e2d3d]/60 border-y border-white/5">
+            <p className="text-xs text-slate-500">
+              Join to rate songs and build your library →{" "}
+              <Link href="/auth/signup" className="text-[#4fc3f7] font-semibold hover:underline">Create a free account</Link>
+            </p>
           </div>
         </div>
       )}
