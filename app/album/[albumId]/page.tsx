@@ -1,0 +1,181 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import { formatDuration, scoreColor } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import { SpotifyAlbum, SpotifyTrack } from "@/types";
+import RatingModal from "@/components/RatingModal";
+import { useRouter } from "next/navigation";
+
+export default function AlbumPage() {
+  const { albumId } = useParams<{ albumId: string }>();
+  const router = useRouter();
+  const supabase = createClient();
+
+  const [album, setAlbum] = useState<SpotifyAlbum | null>(null);
+  const [userRatings, setUserRatings] = useState<Record<string, number>>({});
+  const [ratingTrack, setRatingTrack] = useState<SpotifyTrack | null>(null);
+  const [dbAlbumScore, setDbAlbumScore] = useState<{ manual: number | null; calculated: number | null } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      const [albumRes, { data: { user } }] = await Promise.all([
+        fetch(`/api/spotify/album/${albumId}`),
+        supabase.auth.getUser(),
+      ]);
+      const albumData = await albumRes.json();
+      setAlbum(albumData);
+
+      if (user && albumData.tracks?.items?.length) {
+        const spotifyIds = albumData.tracks.items.map((t: SpotifyTrack) => t.id);
+        const { data: songs } = await supabase
+          .from("songs")
+          .select("id, spotify_id")
+          .in("spotify_id", spotifyIds);
+
+        if (songs?.length) {
+          const songIds = songs.map((s: any) => s.id);
+          const { data: ratings } = await supabase
+            .from("ratings")
+            .select("song_id, overall_score, songs(spotify_id)")
+            .eq("user_id", user.id)
+            .in("song_id", songIds);
+
+          const map: Record<string, number> = {};
+          ratings?.forEach((r: any) => {
+            if (r.songs?.spotify_id) map[r.songs.spotify_id] = r.overall_score;
+          });
+          setUserRatings(map);
+
+          const scores = Object.values(map);
+          if (scores.length > 0) {
+            const calc = scores.reduce((a, b) => a + b, 0) / scores.length;
+            setDbAlbumScore({ manual: null, calculated: Math.round(calc * 10) / 10 });
+          }
+        }
+      }
+      setLoading(false);
+    }
+    load();
+  }, [albumId]);
+
+  async function handleRate(track: SpotifyTrack) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { router.push("/auth/login"); return; }
+    setRatingTrack(track);
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-20">
+        <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!album) return <p className="text-center py-10 text-slate-400">Album not found.</p>;
+
+  const artUrl = album.images[0]?.url;
+  const artist = album.artists.map((a) => a.name).join(", ");
+  const year = album.release_date?.split("-")[0];
+  const tracks = album.tracks?.items ?? [];
+  const ratedCount = Object.keys(userRatings).length;
+
+  return (
+    <div className="page-enter">
+      {/* Album header */}
+      <div className="flex gap-4 mb-5">
+        {artUrl && (
+          <div className="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0 shadow-lg">
+            <Image src={artUrl} alt={album.name} fill className="object-cover" sizes="96px" />
+          </div>
+        )}
+        <div className="flex-1 min-w-0 pt-1">
+          <h1 className="font-black text-lg text-slate-900 leading-tight">{album.name}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{artist}</p>
+          <p className="text-xs text-slate-400">{year} · {album.total_tracks} tracks</p>
+
+          {/* Scores */}
+          {dbAlbumScore && (
+            <div className="flex gap-3 mt-2">
+              {dbAlbumScore.calculated !== null && (
+                <div className="text-center">
+                  <p className={`text-lg font-black ${scoreColor(dbAlbumScore.calculated)}`}>
+                    {dbAlbumScore.calculated.toFixed(1)}
+                  </p>
+                  <p className="text-xs text-slate-400">Avg rated</p>
+                </div>
+              )}
+              {dbAlbumScore.manual !== null && (
+                <div className="text-center">
+                  <p className={`text-lg font-black ${scoreColor(dbAlbumScore.manual)}`}>
+                    {dbAlbumScore.manual.toFixed(1)}
+                  </p>
+                  <p className="text-xs text-slate-400">Overall</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {ratedCount > 0 && (
+        <p className="text-xs text-slate-400 mb-3">{ratedCount} of {album.total_tracks} tracks rated</p>
+      )}
+
+      {/* Track list */}
+      <div className="space-y-1.5">
+        {tracks.map((track, i) => {
+          const myScore = userRatings[track.id];
+          const rated = myScore !== undefined;
+          return (
+            <div
+              key={track.id}
+              className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 border transition-all ${
+                rated
+                  ? "bg-white border-slate-100 shadow-sm"
+                  : "bg-slate-50/50 border-slate-100/50 opacity-70"
+              }`}
+            >
+              <span className="text-xs text-slate-400 w-5 text-right shrink-0">{i + 1}</span>
+              <div className="flex-1 min-w-0">
+                <p className={`font-medium text-sm truncate ${rated ? "text-slate-900" : "text-slate-500"}`}>
+                  {track.name}
+                </p>
+                <p className="text-xs text-slate-400 truncate">
+                  {track.artists.map((a) => a.name).join(", ")} · {formatDuration(Math.round(track.duration_ms / 1000))}
+                </p>
+              </div>
+              {rated ? (
+                <span className={`text-sm font-black shrink-0 ${scoreColor(myScore)}`}>
+                  {myScore.toFixed(1)}
+                </span>
+              ) : (
+                <button
+                  onClick={() => handleRate(track)}
+                  className="shrink-0 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-500 text-xs font-semibold hover:bg-blue-100 transition-colors"
+                >
+                  Rate
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {ratingTrack && (
+        <RatingModal
+          track={ratingTrack}
+          onClose={() => setRatingTrack(null)}
+          onSaved={() => {
+            setRatingTrack(null);
+            window.location.reload();
+          }}
+        />
+      )}
+    </div>
+  );
+}
