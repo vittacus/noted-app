@@ -154,8 +154,8 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         replay_value: form.replay_value,
         lyrics: form.lyrics,
         production: form.production,
-        overall_score: displayScore,
-        elo_score: elo,
+        overall_score: displayScore ?? 5.0,
+        ...(elo !== null ? { elo_score: elo } : {}),
         notes: form.notes || null,
         best_for_tags: [
           ...form.best_for_tags,
@@ -333,10 +333,6 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                     <span className="font-semibold text-slate-200 capitalize">{form.vibe.replace("_", " ")}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-sm border-t border-white/10 pt-2 mt-2">
-                  <span className="text-slate-500">Starting ELO</span>
-                  <span className="font-semibold text-slate-400 tabular-nums">{elo}</span>
-                </div>
               </div>
             </div>
           )}

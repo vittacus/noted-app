@@ -71,6 +71,8 @@ export const BEST_FOR_TAGS = [
   "Heartbreak",
   "Hype",
   "Road Trip",
+  "Chill",
+  "Other",
 ] as const;
 
 export const GENRE_TAGS = [
