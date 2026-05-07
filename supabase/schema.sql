@@ -1,6 +1,9 @@
 -- Enable UUID extension
 create extension if not exists "uuid-ossp";
 
+-- MIGRATION: run this if you already created the songs table without spotify_album_id
+alter table public.songs add column if not exists spotify_album_id text;
+
 -- USERS
 create table if not exists public.users (
   id uuid references auth.users(id) on delete cascade primary key,
@@ -106,6 +109,47 @@ alter table public.follows enable row level security;
 create policy "Follows viewable by all" on public.follows for select using (true);
 create policy "Users can manage their own follows" on public.follows for insert with check (auth.uid() = follower_id);
 create policy "Users can delete their own follows" on public.follows for delete using (auth.uid() = follower_id);
+
+-- COMMENTS
+create table if not exists public.comments (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references public.users(id) on delete cascade not null,
+  rating_id uuid references public.ratings(id) on delete cascade not null,
+  content text not null check (char_length(content) > 0 and char_length(content) <= 500),
+  created_at timestamptz default now() not null
+);
+alter table public.comments enable row level security;
+create policy "Comments viewable by all" on public.comments for select using (true);
+create policy "Users can insert their own comments" on public.comments for insert with check (auth.uid() = user_id);
+create policy "Users can delete their own comments" on public.comments for delete using (auth.uid() = user_id);
+
+-- COLLECTIONS
+create table if not exists public.collections (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references public.users(id) on delete cascade not null,
+  name text not null check (char_length(name) > 0 and char_length(name) <= 50),
+  created_at timestamptz default now() not null
+);
+alter table public.collections enable row level security;
+create policy "Collections viewable by all" on public.collections for select using (true);
+create policy "Users can insert their own collections" on public.collections for insert with check (auth.uid() = user_id);
+create policy "Users can update their own collections" on public.collections for update using (auth.uid() = user_id);
+create policy "Users can delete their own collections" on public.collections for delete using (auth.uid() = user_id);
+
+-- COLLECTION SONGS
+create table if not exists public.collection_songs (
+  id uuid default uuid_generate_v4() primary key,
+  collection_id uuid references public.collections(id) on delete cascade not null,
+  song_id uuid references public.songs(id) on delete cascade not null,
+  added_at timestamptz default now() not null,
+  unique (collection_id, song_id)
+);
+alter table public.collection_songs enable row level security;
+create policy "Collection songs viewable by all" on public.collection_songs for select using (true);
+create policy "Collection owners can insert songs" on public.collection_songs for insert
+  with check (exists (select 1 from public.collections where id = collection_id and user_id = auth.uid()));
+create policy "Collection owners can remove songs" on public.collection_songs for delete
+  using (exists (select 1 from public.collections where id = collection_id and user_id = auth.uid()));
 
 -- Auto-create user profile on signup
 create or replace function public.handle_new_user()

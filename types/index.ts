@@ -9,6 +9,7 @@ export interface User {
 export interface Song {
   id: string;
   spotify_id: string;
+  spotify_album_id: string | null;
   title: string;
   artist: string;
   album_name: string;
@@ -73,12 +74,9 @@ export const BEST_FOR_TAGS = [
 ] as const;
 
 export const GENRE_TAGS = [
-  "Rap",
-  "R&B",
-  "Pop",
-  "Indie",
-  "Electronic",
-  "Alternative",
+  "Rap", "R&B", "Pop", "Indie", "Electronic", "Alternative",
+  "Jazz", "Classical", "Country", "Latin", "Afrobeats", "Soul",
+  "Metal", "Folk", "K-Pop", "Drill", "Trap", "House", "Ambient",
   "Other",
 ] as const;
 
@@ -120,6 +118,7 @@ export interface RatingFormState {
   comparisonSongId: string | null;
   best_for_tags: string[];
   genre_tags: string[];
+  custom_vibe_tag: string;
   album_id: string | null;
   listened_at: string;
   notes: string;

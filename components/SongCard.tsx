@@ -27,7 +27,7 @@ export default function SongCard({
         {song.album_art_url ? (
           <Image src={song.album_art_url} alt={song.album_name} fill className="object-cover" sizes="52px" />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200" />
+          <div className="w-full h-full bg-gradient-to-br from-[#4fc3f7]/10 to-[#4fc3f7]/20" />
         )}
       </div>
 
@@ -54,9 +54,9 @@ export default function SongCard({
         <div className="flex flex-col gap-1.5 shrink-0">
           <button
             onClick={() => onRate?.(song)}
-            className="w-8 h-8 rounded-full bg-blue-50 hover:bg-blue-100 flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-full bg-[#4fc3f7]/5 hover:bg-[#4fc3f7]/10 flex items-center justify-center transition-colors"
           >
-            <Plus size={16} className="text-blue-500" />
+            <Plus size={16} className="text-[#4fc3f7]" />
           </button>
           <button
             onClick={() => onBookmark?.(song)}

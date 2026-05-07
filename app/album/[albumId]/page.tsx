@@ -65,13 +65,24 @@ export default function AlbumPage() {
   async function handleRate(track: SpotifyTrack) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/auth/login"); return; }
-    setRatingTrack(track);
+    // Spotify's album-tracks endpoint returns SimplifiedTrackObject which has no `album` field.
+    // Augment with the parent album so RatingModal can display art and save the album ID.
+    const fullTrack: SpotifyTrack = {
+      ...track,
+      album: (track as any).album ?? (album ? {
+        id: album.id,
+        name: album.name,
+        images: album.images,
+        release_date: album.release_date,
+      } : { id: "", name: "", images: [], release_date: "" }),
+    };
+    setRatingTrack(fullTrack);
   }
 
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#4fc3f7] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -121,7 +132,7 @@ export default function AlbumPage() {
               key={track.id}
               className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 border transition-all ${
                 rated
-                  ? "bg-[#1a1a24] border-white/5"
+                  ? "bg-[#1e2d3d] border-white/5"
                   : "bg-white/[0.02] border-white/[0.03] opacity-60"
               }`}
             >
@@ -141,7 +152,7 @@ export default function AlbumPage() {
               ) : (
                 <button
                   onClick={() => handleRate(track)}
-                  className="shrink-0 px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-400 text-xs font-semibold hover:bg-blue-500/20 transition-colors border border-blue-500/20"
+                  className="shrink-0 px-2.5 py-1 rounded-lg bg-[#4fc3f7]/10 text-[#4fc3f7] text-xs font-semibold hover:bg-[#4fc3f7]/20 transition-colors border border-[#4fc3f7]/20"
                 >
                   Rate
                 </button>
