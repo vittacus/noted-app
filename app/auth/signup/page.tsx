@@ -41,49 +41,43 @@ export default function SignupPage() {
     <div className="min-h-[70vh] flex flex-col items-center justify-center page-enter">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <span className="text-4xl font-black text-blue-500 tracking-tight">sonic</span>
+          <span className="text-4xl font-black text-blue-400 tracking-tight">noted</span>
           <p className="text-slate-500 text-sm mt-2">Start rating your music</p>
         </div>
 
-        <form onSubmit={handleSignup} className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 space-y-4">
-          <h1 className="text-lg font-bold text-slate-900">Create account</h1>
+        <form onSubmit={handleSignup} className="bg-[#1a1a24] rounded-3xl border border-white/5 p-6 space-y-4">
+          <h1 className="text-lg font-bold text-slate-100">Create account</h1>
 
           {error && (
-            <p className="text-sm text-rose-500 bg-rose-50 rounded-xl px-3 py-2">{error}</p>
+            <p className="text-sm text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-3 py-2">{error}</p>
           )}
 
           <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1.5">
-              Username
-            </label>
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1.5">Username</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
               placeholder="sonicsuperuser"
-              className="w-full px-3.5 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 bg-slate-50 placeholder-slate-300"
+              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1.5">
-              Email
-            </label>
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1.5">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="w-full px-3.5 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 bg-slate-50 placeholder-slate-300"
+              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1.5">
-              Password
-            </label>
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1.5">Password</label>
             <input
               type="password"
               value={password}
@@ -91,14 +85,14 @@ export default function SignupPage() {
               required
               placeholder="••••••••"
               minLength={8}
-              className="w-full px-3.5 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 bg-slate-50 placeholder-slate-300"
+              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 rounded-2xl bg-blue-500 text-white font-semibold text-sm hover:bg-blue-600 transition-colors shadow-md shadow-blue-100 disabled:opacity-60"
+            className="w-full h-12 rounded-2xl bg-blue-500 text-white font-semibold text-sm hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50"
           >
             {loading ? "Creating account…" : "Create account"}
           </button>
@@ -106,7 +100,7 @@ export default function SignupPage() {
 
         <p className="text-center text-sm text-slate-500 mt-5">
           Already have an account?{" "}
-          <Link href="/auth/login" className="text-blue-500 font-semibold hover:underline">
+          <Link href="/auth/login" className="text-blue-400 font-semibold hover:underline">
             Sign in
           </Link>
         </p>

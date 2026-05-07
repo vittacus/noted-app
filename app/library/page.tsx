@@ -31,12 +31,10 @@ export default function LibraryPage() {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-
       const { data } = await supabase
         .from("ratings")
         .select("*, song:songs(*)")
         .eq("user_id", user.id);
-
       if (data) {
         setRatings(data as RatingWithSong[]);
         const allGenres = Array.from(new Set(data.flatMap((r: any) => r.genre_tags ?? [])));
@@ -74,18 +72,15 @@ export default function LibraryPage() {
   return (
     <div className="page-enter">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="font-bold text-xl text-slate-900">Library</h1>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setView(view === "list" ? "grid" : "list")}
-            className="w-9 h-9 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors"
-          >
-            {view === "list" ? <LayoutGrid size={16} className="text-slate-500" /> : <Music2 size={16} className="text-slate-500" />}
-          </button>
-        </div>
+        <h1 className="font-bold text-xl text-slate-100">Library</h1>
+        <button
+          onClick={() => setView(view === "list" ? "grid" : "list")}
+          className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+        >
+          {view === "list" ? <LayoutGrid size={16} className="text-slate-400" /> : <Music2 size={16} className="text-slate-400" />}
+        </button>
       </div>
 
-      {/* Sort + filter bar */}
       <div className="flex gap-2 mb-4 overflow-x-auto pb-1 -mx-4 px-4">
         {(["date", "score", "artist"] as SortKey[]).map((s) => (
           <button
@@ -94,18 +89,18 @@ export default function LibraryPage() {
             className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
               sort === s
                 ? "bg-blue-500 text-white border-blue-500"
-                : "bg-white text-slate-600 border-slate-200 hover:border-blue-300"
+                : "bg-white/5 text-slate-400 border-white/10 hover:border-white/20"
             }`}
           >
             <ArrowUpDown size={11} />
             {s.charAt(0).toUpperCase() + s.slice(1)}
           </button>
         ))}
-        <div className="w-px bg-slate-200 mx-1 self-stretch" />
+        <div className="w-px bg-white/10 mx-1 self-stretch" />
         <button
           onClick={() => setGenre("all")}
           className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
-            genre === "all" ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-600 border-slate-200"
+            genre === "all" ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-white/5 text-slate-400 border-white/10 hover:border-white/20"
           }`}
         >
           All
@@ -115,7 +110,7 @@ export default function LibraryPage() {
             key={g}
             onClick={() => setGenre(g)}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
-              genre === g ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-600 border-slate-200"
+              genre === g ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-white/5 text-slate-400 border-white/10 hover:border-white/20"
             }`}
           >
             {g}
@@ -130,10 +125,10 @@ export default function LibraryPage() {
       )}
 
       {!loading && filtered.length === 0 && (
-        <div className="text-center py-16 text-slate-400">
+        <div className="text-center py-16">
           <p className="text-4xl mb-3">📚</p>
-          <p className="font-medium">No ratings yet</p>
-          <Link href="/search" className="text-blue-500 text-sm font-semibold hover:underline mt-1 block">
+          <p className="font-medium text-slate-400">No ratings yet</p>
+          <Link href="/search" className="text-blue-400 text-sm font-semibold hover:underline mt-1 block">
             Rate your first song →
           </Link>
         </div>
@@ -144,24 +139,24 @@ export default function LibraryPage() {
           {filtered.map((r) => (
             <div
               key={r.id}
-              className="flex items-center gap-3 bg-white rounded-2xl p-3 shadow-sm border border-slate-100 hover:shadow-md transition-shadow"
+              className="flex items-center gap-3 bg-[#1a1a24] rounded-2xl p-3 border border-white/5 hover:border-white/10 transition-colors"
             >
-              <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0">
+              <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
                 {r.song.album_art_url ? (
                   <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="48px" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200" />
+                  <div className="w-full h-full bg-gradient-to-br from-blue-900 to-blue-800" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="font-semibold text-sm text-slate-900 truncate">{r.song.title}</p>
-                  <span className="text-xs text-slate-400 shrink-0 mt-0.5">{formatDuration(r.song.duration_seconds)}</span>
+                  <p className="font-semibold text-sm text-slate-100 truncate">{r.song.title}</p>
+                  <span className="text-xs text-slate-600 shrink-0 mt-0.5">{formatDuration(r.song.duration_seconds)}</span>
                 </div>
                 <p className="text-xs text-slate-500 truncate">{r.song.artist}</p>
                 <div className="flex gap-1.5 mt-1">
                   {(r.genre_tags ?? []).slice(0, 2).map((t: string) => (
-                    <span key={t} className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">{t}</span>
+                    <span key={t} className="text-xs bg-white/5 text-slate-500 px-2 py-0.5 rounded-full">{t}</span>
                   ))}
                 </div>
               </div>
@@ -180,15 +175,15 @@ export default function LibraryPage() {
             <button
               key={r.id}
               onClick={() => openReRate(r)}
-              className="relative rounded-2xl overflow-hidden aspect-square bg-slate-100 group"
+              className="relative rounded-2xl overflow-hidden aspect-square bg-white/5 group"
             >
               {r.song.album_art_url ? (
                 <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="33vw" />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200" />
+                <div className="w-full h-full bg-gradient-to-br from-blue-900 to-blue-800" />
               )}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
-              <div className="absolute bottom-1.5 right-1.5 bg-black/60 text-white text-xs font-bold px-1.5 py-0.5 rounded-lg">
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all" />
+              <div className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-xs font-bold px-1.5 py-0.5 rounded-lg">
                 {r.overall_score.toFixed(1)}
               </div>
             </button>

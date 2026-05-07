@@ -9,11 +9,15 @@ export async function GET(request: NextRequest) {
 
   try {
     const token = await getSpotifyToken();
-    const res = await fetch(
-      `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=${type}&limit=20`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    if (!res.ok) throw new Error("Spotify search failed");
+    // Spotify client credentials flow caps limit at 10
+    const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=${type}&limit=10&market=US`;
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`Spotify search failed: ${res.status} ${body}`);
+    }
     const data = await res.json();
     return NextResponse.json(data);
   } catch (err) {

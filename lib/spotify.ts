@@ -5,9 +5,14 @@ export async function getSpotifyToken(): Promise<string> {
     return cachedToken.token;
   }
 
-  const credentials = Buffer.from(
-    `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
-  ).toString("base64");
+  const clientId = process.env.SPOTIFY_CLIENT_ID;
+  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    throw new Error("Missing Spotify credentials in environment");
+  }
+
+  const credentials = btoa(`${clientId}:${clientSecret}`);
 
   const res = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
@@ -18,7 +23,10 @@ export async function getSpotifyToken(): Promise<string> {
     body: "grant_type=client_credentials",
   });
 
-  if (!res.ok) throw new Error("Failed to get Spotify token");
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Failed to get Spotify token: ${res.status} ${body}`);
+  }
 
   const data = await res.json();
   cachedToken = {

@@ -17,16 +17,16 @@ export default function Navigation() {
   return (
     <>
       {/* Top bar */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-100">
+      <header className="sticky top-0 z-40 bg-[#0f0f13]/80 backdrop-blur border-b border-white/5">
         <div className="max-w-2xl mx-auto px-4 h-14 flex items-center">
-          <Link href="/" className="font-bold text-xl tracking-tight text-blue-500">
-            sonic
+          <Link href="/" className="font-bold text-xl tracking-tight text-blue-400">
+            noted
           </Link>
         </div>
       </header>
 
       {/* Bottom tab bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 bg-white/90 backdrop-blur border-t border-slate-100 safe-bottom">
+      <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#0f0f13]/90 backdrop-blur border-t border-white/5">
         <div className="max-w-2xl mx-auto flex">
           {nav.map(({ href, icon: Icon, label }) => {
             const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -35,7 +35,7 @@ export default function Navigation() {
                 key={href}
                 href={href}
                 className={`flex-1 flex flex-col items-center gap-0.5 py-3 text-xs font-medium transition-colors ${
-                  active ? "text-blue-500" : "text-slate-400 hover:text-slate-600"
+                  active ? "text-blue-400" : "text-slate-500 hover:text-slate-300"
                 }`}
               >
                 <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
