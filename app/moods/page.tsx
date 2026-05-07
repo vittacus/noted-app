@@ -4,30 +4,72 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { BEST_FOR_TAGS } from "@/types";
 
-const PRESET_EMOJIS: Record<string, string> = {
-  "Late Night": "🌙",
-  "Workout":    "💪",
-  "Focus":      "🧠",
-  "Heartbreak": "💔",
-  "Hype":       "🔥",
-  "Road Trip":  "🚗",
-};
+const MOODS = [
+  {
+    tag: "Late Night",
+    emoji: "🌙",
+    gradient: "from-indigo-950 to-slate-900",
+    border: "border-indigo-500/20",
+    glow: "shadow-indigo-900/40",
+  },
+  {
+    tag: "Workout",
+    emoji: "💪",
+    gradient: "from-orange-950 to-red-950",
+    border: "border-orange-500/20",
+    glow: "shadow-orange-900/40",
+  },
+  {
+    tag: "Focus",
+    emoji: "🧠",
+    gradient: "from-teal-950 to-cyan-950",
+    border: "border-teal-500/20",
+    glow: "shadow-teal-900/40",
+  },
+  {
+    tag: "Heartbreak",
+    emoji: "💔",
+    gradient: "from-rose-950 to-pink-950",
+    border: "border-rose-500/20",
+    glow: "shadow-rose-900/40",
+  },
+  {
+    tag: "Hype",
+    emoji: "🔥",
+    gradient: "from-amber-950 to-yellow-950",
+    border: "border-amber-500/20",
+    glow: "shadow-amber-900/40",
+  },
+  {
+    tag: "Road Trip",
+    emoji: "🚗",
+    gradient: "from-emerald-950 to-green-950",
+    border: "border-emerald-500/20",
+    glow: "shadow-emerald-900/40",
+  },
+  {
+    tag: "Chill",
+    emoji: "🫶",
+    gradient: "from-sky-950 to-blue-950",
+    border: "border-sky-500/20",
+    glow: "shadow-sky-900/40",
+  },
+  {
+    tag: "Other",
+    emoji: "🎵",
+    gradient: "from-violet-950 to-purple-950",
+    border: "border-violet-500/20",
+    glow: "shadow-violet-900/40",
+  },
+] as const;
 
-const PRESET_COLORS: Record<string, string> = {
-  "Late Night": "from-indigo-900/60 to-[#1e2d3d]",
-  "Workout":    "from-orange-900/60 to-[#1e2d3d]",
-  "Focus":      "from-cyan-900/60 to-[#1e2d3d]",
-  "Heartbreak": "from-rose-900/60 to-[#1e2d3d]",
-  "Hype":       "from-amber-900/60 to-[#1e2d3d]",
-  "Road Trip":  "from-emerald-900/60 to-[#1e2d3d]",
-};
+const MOOD_TAG_NAMES = MOODS.map((m) => m.tag);
 
 export default function MoodsPage() {
   const router = useRouter();
   const supabase = createClient();
-  const [moodCounts, setMoodCounts] = useState<Record<string, number>>({});
+  const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,17 +82,22 @@ export default function MoodsPage() {
         .select("best_for_tags")
         .eq("user_id", user.id);
 
-      const counts: Record<string, number> = {};
+      // Only count songs that match one of the 8 preset mood tags exactly
+      const tally: Record<string, number> = {};
       for (const r of data ?? []) {
         for (const tag of r.best_for_tags ?? []) {
-          counts[tag] = (counts[tag] ?? 0) + 1;
+          if ((MOOD_TAG_NAMES as readonly string[]).includes(tag)) {
+            tally[tag] = (tally[tag] ?? 0) + 1;
+          }
         }
       }
-      setMoodCounts(counts);
+      setCounts(tally);
       setLoading(false);
     }
     load();
   }, []);
+
+  const visible = MOODS.filter((m) => (counts[m.tag] ?? 0) > 0);
 
   if (loading) {
     return (
@@ -60,63 +107,41 @@ export default function MoodsPage() {
     );
   }
 
-  // Preset moods first, then any custom vibes not in the preset list
-  const presets = BEST_FOR_TAGS.filter((t) => moodCounts[t] > 0);
-  const customVibes = Object.keys(moodCounts).filter(
-    (t) => !(BEST_FOR_TAGS as readonly string[]).includes(t) && moodCounts[t] > 0
-  );
-
-  const allEmpty = presets.length === 0 && customVibes.length === 0;
-
   return (
     <div className="page-enter">
       <h1 className="font-black text-2xl text-slate-100 mb-1">Moods</h1>
       <p className="text-sm text-slate-500 mb-6">Your songs by vibe</p>
 
-      {allEmpty && (
+      {visible.length === 0 && (
         <div className="text-center py-16">
           <p className="text-4xl mb-3">🎭</p>
-          <p className="font-medium text-slate-400">No moods yet</p>
-          <p className="text-xs text-slate-600 mt-1 mb-4">Tag songs with moods when you rate them</p>
-          <Link href="/search" className="text-[#4fc3f7] text-sm font-semibold hover:underline">Rate a song →</Link>
+          <p className="font-medium text-slate-400">No moods tagged yet</p>
+          <p className="text-xs text-slate-600 mt-1 mb-4">
+            When you rate a song, use "Best for" tags to unlock this section
+          </p>
+          <Link href="/search" className="text-[#4fc3f7] text-sm font-semibold hover:underline">
+            Rate a song →
+          </Link>
         </div>
       )}
 
-      {/* Preset moods grid */}
-      {presets.length > 0 && (
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          {presets.map((tag) => (
-            <Link
-              key={tag}
-              href={`/moods/${encodeURIComponent(tag)}`}
-              className={`relative rounded-3xl overflow-hidden bg-gradient-to-br ${PRESET_COLORS[tag] ?? "from-slate-800 to-[#1e2d3d]"} border border-white/5 hover:border-white/15 transition-colors p-5 flex flex-col`}
-            >
-              <span className="text-3xl mb-3">{PRESET_EMOJIS[tag] ?? "🎵"}</span>
-              <p className="font-bold text-slate-100 text-base">{tag}</p>
-              <p className="text-xs text-slate-400 mt-0.5">{moodCounts[tag]} song{moodCounts[tag] !== 1 ? "s" : ""}</p>
-            </Link>
-          ))}
-        </div>
-      )}
-
-      {/* Custom vibes */}
-      {customVibes.length > 0 && (
-        <div>
-          <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Custom vibes</p>
-          <div className="flex flex-wrap gap-2">
-            {customVibes.map((tag) => (
-              <Link
-                key={tag}
-                href={`/moods/${encodeURIComponent(tag)}`}
-                className="flex items-center gap-2 px-4 py-2.5 bg-[#1e2d3d] border border-white/5 hover:border-white/15 rounded-2xl transition-colors"
-              >
-                <span className="text-sm font-semibold text-slate-200">{tag}</span>
-                <span className="text-xs text-slate-500">{moodCounts[tag]}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
+      <div className="grid grid-cols-2 gap-3">
+        {visible.map((m) => (
+          <Link
+            key={m.tag}
+            href={`/moods/${encodeURIComponent(m.tag)}`}
+            className={`relative rounded-3xl overflow-hidden bg-gradient-to-br ${m.gradient} border ${m.border} hover:brightness-110 transition-all shadow-lg ${m.glow} p-5 flex flex-col min-h-[130px]`}
+          >
+            <span className="text-3xl mb-auto">{m.emoji}</span>
+            <div className="mt-3">
+              <p className="font-bold text-slate-100 text-base leading-tight">{m.tag}</p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {counts[m.tag]} song{counts[m.tag] !== 1 ? "s" : ""}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
