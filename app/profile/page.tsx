@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ScoreCircle from "@/components/ScoreCircle";
 import TasteRadar, { type TasteItem } from "@/components/TasteRadar";
+import { calculateStreak } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,18 @@ export default async function ProfilePage() {
   const albumsInProgress = Array.from(albumMap.values()).slice(0, 6);
 
   const top5 = ratings?.slice(0, 5) ?? [];
+
+  // Stats (moved from Home)
+  const streak = calculateStreak((ratings ?? []).map((r: any) => r.listened_at));
+  const albumNames = new Set((ratings ?? []).map((r: any) => r.song?.album_name?.trim()).filter(Boolean));
+  const albumsCount = albumNames.size;
+
+  const STATS = [
+    { icon: "🔥", value: streak > 0 ? streak : "—", label: "day streak",  accent: "#fb923c", bg: "rgba(251,146,60,0.07)"  },
+    { icon: "🎵", value: totalRated || "—",           label: "songs rated", accent: "#4fc3f7", bg: "rgba(79,195,247,0.07)"  },
+    { icon: "📀", value: albumsCount || "—",          label: "albums",      accent: "#a78bfa", bg: "rgba(167,139,250,0.07)" },
+    { icon: "⭐", value: avgScore ?? "—",             label: "avg score",   accent: "#fbbf24", bg: "rgba(251,191,36,0.07)"  },
+  ] as const;
 
   // TasteRadar data
   const GENRE_EMOJIS: Record<string, string> = {
@@ -149,6 +162,18 @@ export default async function ProfilePage() {
             <p className="text-xs text-slate-500 mt-0.5">Top genre</p>
           </div>
         </div>
+      </div>
+
+      {/* Stats bar */}
+      <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4">
+        {STATS.map((s) => (
+          <div key={s.label} className="shrink-0 rounded-2xl border border-white/5 px-5 py-4 text-center min-w-[84px]"
+            style={{ background: s.bg, borderLeft: `3px solid ${s.accent}` }}>
+            <p className="text-xl leading-none mb-2">{s.icon}</p>
+            <p className="text-2xl font-black leading-none tabular-nums" style={{ color: s.accent }}>{s.value}</p>
+            <p className="text-xs text-slate-500 mt-2 leading-tight">{s.label}</p>
+          </div>
+        ))}
       </div>
 
       {/* Taste profile — only shows once you have ≥3 ratings */}
