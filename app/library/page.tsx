@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
-import { ArrowUpDown, Music2, LayoutGrid, Swords } from "lucide-react";
+import { ArrowUpDown, Music2, LayoutGrid } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Rating, Song } from "@/types";
 import { formatDuration } from "@/lib/utils";
@@ -104,10 +104,8 @@ export default function LibraryPage() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="font-bold text-xl text-slate-100">Library</h1>
         <div className="flex gap-2 items-center">
-          <Link href="/battle"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#4fc3f7]/10 border border-[#4fc3f7]/20 text-[#4fc3f7] text-xs font-semibold hover:bg-[#4fc3f7]/20 transition-colors"
-          >
-            <Swords size={13} /> Battle
+          <Link href="/battle" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
+            ⚔ Battle mode
           </Link>
           {libraryMode === "songs" && (
             <button

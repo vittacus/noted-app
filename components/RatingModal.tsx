@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { X, ChevronRight, ChevronLeft } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, Check } from "lucide-react";
 import { SpotifyTrack, VibeOption, RatingFormState, BEST_FOR_TAGS, GENRE_TAGS } from "@/types";
 import { scoreColor, calculateScore } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -70,43 +70,26 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  // Mood collections
-  const [userCollections, setUserCollections] = useState<{ id: string; name: string }[]>([]);
-  const [selectedCollectionIds, setSelectedCollectionIds] = useState<string[]>([]);
-  const [newCollectionName, setNewCollectionName] = useState("");
-  const [creatingCollection, setCreatingCollection] = useState(false);
+  // Inline "Other" expansion and mood-list checkboxes
+  const [otherVibeText, setOtherVibeText] = useState("");
+  const [moodCheckboxes, setMoodCheckboxes] = useState<Set<string>>(new Set());
+  const [customMoodEntries, setCustomMoodEntries] = useState<string[]>([]);
+  const [customMoodInput, setCustomMoodInput] = useState("");
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
-      supabase.from("collections").select("id, name").eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .then(({ data }) => setUserCollections(data ?? []));
+  function toggleMoodCheckbox(name: string) {
+    setMoodCheckboxes((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name); else next.add(name);
+      return next;
     });
-  }, []);
-
-  function toggleCollection(id: string) {
-    setSelectedCollectionIds((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
-    );
   }
 
-  async function createAndSelectCollection() {
-    if (!newCollectionName.trim()) return;
-    setCreatingCollection(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data } = await supabase
-        .from("collections")
-        .insert({ user_id: user.id, name: newCollectionName.trim() })
-        .select("id, name").single();
-      if (data) {
-        setUserCollections((prev) => [data, ...prev]);
-        setSelectedCollectionIds((prev) => [...prev, data.id]);
-        setNewCollectionName("");
-      }
-    }
-    setCreatingCollection(false);
+  function addCustomMoodEntry() {
+    const name = customMoodInput.trim();
+    if (!name || customMoodEntries.includes(name)) return;
+    setCustomMoodEntries((prev) => [...prev, name]);
+    setMoodCheckboxes((prev) => new Set([...prev, name]));
+    setCustomMoodInput("");
   }
 
   const [form, setForm] = useState<RatingFormState>({
@@ -197,21 +180,32 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         production: form.production,
         overall_score: displayScore ?? 5.0,
         notes: form.notes || null,
-        best_for_tags: [
-          ...form.best_for_tags,
-          ...(form.custom_vibe_tag.trim() ? [form.custom_vibe_tag.trim()] : []),
-        ],
+        best_for_tags: form.best_for_tags.map((t) =>
+          t === "Other" && otherVibeText.trim() ? otherVibeText.trim() : t
+        ),
         genre_tags: form.genre_tags,
         listened_at: form.listened_at,
       }, { onConflict: "user_id,song_id" });
       if (ratingErr) throw new Error(`Could not save rating: ${ratingErr.message}`);
 
-      // Add to selected mood collections
-      if (selectedCollectionIds.length > 0) {
-        await supabase.from("collection_songs").upsert(
-          selectedCollectionIds.map((cid) => ({ collection_id: cid, song_id: songId })),
-          { onConflict: "collection_id,song_id" }
-        );
+      // Add song to checked mood lists (find-or-create each collection by name)
+      for (const moodName of moodCheckboxes) {
+        let colId: string | null = null;
+        const { data: found } = await supabase.from("collections")
+          .select("id").eq("user_id", user.id).eq("name", moodName).single();
+        if (found) {
+          colId = found.id;
+        } else {
+          const { data: created } = await supabase.from("collections")
+            .insert({ user_id: user.id, name: moodName }).select("id").single();
+          colId = created?.id ?? null;
+        }
+        if (colId) {
+          await supabase.from("collection_songs").upsert(
+            { collection_id: colId, song_id: songId },
+            { onConflict: "collection_id,song_id" }
+          );
+        }
       }
 
       onSaved();
@@ -299,61 +293,90 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
               <h2 className="text-lg font-bold text-slate-100 mb-1">Tags & details</h2>
               <p className="text-sm text-slate-500 mb-5">Tell more about how you heard it</p>
 
+              {/* Best for — "Other" expands inline */}
               <div className="mb-5">
                 <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2.5">Best for</p>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {BEST_FOR_TAGS.map((tag) => (
-                    <button key={tag} onClick={() => toggleTag(tag, "best_for_tags")}
-                      className={`px-3.5 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                        form.best_for_tags.includes(tag)
-                          ? "bg-[#4fc3f7]/50 border-[#4fc3f7] text-white"
-                          : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20"
-                      }`}>{tag}</button>
-                  ))}
-                </div>
-                <input type="text" value={form.custom_vibe_tag}
-                  onChange={(e) => setForm((f) => ({ ...f, custom_vibe_tag: e.target.value.slice(0, 30) }))}
-                  placeholder="Other vibe… (e.g. Sunday morning)"
-                  className="w-full px-3 py-2 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-[#4fc3f7]/50" />
-                {form.custom_vibe_tag && (
-                  <p className="text-xs text-slate-600 mt-1 text-right">{form.custom_vibe_tag.length}/30</p>
-                )}
-              </div>
-
-              {/* Mood lists (user's named collections) */}
-              <div className="mb-5">
-                <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2.5">Add to mood list</p>
-                {userCollections.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {userCollections.map((col) => (
-                      <button key={col.id} onClick={() => toggleCollection(col.id)}
+                <div className="flex flex-wrap gap-2">
+                  {BEST_FOR_TAGS.map((tag) => {
+                    const selected = form.best_for_tags.includes(tag);
+                    if (tag === "Other" && selected) {
+                      // Expanded inline input
+                      return (
+                        <div key="Other"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#4fc3f7] bg-[#4fc3f7]/20 text-white">
+                          <span className="text-sm font-medium shrink-0">Other:</span>
+                          <input
+                            autoFocus
+                            value={otherVibeText}
+                            onChange={(e) => setOtherVibeText(e.target.value.slice(0, 30))}
+                            placeholder="e.g. Sunday morning"
+                            className="w-28 bg-transparent text-sm text-white placeholder-white/30 outline-none"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <button
+                            onClick={() => { toggleTag("Other", "best_for_tags"); setOtherVibeText(""); }}
+                            className="text-white/50 hover:text-white text-base leading-none ml-0.5"
+                          >×</button>
+                        </div>
+                      );
+                    }
+                    return (
+                      <button key={tag} onClick={() => toggleTag(tag, "best_for_tags")}
                         className={`px-3.5 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                          selectedCollectionIds.includes(col.id)
-                            ? "bg-[#a78bfa]/30 border-[#a78bfa] text-white"
+                          selected
+                            ? "bg-[#4fc3f7]/50 border-[#4fc3f7] text-white"
                             : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20"
-                        }`}
-                      >
-                        {col.name}
-                      </button>
-                    ))}
+                        }`}>{tag}</button>
+                    );
+                  })}
+                </div>
+
+                {/* Checkboxes — one per selected tag, plus custom entries */}
+                {(form.best_for_tags.length > 0 || customMoodEntries.length > 0) && (
+                  <div className="mt-4 space-y-2.5">
+                    <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Add to mood list</p>
+                    {[
+                      ...form.best_for_tags.map((t) =>
+                        t === "Other" && otherVibeText.trim() ? otherVibeText.trim() : t
+                      ),
+                      ...customMoodEntries,
+                    ]
+                      .filter((v, i, a) => a.indexOf(v) === i) // dedupe
+                      .map((name) => (
+                        <label key={name} className="flex items-center gap-2.5 cursor-pointer group">
+                          <button
+                            type="button"
+                            onClick={() => toggleMoodCheckbox(name)}
+                            className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center shrink-0 transition-all ${
+                              moodCheckboxes.has(name)
+                                ? "bg-[#4fc3f7] border-[#4fc3f7]"
+                                : "border-white/25 bg-transparent group-hover:border-white/40"
+                            }`}
+                          >
+                            {moodCheckboxes.has(name) && (
+                              <Check size={11} className="text-[#0d1f35]" strokeWidth={3} />
+                            )}
+                          </button>
+                          <span className="text-sm text-slate-300">
+                            Add to <span className="text-slate-100 font-medium">{name}</span> mood list
+                          </span>
+                        </label>
+                      ))}
+
+                    {/* "+" custom mood list */}
+                    <div className="flex items-center gap-2 pt-0.5">
+                      <span className="text-[#4fc3f7] text-base font-bold leading-none shrink-0">+</span>
+                      <input
+                        value={customMoodInput}
+                        onChange={(e) => setCustomMoodInput(e.target.value.slice(0, 50))}
+                        onKeyDown={(e) => e.key === "Enter" && addCustomMoodEntry()}
+                        onBlur={addCustomMoodEntry}
+                        placeholder="Custom mood list… (press Enter)"
+                        className="flex-1 bg-transparent text-sm text-slate-300 placeholder-slate-700 outline-none border-b border-white/10 pb-0.5 focus:border-[#4fc3f7]/50 transition-colors"
+                      />
+                    </div>
                   </div>
                 )}
-                <div className="flex gap-2">
-                  <input
-                    value={newCollectionName}
-                    onChange={(e) => setNewCollectionName(e.target.value.slice(0, 50))}
-                    onKeyDown={(e) => e.key === "Enter" && createAndSelectCollection()}
-                    placeholder={userCollections.length ? "New mood list… (press Enter)" : "Create a mood list… e.g. Car Jams"}
-                    className="flex-1 px-3 py-2 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-[#4fc3f7]/50"
-                  />
-                  {newCollectionName.trim() && (
-                    <button onClick={createAndSelectCollection} disabled={creatingCollection}
-                      className="px-3 py-2 rounded-xl bg-white/10 text-slate-300 text-xs font-semibold hover:bg-white/20 transition-colors disabled:opacity-40"
-                    >
-                      {creatingCollection ? "…" : "Add"}
-                    </button>
-                  )}
-                </div>
               </div>
 
               <div className="mb-5">

@@ -4,18 +4,19 @@ interface Props {
 }
 
 export default function ScoreCircle({ score, size = 44 }: Props) {
-  const fontSize = Math.round(size * 0.3);
+  const fontSize = Math.round(size * 0.32);
   return (
-    <div
-      className="shrink-0 flex items-center justify-center rounded-full"
-      style={{ width: size, height: size, backgroundColor: "#000" }}
+    <span
+      className="shrink-0 font-black text-white tabular-nums leading-none"
+      style={{
+        fontSize,
+        textShadow:
+          "-1px -1px 0 rgba(0,0,0,0.85), 1px -1px 0 rgba(0,0,0,0.85), " +
+          "-1px  1px 0 rgba(0,0,0,0.85), 1px  1px 0 rgba(0,0,0,0.85), " +
+          "0 2px 8px rgba(0,0,0,0.6)",
+      }}
     >
-      <span
-        className="font-black text-white tabular-nums leading-none"
-        style={{ fontSize }}
-      >
-        {score.toFixed(1)}
-      </span>
-    </div>
+      {score.toFixed(1)}
+    </span>
   );
 }
