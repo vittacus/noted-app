@@ -156,25 +156,36 @@ export default async function ProfilePage() {
         <div className="bg-[#1e2d3d] rounded-3xl p-5 border border-white/5">
           <h2 className="font-bold text-base text-slate-100 mb-4">Your taste</h2>
 
-          {topDim && (
-            <div className="mb-5">
-              <p className="text-xs text-slate-600 uppercase tracking-wide font-semibold mb-1">You value most</p>
-              <p className="text-sm font-semibold text-slate-200">
-                {topDim}{" "}
-                <span className="text-slate-500 font-normal">— avg {dimAvg[topDim].toFixed(1)}/10</span>
-              </p>
-              <div className="flex gap-2 mt-2.5">
-                {Object.entries(dimAvg).map(([dim, val]) => (
-                  <div key={dim} className="flex-1">
-                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden mb-1">
-                      <div
-                        className={`h-full rounded-full taste-bar ${dim === topDim ? "bg-[#4fc3f7]/50" : "bg-white/10"}`}
-                        style={{ width: `${(val / 10) * 100}%` }}
-                      />
+          {/* Dimension circles — Replay / Lyrics / Production */}
+          {totalRated > 0 && (
+            <div className="mb-6">
+              <p className="text-xs text-slate-600 uppercase tracking-wide font-semibold mb-4">Dimension scores</p>
+              <div className="flex justify-around items-end">
+                {([
+                  { key: "Replay Value", label: "Replay",     color: "#4fc3f7", short: "RV" },
+                  { key: "Lyrics",       label: "Lyrics",     color: "#a78bfa", short: "LY" },
+                  { key: "Production",   label: "Production", color: "#fb923c", short: "PR" },
+                ] as const).map(({ key, label, color, short }) => {
+                  const val = dimAvg[key] ?? 0;
+                  // Size scales from 72px (score=1) to 100px (score=10)
+                  const sz = Math.round(72 + (val / 10) * 28);
+                  return (
+                    <div key={key} className="flex flex-col items-center gap-2">
+                      <div className="flex items-center justify-center rounded-full"
+                        style={{ width: sz, height: sz, backgroundColor: `${color}22`, border: `3px solid ${color}` }}>
+                        <div className="text-center">
+                          <p className="font-black leading-none tabular-nums" style={{ fontSize: Math.round(sz * 0.26), color }}>
+                            {val.toFixed(1)}
+                          </p>
+                          <p className="font-semibold leading-none mt-0.5" style={{ fontSize: Math.round(sz * 0.13), color: `${color}aa` }}>
+                            /10
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-xs font-semibold text-slate-400">{label}</p>
                     </div>
-                    <p className="text-xs text-slate-600 truncate">{dim.split(" ")[0]}</p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

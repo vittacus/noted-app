@@ -3,20 +3,26 @@ interface Props {
   size?: number;
 }
 
+function bgColor(score: number): string {
+  if (score >= 8) return "#4ade80";   // green
+  if (score >= 6) return "#fbbf24";   // yellow
+  if (score >= 4) return "#fb923c";   // orange
+  return "#f87171";                    // red
+}
+
 export default function ScoreCircle({ score, size = 44 }: Props) {
-  const fontSize = Math.round(size * 0.32);
+  const fontSize = Math.round(size * 0.3);
   return (
-    <span
-      className="shrink-0 font-black text-white tabular-nums leading-none"
-      style={{
-        fontSize,
-        textShadow:
-          "-1px -1px 0 rgba(0,0,0,0.85), 1px -1px 0 rgba(0,0,0,0.85), " +
-          "-1px  1px 0 rgba(0,0,0,0.85), 1px  1px 0 rgba(0,0,0,0.85), " +
-          "0 2px 8px rgba(0,0,0,0.6)",
-      }}
+    <div
+      className="shrink-0 flex items-center justify-center rounded-full"
+      style={{ width: size, height: size, backgroundColor: bgColor(score) }}
     >
-      {score.toFixed(1)}
-    </span>
+      <span
+        className="font-black text-white tabular-nums leading-none"
+        style={{ fontSize }}
+      >
+        {score.toFixed(1)}
+      </span>
+    </div>
   );
 }

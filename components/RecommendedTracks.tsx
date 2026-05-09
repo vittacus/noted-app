@@ -125,8 +125,11 @@ export default function RecommendedTracks({
 
       <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
         {tracks.map((track) => (
-          <div key={track.id}
-            className="shrink-0 w-[120px] bg-[#1e2d3d] rounded-2xl border border-white/5 overflow-hidden flex flex-col">
+          <button
+            key={track.id}
+            onClick={() => handleRate(track)}
+            className="shrink-0 w-[120px] bg-[#1e2d3d] rounded-2xl border border-white/5 overflow-hidden flex flex-col text-left hover:border-white/15 hover:bg-[#243347] active:scale-95 transition-all"
+          >
             <div className="relative w-full aspect-square bg-white/5">
               {track.album?.images?.[0] ? (
                 <Image src={track.album.images[0].url} alt={track.album?.name ?? ""} fill className="object-cover" sizes="120px" />
@@ -137,12 +140,9 @@ export default function RecommendedTracks({
             <div className="p-2 flex flex-col flex-1 gap-1">
               <p className="text-xs font-semibold text-slate-200 line-clamp-2 leading-tight">{track.name}</p>
               <p className="text-xs text-slate-500 truncate">{track.artists.map((a) => a.name).join(", ")}</p>
-              <button onClick={() => handleRate(track)}
-                className="mt-auto pt-1.5 text-xs font-semibold text-[#4fc3f7] hover:text-[#7dd8f0] transition-colors text-left">
-                + Rate
-              </button>
+              <p className="mt-auto pt-1.5 text-xs font-semibold text-[#4fc3f7]">+ Rate</p>
             </div>
-          </div>
+          </button>
         ))}
       </div>
 

@@ -20,7 +20,7 @@ function HexagonChart({ items }: { items: TasteItem[] }) {
   const n = items.length;
   if (n < 3) return null;
 
-  const cx = 140, cy = 145, r = 95, labelR = 125;
+  const cx = 142, cy = 148, r = 105, labelR = 136;
   const angles = Array.from({ length: n }, (_, i) =>
     ((i * (360 / n) - 90) * Math.PI) / 180
   );
@@ -46,7 +46,7 @@ function HexagonChart({ items }: { items: TasteItem[] }) {
       .join(" ") + " Z";
 
   return (
-    <svg width={280} height={290} viewBox="0 0 280 290">
+    <svg width={284} height={296} viewBox="0 0 284 296">
       {/* Background rings */}
       {[0.25, 0.5, 0.75, 1].map((frac) => (
         <path key={frac} d={ringPath(frac)} fill="none"
@@ -57,21 +57,32 @@ function HexagonChart({ items }: { items: TasteItem[] }) {
       {angles.map((a, i) => (
         <line key={i} x1={cx} y1={cy}
           x2={cx + r * Math.cos(a)} y2={cy + r * Math.sin(a)}
-          stroke={items[i].color} strokeWidth={2.5} strokeOpacity={0.45} />
+          stroke={items[i].color} strokeWidth={3} strokeOpacity={0.6} />
       ))}
 
       {/* Filled profile */}
-      <path d={profilePath} fill="rgba(79,195,247,0.12)"
-        stroke="#4fc3f7" strokeWidth={2.5} strokeLinejoin="round" />
+      <path d={profilePath} fill="rgba(79,195,247,0.14)"
+        stroke="#4fc3f7" strokeWidth={3} strokeLinejoin="round" />
 
-      {/* Colored vertex dots */}
+      {/* Colored vertex dots + score labels */}
       {items.map((item, i) => {
         const v = Math.min(1, Math.max(0, item.value));
         const a = angles[i];
+        const px = cx + r * v * Math.cos(a);
+        const py = cy + r * v * Math.sin(a);
+        // Place score label slightly toward center so it's inside the dot
+        const lx = cx + (r * v - 14) * Math.cos(a);
+        const ly = cy + (r * v - 14) * Math.sin(a);
         return (
-          <circle key={i}
-            cx={cx + r * v * Math.cos(a)} cy={cy + r * v * Math.sin(a)}
-            r={5} fill={item.color} stroke="rgba(0,0,0,0.5)" strokeWidth={1.5} />
+          <g key={i}>
+            <circle cx={px} cy={py} r={6} fill={item.color} stroke="rgba(0,0,0,0.5)" strokeWidth={1.5} />
+            {v > 0.15 && (
+              <text x={lx} y={ly + 4} textAnchor="middle" fontSize={8} fontWeight="700"
+                fill="rgba(255,255,255,0.9)" fontFamily="-apple-system, sans-serif">
+                {item.rawPct}%
+              </text>
+            )}
+          </g>
         );
       })}
 
