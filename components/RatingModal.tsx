@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { X, ChevronRight, ChevronLeft } from "lucide-react";
 import { SpotifyTrack, VibeOption, RatingFormState, BEST_FOR_TAGS, GENRE_TAGS } from "@/types";
-import { scoreColor } from "@/lib/utils";
-import { initialElo, eloToDisplayScore } from "@/lib/elo";
+import { scoreColor, calculateScore } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 
 // Steps: 1=Vibe  2=Dimensions  3=Tags  4=Reveal+Save
@@ -71,6 +70,45 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
+  // Mood collections
+  const [userCollections, setUserCollections] = useState<{ id: string; name: string }[]>([]);
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState<string[]>([]);
+  const [newCollectionName, setNewCollectionName] = useState("");
+  const [creatingCollection, setCreatingCollection] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase.from("collections").select("id, name").eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .then(({ data }) => setUserCollections(data ?? []));
+    });
+  }, []);
+
+  function toggleCollection(id: string) {
+    setSelectedCollectionIds((prev) =>
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
+    );
+  }
+
+  async function createAndSelectCollection() {
+    if (!newCollectionName.trim()) return;
+    setCreatingCollection(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data } = await supabase
+        .from("collections")
+        .insert({ user_id: user.id, name: newCollectionName.trim() })
+        .select("id, name").single();
+      if (data) {
+        setUserCollections((prev) => [data, ...prev]);
+        setSelectedCollectionIds((prev) => [...prev, data.id]);
+        setNewCollectionName("");
+      }
+    }
+    setCreatingCollection(false);
+  }
+
   const [form, setForm] = useState<RatingFormState>({
     song: track,
     vibe: null,
@@ -93,13 +131,16 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
       [field]: f[field].includes(tag) ? f[field].filter((t) => t !== tag) : [...f[field], tag],
     }));
 
-  // ELO-derived score shown at step 4
-  const avgDim =
-    form.replay_value && form.lyrics && form.production
-      ? (form.replay_value + form.lyrics + form.production) / 3
+  // Score: dimension average + vibe modifier, capped 1.0–10.0
+  const displayScore =
+    form.replay_value && form.lyrics && form.production && form.vibe
+      ? calculateScore({
+          replay_value: form.replay_value,
+          lyrics: form.lyrics,
+          production: form.production,
+          vibe: form.vibe,
+        })
       : null;
-  const elo = avgDim !== null ? initialElo(avgDim) : null;
-  const displayScore = elo !== null ? eloToDisplayScore(elo) : null;
 
   const canAdvance = () => {
     if (step === 1) return form.vibe !== null;
@@ -155,7 +196,6 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         lyrics: form.lyrics,
         production: form.production,
         overall_score: displayScore ?? 5.0,
-        ...(elo !== null ? { elo_score: elo } : {}),
         notes: form.notes || null,
         best_for_tags: [
           ...form.best_for_tags,
@@ -165,6 +205,14 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         listened_at: form.listened_at,
       }, { onConflict: "user_id,song_id" });
       if (ratingErr) throw new Error(`Could not save rating: ${ratingErr.message}`);
+
+      // Add to selected mood collections
+      if (selectedCollectionIds.length > 0) {
+        await supabase.from("collection_songs").upsert(
+          selectedCollectionIds.map((cid) => ({ collection_id: cid, song_id: songId })),
+          { onConflict: "collection_id,song_id" }
+        );
+      }
 
       onSaved();
     } catch (e) {
@@ -270,6 +318,42 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                 {form.custom_vibe_tag && (
                   <p className="text-xs text-slate-600 mt-1 text-right">{form.custom_vibe_tag.length}/30</p>
                 )}
+              </div>
+
+              {/* Mood lists (user's named collections) */}
+              <div className="mb-5">
+                <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2.5">Add to mood list</p>
+                {userCollections.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {userCollections.map((col) => (
+                      <button key={col.id} onClick={() => toggleCollection(col.id)}
+                        className={`px-3.5 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                          selectedCollectionIds.includes(col.id)
+                            ? "bg-[#a78bfa]/30 border-[#a78bfa] text-white"
+                            : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20"
+                        }`}
+                      >
+                        {col.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <input
+                    value={newCollectionName}
+                    onChange={(e) => setNewCollectionName(e.target.value.slice(0, 50))}
+                    onKeyDown={(e) => e.key === "Enter" && createAndSelectCollection()}
+                    placeholder={userCollections.length ? "New mood list… (press Enter)" : "Create a mood list… e.g. Car Jams"}
+                    className="flex-1 px-3 py-2 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-[#4fc3f7]/50"
+                  />
+                  {newCollectionName.trim() && (
+                    <button onClick={createAndSelectCollection} disabled={creatingCollection}
+                      className="px-3 py-2 rounded-xl bg-white/10 text-slate-300 text-xs font-semibold hover:bg-white/20 transition-colors disabled:opacity-40"
+                    >
+                      {creatingCollection ? "…" : "Add"}
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="mb-5">

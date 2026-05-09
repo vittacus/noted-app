@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ScoreCircle from "@/components/ScoreCircle";
 import CollectionsSection from "@/components/CollectionsSection";
+import RadarChart from "@/components/RadarChart";
 
 export const dynamic = "force-dynamic";
 
@@ -65,6 +66,24 @@ export default async function ProfilePage() {
   const top5 = ratings?.slice(0, 5) ?? [];
   const genreEntries = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
   const maxGenreCount = genreEntries[0]?.[1] ?? 1;
+
+  // Radar chart: 6 dimensions, each normalised 0–1
+  const radarValues: number[] = (() => {
+    if (totalRated < 3) return [0, 0, 0, 0, 0, 0];
+    const rs = ratings!;
+    const avgReplay     = rs.reduce((s, r) => s + r.replay_value, 0) / totalRated / 10;
+    const avgLyrics     = rs.reduce((s, r) => s + r.lyrics, 0)       / totalRated / 10;
+    const avgProduction = rs.reduce((s, r) => s + r.production, 0)   / totalRated / 10;
+    const uniqueGenres  = Object.keys(genreCounts).length;
+    const variety       = Math.min(1, uniqueGenres / 8);
+    const discovery     = rs.filter((r) => r.overall_score < 8).length / totalRated;
+    const meanScore     = rs.reduce((s, r) => s + r.overall_score, 0) / totalRated;
+    const variance      = rs.reduce((s, r) => s + (r.overall_score - meanScore) ** 2, 0) / totalRated;
+    const stdDev        = Math.sqrt(variance);
+    const consistency   = Math.max(0, 1 - stdDev / 3);
+    return [avgReplay, avgLyrics, avgProduction, variety, discovery, consistency];
+  })();
+  const radarLabels = ["Replay", "Lyrics", "Production", "Variety", "Discovery", "Consistency"];
 
   async function handleSignOut() {
     "use server";
@@ -142,20 +161,21 @@ export default async function ProfilePage() {
             </div>
           )}
 
-          {genreEntries.length > 0 && (
+          {/* Hexagon radar chart */}
+          {totalRated >= 3 && (
             <div>
-              <p className="text-xs text-slate-600 uppercase tracking-wide font-semibold mb-2.5">Genre spread</p>
-              <div className="space-y-2">
-                {genreEntries.map(([g, count]) => (
-                  <div key={g} className="flex items-center gap-2">
-                    <p className="text-xs text-slate-400 w-20 shrink-0">{g}</p>
-                    <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-[#4fc3f7]/60 rounded-full taste-bar"
-                        style={{ width: `${(count / maxGenreCount) * 100}%` }}
-                      />
-                    </div>
-                    <p className="text-xs text-slate-600 w-4 text-right shrink-0">{count}</p>
+              <p className="text-xs text-slate-600 uppercase tracking-wide font-semibold mb-3">Taste radar</p>
+              <div className="flex justify-center">
+                <RadarChart values={radarValues} labels={radarLabels} size={280} />
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1">
+                {radarLabels.map((label, i) => (
+                  <div key={label} className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-[#4fc3f7]/60 shrink-0" />
+                    <span className="text-xs text-slate-500">{label}</span>
+                    <span className="text-xs text-[#4fc3f7] font-semibold ml-auto tabular-nums">
+                      {Math.round(radarValues[i] * 100)}
+                    </span>
                   </div>
                 ))}
               </div>
