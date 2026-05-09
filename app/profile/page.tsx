@@ -3,8 +3,7 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import ScoreCircle from "@/components/ScoreCircle";
-import CollectionsSection from "@/components/CollectionsSection";
-import RadarChart from "@/components/RadarChart";
+import TasteRadar, { type TasteItem } from "@/components/TasteRadar";
 
 export const dynamic = "force-dynamic";
 
@@ -64,26 +63,55 @@ export default async function ProfilePage() {
   const albumsInProgress = Array.from(albumMap.values()).slice(0, 6);
 
   const top5 = ratings?.slice(0, 5) ?? [];
-  const genreEntries = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
-  const maxGenreCount = genreEntries[0]?.[1] ?? 1;
 
-  // Radar chart: 6 dimensions, each normalised 0–1
-  const radarValues: number[] = (() => {
-    if (totalRated < 3) return [0, 0, 0, 0, 0, 0];
-    const rs = ratings!;
-    const avgReplay     = rs.reduce((s, r) => s + r.replay_value, 0) / totalRated / 10;
-    const avgLyrics     = rs.reduce((s, r) => s + r.lyrics, 0)       / totalRated / 10;
-    const avgProduction = rs.reduce((s, r) => s + r.production, 0)   / totalRated / 10;
-    const uniqueGenres  = Object.keys(genreCounts).length;
-    const variety       = Math.min(1, uniqueGenres / 8);
-    const discovery     = rs.filter((r) => r.overall_score < 8).length / totalRated;
-    const meanScore     = rs.reduce((s, r) => s + r.overall_score, 0) / totalRated;
-    const variance      = rs.reduce((s, r) => s + (r.overall_score - meanScore) ** 2, 0) / totalRated;
-    const stdDev        = Math.sqrt(variance);
-    const consistency   = Math.max(0, 1 - stdDev / 3);
-    return [avgReplay, avgLyrics, avgProduction, variety, discovery, consistency];
-  })();
-  const radarLabels = ["Replay", "Lyrics", "Production", "Variety", "Discovery", "Consistency"];
+  // TasteRadar data
+  const GENRE_EMOJIS: Record<string, string> = {
+    Rap:"🎤", "R&B":"🎸", Pop:"⭐", Indie:"🌿", Electronic:"🎛️", Alternative:"🎵",
+    Jazz:"🎺", Classical:"🎻", Country:"🤠", Latin:"💃", Afrobeats:"🥁", Soul:"🎶",
+    Metal:"🤘", Folk:"🪕", "K-Pop":"🌟", Drill:"🎯", Trap:"🎵", House:"🏠", Ambient:"🌊",
+  };
+  const GENRE_COLORS = ["#f59e0b","#ec4899","#8b5cf6","#10b981","#06b6d4","#f97316"];
+  const VIBE_EMOJIS: Record<string, string> = {
+    "Late Night":"🌙", Workout:"💪", Focus:"🧠", Heartbreak:"💔",
+    Hype:"🔥", "Road Trip":"🚗", Chill:"🫶", Other:"🎵",
+  };
+  const VIBE_COLORS = ["#818cf8","#fb923c","#34d399","#f472b6","#fbbf24","#60a5fa"];
+
+  const maxGenreCount = Math.max(...Object.values(genreCounts), 1);
+  const genreItems: TasteItem[] = Object.entries(genreCounts)
+    .sort((a, b) => b[1] - a[1]).slice(0, 6)
+    .map(([g, cnt], i) => ({
+      label: g, emoji: GENRE_EMOJIS[g] ?? "🎵",
+      value: cnt / maxGenreCount,
+      rawPct: Math.round((cnt / totalRated) * 100),
+      color: GENRE_COLORS[i % GENRE_COLORS.length],
+    }));
+
+  const vibeCounts: Record<string, number> = {};
+  ratings?.forEach((r: any) => {
+    for (const t of r.best_for_tags ?? []) vibeCounts[t] = (vibeCounts[t] ?? 0) + 1;
+  });
+  const maxVibeCount = Math.max(...Object.values(vibeCounts), 1);
+  const vibeItems: TasteItem[] = Object.entries(vibeCounts)
+    .sort((a, b) => b[1] - a[1]).slice(0, 6)
+    .map(([v, cnt], i) => ({
+      label: v, emoji: VIBE_EMOJIS[v] ?? "🎵",
+      value: cnt / maxVibeCount,
+      rawPct: Math.round((cnt / totalRated) * 100),
+      color: VIBE_COLORS[i % VIBE_COLORS.length],
+    }));
+
+  // Generated headline
+  const topGenreName  = genreItems[0]?.label ?? "";
+  const topGenrePct   = genreItems[0]?.rawPct ?? 0;
+  const topVibeName   = vibeItems[0]?.label ?? "";
+  const tasteHeadline = totalRated >= 3
+    ? topGenreName && topVibeName
+      ? `Your music is ${topGenrePct}% ${topGenreName} and you love ${topVibeName} vibes ✨`
+      : topGenreName
+        ? `You're ${topGenrePct}% into ${topGenreName} right now ✨`
+        : `You're building your taste ✨`
+    : "";
 
   async function handleSignOut() {
     "use server";
@@ -161,26 +189,12 @@ export default async function ProfilePage() {
             </div>
           )}
 
-          {/* Hexagon radar chart */}
-          {totalRated >= 3 && (
-            <div>
-              <p className="text-xs text-slate-600 uppercase tracking-wide font-semibold mb-3">Taste radar</p>
-              <div className="flex justify-center">
-                <RadarChart values={radarValues} labels={radarLabels} size={280} />
-              </div>
-              <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1">
-                {radarLabels.map((label, i) => (
-                  <div key={label} className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[#4fc3f7]/60 shrink-0" />
-                    <span className="text-xs text-slate-500">{label}</span>
-                    <span className="text-xs text-[#4fc3f7] font-semibold ml-auto tabular-nums">
-                      {Math.round(radarValues[i] * 100)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Genre / Vibe DNA radar */}
+          <TasteRadar
+            genreItems={genreItems}
+            vibeItems={vibeItems}
+            headline={tasteHeadline}
+          />
         </div>
       )}
 
@@ -238,9 +252,6 @@ export default async function ProfilePage() {
           </div>
         </div>
       )}
-
-      {/* Collections */}
-      <CollectionsSection userId={user.id} />
 
       <form action={handleSignOut}>
         <button
