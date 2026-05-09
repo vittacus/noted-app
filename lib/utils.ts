@@ -41,6 +41,23 @@ export function calculateStreak(dates: string[]): number {
   return streak;
 }
 
+/** Maps a song's genre tags to a Pokemon-card accent color. Returns null for unknown genres. */
+export function genreAccentColor(tags: string[]): string | null {
+  const tag = (tags?.[0] ?? "").toLowerCase();
+  if (tag.includes("pop"))                               return "#3b82f6"; // blue
+  if (tag.includes("rap") || tag.includes("hip"))       return "#fbbf24"; // yellow
+  if (tag.includes("latin"))                             return "#ec4899"; // pink
+  if (tag.includes("r&b") || tag.includes("soul"))      return "#a78bfa"; // purple
+  if (tag.includes("indie"))                             return "#4ade80"; // green
+  if (tag.includes("electronic") || tag.includes("house") || tag.includes("ambient")) return "#4fc3f7"; // cyan
+  if (tag.includes("trap") || tag.includes("drill"))    return "#fb923c"; // orange
+  if (tag.includes("alternative") || tag.includes("metal")) return "#f97316";
+  if (tag.includes("jazz") || tag.includes("classical") || tag.includes("folk")) return "#f59e0b";
+  if (tag.includes("country"))                          return "#84cc16";
+  if (tag.includes("afro") || tag.includes("k-pop"))   return "#10b981";
+  return null;
+}
+
 export function scoreColor(score: number): string {
   if (score >= 8) return "text-[#4ade80]";   // green
   if (score >= 6) return "text-[#fbbf24]";   // yellow

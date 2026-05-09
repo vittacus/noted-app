@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
-import { calculateStreak } from "@/lib/utils";
+import { genreAccentColor } from "@/lib/utils";
 import FeedTabs from "@/components/FeedTabs";
 import RatingComments from "@/components/RatingComments";
 import RecommendedTracks from "@/components/RecommendedTracks";
@@ -10,12 +10,13 @@ import ScoreCircle from "@/components/ScoreCircle";
 
 export const dynamic = "force-dynamic";
 
-const STATS_CONFIG = [
-  { key: "streak",  icon: "🔥", label: "day streak",  accent: "#fb923c", bg: "rgba(251,146,60,0.07)"  },
-  { key: "songs",   icon: "🎵", label: "songs rated", accent: "#4fc3f7", bg: "rgba(79,195,247,0.07)"  },
-  { key: "albums",  icon: "📀", label: "albums",      accent: "#a78bfa", bg: "rgba(167,139,250,0.07)" },
-  { key: "average", icon: "⭐", label: "avg score",   accent: "#fbbf24", bg: "rgba(251,191,36,0.07)"  },
-] as const;
+const SUGGESTED_FRIENDS = [
+  { username: "beatmaven",   initials: "BM", color: "#f59e0b", match: 94, genre: "Rap / Alt"    },
+  { username: "melodyghost", initials: "MG", color: "#ec4899", match: 88, genre: "Latin / Pop"  },
+  { username: "wavesurfer",  initials: "WS", color: "#4fc3f7", match: 82, genre: "Indie / R&B"  },
+  { username: "lowfreq",     initials: "LF", color: "#a78bfa", match: 79, genre: "Rap / Soul"   },
+  { username: "driftpop",    initials: "DP", color: "#4ade80", match: 75, genre: "Pop"           },
+];
 
 export default async function HomePage({
   searchParams,
@@ -26,44 +27,31 @@ export default async function HomePage({
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Stats + seed/filter data for recommendations
-  let streak = 0, songsRated = 0, albumsCount = 0;
-  let avgScore: string | null = null;
+  // Recommendation seed data (no stats — those live on the Profile page)
+  let songsRated = 0;
   let seedTrackIds: string[] = [];
   let ratedSpotifyIds: string[] = [];
   let topArtistNames: string[] = [];
 
   if (user) {
-    const [{ data: dates }, { data: albumRows }, { data: allRated }] = await Promise.all([
-      supabase.from("ratings").select("listened_at").eq("user_id", user.id),
-      supabase.from("ratings").select("song:songs(album_name)").eq("user_id", user.id),
-      supabase
-        .from("ratings")
-        .select("overall_score, song:songs(spotify_id, album_name, artist)")
-        .eq("user_id", user.id)
-        .order("overall_score", { ascending: false }),
-    ]);
+    const { data: allRated } = await supabase
+      .from("ratings")
+      .select("overall_score, song:songs(spotify_id, artist)")
+      .eq("user_id", user.id)
+      .order("overall_score", { ascending: false });
 
     const ratedRows = (allRated ?? []) as any[];
-    streak = calculateStreak((dates ?? []).map((r: any) => r.listened_at));
     songsRated = ratedRows.length;
-    avgScore = songsRated > 0
-      ? (ratedRows.reduce((s, r) => s + r.overall_score, 0) / songsRated).toFixed(1)
-      : null;
-    const albumNames = new Set((albumRows ?? []).map((r: any) => r.song?.album_name).filter(Boolean));
-    albumsCount = albumNames.size;
-
-    seedTrackIds   = ratedRows.slice(0, 3).map((r) => r.song?.spotify_id).filter(Boolean);
+    seedTrackIds    = ratedRows.slice(0, 3).map((r) => r.song?.spotify_id).filter(Boolean);
     ratedSpotifyIds = ratedRows.map((r) => r.song?.spotify_id).filter(Boolean);
-    // Deduplicated artist names from top-rated songs for the fallback
     const seen = new Set<string>();
-    topArtistNames = ratedRows
+    topArtistNames  = ratedRows
       .map((r) => r.song?.artist?.trim())
       .filter((a: string) => a && !seen.has(a) && seen.add(a))
       .slice(0, 5);
   }
 
-  // Feed
+  // Feed query
   let feedQuery = supabase
     .from("ratings")
     .select(`
@@ -75,92 +63,78 @@ export default async function HomePage({
     .limit(30);
 
   if (tab === "mine" && user) feedQuery = feedQuery.eq("user_id", user.id);
-
   const { data: ratings } = await feedQuery;
 
   const vibeEmoji: Record<string, string> = { loved: "🔥", liked: "👍", didnt_like: "😐" };
 
   return (
     <div className="page-enter">
-      {/* Hero — logged-out, full-width ~40vh */}
+      {/* Hero — logged-out */}
       {!user && (
         <div className="-mx-4 mb-10">
           <div className="min-h-[42vh] flex flex-col items-center justify-center text-center bg-gradient-to-b from-[#0d2a45] via-[#1a2332] to-[#1a2332] px-6 py-12 relative overflow-hidden">
-            {/* Subtle radial glow */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_20%,rgba(79,195,247,0.12),transparent)] pointer-events-none" />
-
             <div className="relative">
-              <h1 className="text-6xl font-black tracking-tighter text-[#4fc3f7] mb-4 leading-none">
-                noted
-              </h1>
-              <p className="text-xl font-semibold text-white mb-2 leading-tight">
-                Rate and discover the music you love
-              </p>
+              <h1 className="text-6xl font-black tracking-tighter text-[#4fc3f7] mb-4 leading-none">noted</h1>
+              <p className="text-xl font-semibold text-white mb-2">Rate and discover the music you love</p>
               <p className="text-sm text-slate-400 mb-8 max-w-xs mx-auto leading-relaxed">
                 Track every song. Build your taste. Find your top 100.
               </p>
               <div className="flex gap-3 justify-center">
-                <Link href="/auth/signup"
-                  className="px-7 py-3.5 bg-[#4fc3f7] text-[#0d1f35] font-bold text-sm rounded-2xl hover:bg-[#7dd8f0] transition-colors shadow-lg shadow-[#4fc3f7]/25"
-                >
+                <Link href="/auth/signup" className="px-7 py-3.5 bg-[#4fc3f7] text-[#0d1f35] font-bold text-sm rounded-2xl hover:bg-[#7dd8f0] transition-colors shadow-lg shadow-[#4fc3f7]/25">
                   Get started
                 </Link>
-                <Link href="/auth/login"
-                  className="px-7 py-3.5 border-2 border-white/20 text-white font-bold text-sm rounded-2xl hover:bg-white/10 transition-colors"
-                >
+                <Link href="/auth/login" className="px-7 py-3.5 border-2 border-white/20 text-white font-bold text-sm rounded-2xl hover:bg-white/10 transition-colors">
                   Sign in
                 </Link>
               </div>
             </div>
           </div>
-
-          {/* CTA between hero and feed */}
           <div className="text-center py-5 bg-[#1e2d3d]/60 border-y border-white/5">
             <p className="text-xs text-slate-500">
-              Join to rate songs and build your library →{" "}
+              Join to rate songs →{" "}
               <Link href="/auth/signup" className="text-[#4fc3f7] font-semibold hover:underline">Create a free account</Link>
             </p>
           </div>
         </div>
       )}
 
-      {/* Stats bar */}
-      {user && (
-        <>
-          <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4">
-            {STATS_CONFIG.map((s) => {
-              const value =
-                s.key === "streak"  ? (streak > 0 ? streak : "—") :
-                s.key === "songs"   ? (songsRated || "—") :
-                s.key === "albums"  ? (albumsCount || "—") :
-                (avgScore ?? "—");
-              return (
-                <div
-                  key={s.key}
-                  className="shrink-0 rounded-2xl border border-white/5 px-5 py-4 text-center min-w-[88px]"
-                  style={{ background: s.bg, borderLeft: `3px solid ${s.accent}` }}
-                >
-                  <p className="text-xl leading-none mb-2">{s.icon}</p>
-                  <p className="text-2xl font-black leading-none tabular-nums" style={{ color: s.accent }}>
-                    {value}
-                  </p>
-                  <p className="text-xs text-slate-500 mt-2 leading-tight">{s.label}</p>
-                </div>
-              );
-            })}
-          </div>
-          {/* Divider between stats and feed */}
-          <div className="mt-6 mb-5 border-t border-white/5" />
-        </>
-      )}
-
-      {/* Recommendations — shown once the user has at least 1 rating */}
+      {/* Recommended for you */}
       {user && songsRated >= 1 && (
         <RecommendedTracks
           seedTrackIds={seedTrackIds}
           ratedSpotifyIds={ratedSpotifyIds}
           topArtistNames={topArtistNames}
         />
+      )}
+
+      {/* Suggested friends */}
+      {user && (
+        <div className="mb-8">
+          <div className="mb-3">
+            <h2 className="font-bold text-base text-slate-100">Suggested friends</h2>
+            <p className="text-xs text-slate-600 mt-0.5">People with similar taste</p>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
+            {SUGGESTED_FRIENDS.map((f) => (
+              <div key={f.username}
+                className="shrink-0 w-32 bg-[#1e2d3d] rounded-2xl border border-white/5 p-3 flex flex-col items-center gap-2">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm text-white"
+                  style={{ backgroundColor: f.color }}>
+                  {f.initials}
+                </div>
+                <p className="text-xs font-semibold text-slate-200 truncate w-full text-center">{f.username}</p>
+                <div className="flex flex-col items-center gap-0.5">
+                  <p className="text-xs font-bold" style={{ color: f.color }}>{f.match}% match</p>
+                  <p className="text-xs text-slate-600 text-center leading-tight">{f.genre}</p>
+                </div>
+                <button disabled className="w-full py-1 rounded-lg border border-white/10 text-xs text-slate-600 cursor-not-allowed">
+                  Follow
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Feed toggle */}
@@ -173,8 +147,9 @@ export default async function HomePage({
         <div className="text-center py-20">
           <p className="text-5xl mb-4">🎵</p>
           <p className="font-semibold text-slate-300 text-lg">No ratings yet</p>
-          <p className="text-slate-600 text-sm mt-1 mb-4">Start building your library</p>
-          <Link href="/search" className="inline-block px-5 py-2.5 bg-[#4fc3f7]/50 text-white text-sm font-semibold rounded-full hover:bg-[#3ab0d8] transition-colors">Rate a song →</Link>
+          <Link href="/search" className="inline-block mt-4 px-5 py-2.5 bg-[#4fc3f7]/50 text-white text-sm font-semibold rounded-full hover:bg-[#3ab0d8] transition-colors">
+            Rate a song →
+          </Link>
         </div>
       )}
       {tab === "everyone" && (ratings?.length ?? 0) === 0 && (
@@ -187,66 +162,72 @@ export default async function HomePage({
 
       {/* Rating cards */}
       <div className="space-y-4">
-        {ratings?.map((r: any) => (
-          <div key={r.id} className="bg-[#1e2d3d] rounded-2xl border border-white/5 overflow-hidden hover:border-white/10 transition-colors">
-            {/* Clickable song area */}
-            <Link href={`/song/${r.id}`} className="block">
-              {/* User + date */}
-              <div className="flex items-center gap-2 px-4 pt-4">
-                <div className="w-6 h-6 rounded-full bg-[#4fc3f7]/20 flex items-center justify-center text-[#4fc3f7] font-bold text-xs overflow-hidden shrink-0">
-                  {r.user?.avatar_url
-                    ? <Image src={r.user.avatar_url} alt={r.user.username} width={24} height={24} className="object-cover" />
-                    : (r.user?.username?.[0] ?? "?").toUpperCase()}
+        {ratings?.map((r: any) => {
+          const accentColor = genreAccentColor(r.genre_tags ?? []);
+          return (
+            <div key={r.id} className="bg-[#1e2d3d] rounded-2xl border border-white/5 overflow-hidden hover:border-white/10 transition-colors">
+              {/* Pokemon accent bar */}
+              {accentColor && (
+                <div className="flex justify-center pt-2">
+                  <div className="h-[3px] rounded-full" style={{ width: "60%", backgroundColor: accentColor }} />
                 </div>
-                <span className="text-xs font-semibold text-slate-400">{r.user?.username ?? "Unknown"}</span>
-                <span className="text-xs text-slate-700 ml-auto">
-                  {new Date(r.listened_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                </span>
-              </div>
-
-              {/* Song row */}
-              <div className="flex items-center gap-4 px-4 py-4">
-                <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-lg">
-                  {r.song?.album_art_url
-                    ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="64px" />
-                    : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-base text-slate-100 truncate leading-tight">{r.song?.title}</p>
-                  <p className="text-sm text-slate-500 truncate mt-0.5">{r.song?.artist}</p>
-                  <div className="flex items-center gap-2 mt-2 flex-wrap">
-                    <span className="text-sm">{vibeEmoji[r.vibe] ?? ""}</span>
-                    {(r.genre_tags ?? []).slice(0, 1).map((tag: string) => (
-                      <span key={tag} className="text-xs bg-white/5 text-slate-500 px-2 py-0.5 rounded-full">{tag}</span>
-                    ))}
-                    {/* Custom vibe tags (non-preset best_for entries) */}
-                    {(r.best_for_tags ?? [])
-                      .filter((t: string) => !["Late Night","Workout","Focus","Heartbreak","Hype","Road Trip"].includes(t))
-                      .slice(0, 1)
-                      .map((tag: string) => (
-                        <span key={tag} className="text-xs bg-[#4fc3f7]/10 text-[#4fc3f7] px-2 py-0.5 rounded-full border border-[#4fc3f7]/20">{tag}</span>
-                      ))}
-                  </div>
-                </div>
-                <ScoreCircle score={r.overall_score} size={44} />
-              </div>
-
-              {/* Notes */}
-              {r.notes && (
-                <p className="text-xs text-slate-500 italic mx-4 mb-4 line-clamp-2 border-t border-white/5 pt-3 leading-relaxed">
-                  &ldquo;{r.notes}&rdquo;
-                </p>
               )}
-            </Link>
 
-            {/* Comments (Everyone tab only) */}
-            {tab === "everyone" && (
-              <div className="border-t border-white/5">
-                <RatingComments ratingId={r.id} />
-              </div>
-            )}
-          </div>
-        ))}
+              <Link href={`/song/${r.id}`} className="block">
+                {/* User + date */}
+                <div className={`flex items-center gap-2 px-4 ${accentColor ? "pt-2" : "pt-4"}`}>
+                  <div className="w-6 h-6 rounded-full bg-[#4fc3f7]/20 flex items-center justify-center text-[#4fc3f7] font-bold text-xs overflow-hidden shrink-0">
+                    {r.user?.avatar_url
+                      ? <Image src={r.user.avatar_url} alt={r.user.username} width={24} height={24} className="object-cover" />
+                      : (r.user?.username?.[0] ?? "?").toUpperCase()}
+                  </div>
+                  <span className="text-xs font-semibold text-slate-400">{r.user?.username ?? "Unknown"}</span>
+                  <span className="text-xs text-slate-700 ml-auto">
+                    {new Date(r.listened_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  </span>
+                </div>
+
+                {/* Song row */}
+                <div className="flex items-center gap-4 px-4 py-4">
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-lg">
+                    {r.song?.album_art_url
+                      ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="64px" />
+                      : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-base text-slate-100 truncate leading-tight">{r.song?.title}</p>
+                    <p className="text-sm text-slate-500 truncate mt-0.5">{r.song?.artist}</p>
+                    <div className="flex items-center gap-2 mt-2 flex-wrap">
+                      <span className="text-sm">{vibeEmoji[r.vibe] ?? ""}</span>
+                      {(r.genre_tags ?? []).slice(0, 1).map((tag: string) => (
+                        <span key={tag} className="text-xs bg-white/5 text-slate-500 px-2 py-0.5 rounded-full">{tag}</span>
+                      ))}
+                      {(r.best_for_tags ?? [])
+                        .filter((t: string) => !["Late Night","Workout","Focus","Heartbreak","Hype","Road Trip","Chill","Other"].includes(t))
+                        .slice(0, 1)
+                        .map((tag: string) => (
+                          <span key={tag} className="text-xs bg-[#4fc3f7]/10 text-[#4fc3f7] px-2 py-0.5 rounded-full border border-[#4fc3f7]/20">{tag}</span>
+                        ))}
+                    </div>
+                  </div>
+                  <ScoreCircle score={r.overall_score} size={40} />
+                </div>
+
+                {r.notes && (
+                  <p className="text-xs text-slate-500 italic mx-4 mb-4 line-clamp-2 border-t border-white/5 pt-3 leading-relaxed">
+                    &ldquo;{r.notes}&rdquo;
+                  </p>
+                )}
+              </Link>
+
+              {tab === "everyone" && (
+                <div className="border-t border-white/5">
+                  <RatingComments ratingId={r.id} />
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
