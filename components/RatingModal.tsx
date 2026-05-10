@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { X, ChevronRight, ChevronLeft, Check } from "lucide-react";
+import ScoreCircle from "@/components/ScoreCircle";
 import { SpotifyTrack, VibeOption, RatingFormState, BEST_FOR_TAGS, GENRE_TAGS } from "@/types";
 import { scoreColor, calculateScore } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -64,11 +65,19 @@ function RatingCircleRow({ label, description, value, color, onChange }: {
   );
 }
 
+interface CompSong { ratingId: string; title: string; artist: string; albumArt: string | null; score: number; }
+
 export default function RatingModal({ track, onClose, onSaved }: RatingModalProps) {
   const supabase = createClient();
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Head-to-head comparison state
+  const [librarySongs, setLibrarySongs] = useState<CompSong[]>([]);
+  const [compCandidates, setCompCandidates] = useState<CompSong[]>([]);
+  const [compRoundIdx, setCompRoundIdx] = useState(0);
+  const [compResults, setCompResults] = useState<("won"|"lost"|"skipped")[]>([]);
 
   // Inline "Other" expansion and mood-list checkboxes
   const [otherVibeText, setOtherVibeText] = useState("");
@@ -114,16 +123,56 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
       [field]: f[field].includes(tag) ? f[field].filter((t) => t !== tag) : [...f[field], tag],
     }));
 
-  // Score: dimension average + vibe modifier, capped 1.0–10.0
-  const displayScore =
+  // Load library on mount for comparison candidates
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase.from("ratings")
+        .select("id, overall_score, song:songs(title, artist, album_art_url)")
+        .eq("user_id", user.id)
+        .order("overall_score", { ascending: false })
+        .then(({ data }) => {
+          if (!data) return;
+          setLibrarySongs((data as any[]).map((r) => ({
+            ratingId: r.id,
+            title: r.song?.title ?? "Unknown",
+            artist: r.song?.artist ?? "",
+            albumArt: r.song?.album_art_url ?? null,
+            score: r.overall_score,
+          })));
+        });
+    });
+  }, []);
+
+  const hasComparison = librarySongs.length >= 2;
+  // With comparison: 1=Vibe 2=Dims 3=Compare 4=Tags 5=Reveal
+  // Without:         1=Vibe 2=Dims 3=Tags 4=Reveal
+  const STEP_COMPARE = hasComparison ? 3 : -1;
+  const STEP_TAGS    = hasComparison ? 4 : 3;
+  const STEP_REVEAL  = hasComparison ? 5 : 4;
+  const totalSteps   = hasComparison ? 5 : 4;
+
+  // Score: base from dims+vibe ± comparison modifier, capped 1–10
+  const baseScore =
     form.replay_value && form.lyrics && form.production && form.vibe
-      ? calculateScore({
-          replay_value: form.replay_value,
-          lyrics: form.lyrics,
-          production: form.production,
-          vibe: form.vibe,
-        })
+      ? calculateScore({ replay_value: form.replay_value, lyrics: form.lyrics, production: form.production, vibe: form.vibe })
       : null;
+  const compMod = compResults.reduce(
+    (acc, r) => acc + (r === "won" ? 0.1 : r === "lost" ? -0.1 : 0), 0
+  );
+  const displayScore = baseScore !== null
+    ? Math.min(10, Math.max(1, Math.round((baseScore + compMod) * 10) / 10))
+    : null;
+
+  function pickInComparison(result: "won" | "lost" | "skipped") {
+    const newResults = [...compResults, result];
+    setCompResults(newResults);
+    if (newResults.length < compCandidates.length) {
+      setCompRoundIdx((i) => i + 1);
+    } else {
+      setStep(STEP_TAGS);
+    }
+  }
 
   const canAdvance = () => {
     if (step === 1) return form.vibe !== null;
@@ -132,8 +181,32 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
   };
 
   function advance() {
-    if (step < 4) setStep(step + 1);
-    else handleSave();
+    // During comparison step, the footer button skips all remaining rounds
+    if (step === STEP_COMPARE) {
+      setStep(STEP_TAGS);
+      return;
+    }
+    if (step === 2) {
+      // Freeze comparison candidates based on current score
+      if (hasComparison && baseScore !== null) {
+        const cands = librarySongs
+          .filter((s) => Math.abs(s.score - baseScore) <= 1.5)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 3);
+        setCompCandidates(cands);
+        setCompRoundIdx(0);
+        setCompResults([]);
+        setStep(cands.length > 0 ? STEP_COMPARE : STEP_TAGS);
+      } else {
+        setStep(STEP_TAGS);
+      }
+    } else if (step === STEP_TAGS) {
+      setStep(STEP_REVEAL);
+    } else if (step === STEP_REVEAL) {
+      handleSave();
+    } else {
+      setStep(step + 1);
+    }
   }
 
   async function handleSave() {
@@ -243,11 +316,11 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         {/* Progress */}
         <div className="px-5 pt-3">
           <div className="flex gap-1.5">
-            {[1,2,3,4].map((s) => (
-              <div key={s} className={`h-1 flex-1 rounded-full transition-all duration-300 ${s <= step ? "bg-[#4fc3f7]" : "bg-white/10"}`} />
+            {Array.from({ length: totalSteps }, (_, i) => (
+              <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i + 1 <= step ? "bg-[#4fc3f7]" : "bg-white/10"}`} />
             ))}
           </div>
-          <p className="text-xs text-slate-600 mt-1.5">Step {step} of 4</p>
+          <p className="text-xs text-slate-600 mt-1.5">Step {step} of {totalSteps}</p>
         </div>
 
         {/* Body */}
@@ -287,8 +360,64 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
             </div>
           )}
 
-          {/* 3 — Tags */}
-          {step === 3 && (
+          {/* 3 — Head to head comparison (only when library has ≥2 songs) */}
+          {step === STEP_COMPARE && compCandidates.length > 0 && (
+            <div className="page-enter">
+              <h2 className="text-lg font-bold text-slate-100 mb-0.5">Head to head</h2>
+              <p className="text-sm text-slate-500 mb-1">
+                Round {compRoundIdx + 1} of {compCandidates.length} — which do you prefer?
+              </p>
+              <p className="text-xs text-slate-700 mb-5">
+                Your choice nudges the final score slightly.
+              </p>
+
+              <div className="flex gap-3 mb-4">
+                {/* New track */}
+                <button
+                  onClick={() => pickInComparison("won")}
+                  className="flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-white/10 bg-white/5 hover:border-[#4fc3f7]/50 transition-all active:scale-95"
+                >
+                  {albumArt && (
+                    <div className="relative w-full aspect-square rounded-xl overflow-hidden">
+                      <Image src={albumArt} alt={track.name} fill className="object-cover" sizes="200px" />
+                    </div>
+                  )}
+                  <div className="text-center">
+                    <p className="font-semibold text-sm text-slate-100 line-clamp-2">{track.name}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{track.artists.map((a) => a.name).join(", ")}</p>
+                    <p className="text-xs font-bold text-[#4fc3f7] mt-1">This one ✓</p>
+                  </div>
+                </button>
+
+                {/* Library track */}
+                <button
+                  onClick={() => pickInComparison("lost")}
+                  className="flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-white/10 bg-white/5 hover:border-[#4fc3f7]/50 transition-all active:scale-95"
+                >
+                  {compCandidates[compRoundIdx]?.albumArt && (
+                    <div className="relative w-full aspect-square rounded-xl overflow-hidden">
+                      <Image src={compCandidates[compRoundIdx].albumArt!} alt={compCandidates[compRoundIdx].title} fill className="object-cover" sizes="200px" />
+                    </div>
+                  )}
+                  <div className="text-center">
+                    <p className="font-semibold text-sm text-slate-100 line-clamp-2">{compCandidates[compRoundIdx]?.title}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{compCandidates[compRoundIdx]?.artist}</p>
+                    <ScoreCircle score={compCandidates[compRoundIdx]?.score ?? 5} size={28} />
+                  </div>
+                </button>
+              </div>
+
+              <button
+                onClick={() => pickInComparison("skipped")}
+                className="w-full py-2.5 rounded-xl border border-white/10 text-xs font-semibold text-slate-500 hover:bg-white/5 transition-colors"
+              >
+                Too close to call — skip this round
+              </button>
+            </div>
+          )}
+
+          {/* Tags — step number depends on whether comparison is active */}
+          {step === STEP_TAGS && (
             <div className="page-enter">
               <h2 className="text-lg font-bold text-slate-100 mb-1">Tags & details</h2>
               <p className="text-sm text-slate-500 mb-5">Tell more about how you heard it</p>
@@ -411,11 +540,13 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
             </div>
           )}
 
-          {/* 4 — Score reveal */}
-          {step === 4 && displayScore !== null && (
+          {/* Score reveal */}
+          {step === STEP_REVEAL && displayScore !== null && (
             <div className="page-enter flex flex-col items-center py-6">
               <h2 className="text-lg font-bold text-slate-100 mb-2">Your score</h2>
-              <p className="text-sm text-slate-500 mb-8">Battle songs in your library to refine it</p>
+              <p className="text-sm text-slate-500 mb-8">
+                {compResults.length > 0 ? "Based on dimensions, vibe, and your comparisons" : "Based on your ratings"}
+              </p>
 
               {saveError && (
                 <div className="w-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm rounded-2xl px-4 py-3 mb-4">
@@ -440,6 +571,14 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                     <span className="font-semibold text-slate-200 capitalize">{form.vibe.replace("_", " ")}</span>
                   </div>
                 )}
+                {compResults.length > 0 && (
+                  <div className="flex justify-between text-sm border-t border-white/10 pt-2 mt-2">
+                    <span className="text-slate-500">Head to head</span>
+                    <span className="font-semibold text-slate-400">
+                      {compResults.filter(r => r === "won").length}W — {compResults.filter(r => r === "lost").length}L
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -447,7 +586,7 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
 
         {/* Footer */}
         <div className="px-5 pb-6 pt-3 border-t border-white/5 flex gap-3">
-          {step > 1 && (
+          {step > 1 && step !== STEP_COMPARE && (
             <button onClick={() => setStep(step - 1)} disabled={saving}
               className="w-10 h-12 rounded-2xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors disabled:opacity-40">
               <ChevronLeft size={18} className="text-slate-400" />
@@ -461,7 +600,8 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
             }`}
           >
             {saving ? <span className="animate-pulse">Saving…</span>
-              : step === 4 ? "Save rating"
+              : step === STEP_REVEAL ? "Save rating"
+              : step === STEP_COMPARE ? "Skip all comparisons →"
               : <><span>Continue</span><ChevronRight size={16} /></>}
           </button>
         </div>
