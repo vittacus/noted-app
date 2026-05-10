@@ -164,22 +164,22 @@ export default async function ProfilePage() {
         </div>
       </div>
 
-      {/* Stats bar */}
-      <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4">
-        {STATS.map((s) => (
-          <div key={s.label} className="shrink-0 rounded-2xl border border-white/5 px-5 py-4 text-center min-w-[84px]"
-            style={{ background: s.bg, borderLeft: `3px solid ${s.accent}` }}>
-            <p className="text-xl leading-none mb-2">{s.icon}</p>
-            <p className="text-2xl font-black leading-none tabular-nums" style={{ color: s.accent }}>{s.value}</p>
-            <p className="text-xs text-slate-500 mt-2 leading-tight">{s.label}</p>
-          </div>
-        ))}
-      </div>
-
       {/* Taste profile — only shows once you have ≥3 ratings */}
       {totalRated >= 3 && (
         <div className="bg-[#1e2d3d] rounded-3xl p-5 border border-white/5">
           <h2 className="font-bold text-base text-slate-100 mb-4">Your taste</h2>
+
+          {/* Stats bar — lives inside the taste card */}
+          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 mb-6">
+            {STATS.map((s) => (
+              <div key={s.label} className="shrink-0 rounded-2xl border border-white/5 px-4 py-3 text-center min-w-[74px]"
+                style={{ background: s.bg, borderLeft: `3px solid ${s.accent}` }}>
+                <p className="text-lg leading-none mb-1.5">{s.icon}</p>
+                <p className="text-xl font-black leading-none tabular-nums" style={{ color: s.accent }}>{s.value}</p>
+                <p className="text-[10px] text-slate-500 mt-1.5 leading-tight">{s.label}</p>
+              </div>
+            ))}
+          </div>
 
           {/* Dimension circles — Replay / Lyrics / Production */}
           {totalRated > 0 && (

@@ -184,8 +184,15 @@ export default function LibraryPage() {
               const pct = total ? Math.round((rated / total) * 100) : null;
               const isComplete = total !== null && rated >= total;
 
+              const CardWrapper = a.spotifyAlbumId
+                ? ({ children }: { children: React.ReactNode }) => (
+                    <Link href={`/album/${a.spotifyAlbumId}`} className="block">{children}</Link>
+                  )
+                : ({ children }: { children: React.ReactNode }) => <>{children}</>;
+
               return (
                 <div key={a.key} className="bg-[#1e2d3d] rounded-2xl border border-white/5 hover:border-white/10 transition-colors overflow-hidden">
+                  <CardWrapper>
                   <div className="flex items-center gap-3 p-3">
                     <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0">
                       {a.albumArt
@@ -193,13 +200,7 @@ export default function LibraryPage() {
                         : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      {a.spotifyAlbumId ? (
-                        <Link href={`/album/${a.spotifyAlbumId}`} className="font-bold text-sm text-slate-100 truncate block hover:text-[#4fc3f7] transition-colors">
-                          {a.albumName}
-                        </Link>
-                      ) : (
-                        <p className="font-bold text-sm text-slate-100 truncate">{a.albumName}</p>
-                      )}
+                      <p className="font-bold text-sm text-slate-100 truncate">{a.albumName}</p>
                       <p className="text-xs text-slate-500 truncate mt-0.5">{a.artist.split(",")[0]}</p>
                       <div className="flex items-center gap-2 mt-1.5">
                         <p className="text-xs text-slate-600">
@@ -222,6 +223,7 @@ export default function LibraryPage() {
                     </div>
                     <ScoreCircle score={a.avgScore} size={36} />
                   </div>
+                  </CardWrapper>
                 </div>
               );
             })}

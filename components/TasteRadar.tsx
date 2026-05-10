@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export interface TasteItem {
   label: string;
@@ -19,6 +19,7 @@ interface Props {
 function HexagonChart({ items }: { items: TasteItem[] }) {
   const n = items.length;
   if (n < 3) return null;
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   const cx = 142, cy = 148, r = 105, labelR = 136;
   const angles = Array.from({ length: n }, (_, i) =>
@@ -64,49 +65,56 @@ function HexagonChart({ items }: { items: TasteItem[] }) {
       <path d={profilePath} fill="rgba(79,195,247,0.14)"
         stroke="#4fc3f7" strokeWidth={3} strokeLinejoin="round" />
 
-      {/* Colored vertex dots + score labels */}
+      {/* Colored vertex dots — no % numbers inline */}
       {items.map((item, i) => {
         const v = Math.min(1, Math.max(0, item.value));
         const a = angles[i];
         const px = cx + r * v * Math.cos(a);
         const py = cy + r * v * Math.sin(a);
-        // Place score label slightly toward center so it's inside the dot
-        const lx = cx + (r * v - 14) * Math.cos(a);
-        const ly = cy + (r * v - 14) * Math.sin(a);
         return (
-          <g key={i}>
-            <circle cx={px} cy={py} r={6} fill={item.color} stroke="rgba(0,0,0,0.5)" strokeWidth={1.5} />
-            {v > 0.15 && (
-              <text x={lx} y={ly + 4} textAnchor="middle" fontSize={8} fontWeight="700"
-                fill="rgba(255,255,255,0.9)" fontFamily="-apple-system, sans-serif">
-                {item.rawPct}%
-              </text>
-            )}
-          </g>
+          <circle key={i} cx={px} cy={py} r={6}
+            fill={item.color} stroke="rgba(0,0,0,0.5)" strokeWidth={1.5} />
         );
       })}
 
-      {/* Axis labels */}
+      {/* Axis labels — larger, tappable, show % tooltip on hover */}
       {angles.map((a, i) => {
         const lx = cx + labelR * Math.cos(a);
         const ly = cy + labelR * Math.sin(a);
         const ca = Math.cos(a);
         const anchor = Math.abs(ca) < 0.15 ? "middle" : ca < 0 ? "end" : "start";
-        const shortLabel = items[i].label.length > 9
-          ? items[i].label.slice(0, 8) + "…"
-          : items[i].label;
+        const shortLabel = items[i].label.length > 9 ? items[i].label.slice(0, 8) + "…" : items[i].label;
+        const isHovered = hoveredIdx === i;
         return (
-          <g key={i}>
-            <text x={lx} y={ly - 5} textAnchor={anchor as any}
-              fontSize={14} fill={items[i].color}
+          <g key={i} style={{ cursor: "pointer" }}
+            onMouseEnter={() => setHoveredIdx(i)}
+            onMouseLeave={() => setHoveredIdx(null)}
+            onClick={() => setHoveredIdx(isHovered ? null : i)}>
+            <text x={lx} y={ly - 6} textAnchor={anchor as any}
+              fontSize={16} fill={items[i].color}
               fontFamily="-apple-system, BlinkMacSystemFont, sans-serif">
               {items[i].emoji}
             </text>
-            <text x={lx} y={ly + 9} textAnchor={anchor as any}
-              fontSize={9} fontWeight="600" fill="rgba(148,163,184,0.85)"
+            <text x={lx} y={ly + 11} textAnchor={anchor as any}
+              fontSize={11} fontWeight="700" fill={isHovered ? items[i].color : "rgba(148,163,184,0.9)"}
               fontFamily="-apple-system, BlinkMacSystemFont, sans-serif">
               {shortLabel}
             </text>
+            {/* Tooltip bubble on hover */}
+            {isHovered && (() => {
+              const bx = lx + (Math.abs(ca) < 0.15 ? 0 : ca < 0 ? -32 : 32);
+              const by = ly - 28;
+              return (
+                <g>
+                  <rect x={bx - 20} y={by - 12} width={40} height={18} rx={5}
+                    fill={items[i].color} opacity={0.95} />
+                  <text x={bx} y={by + 1} textAnchor="middle" fontSize={10} fontWeight="700"
+                    fill="white" fontFamily="-apple-system, sans-serif">
+                    {items[i].rawPct}%
+                  </text>
+                </g>
+              );
+            })()}
           </g>
         );
       })}

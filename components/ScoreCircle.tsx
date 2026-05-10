@@ -10,12 +10,24 @@ function bgColor(score: number): string {
   return "#f87171";
 }
 
-/** Color-coded dot — no number displayed. Color signals quality at a glance. */
 export default function ScoreCircle({ score, size = 44 }: Props) {
+  const fontSize = Math.round(size * 0.3);
   return (
     <div
-      className="shrink-0 rounded-full"
+      className="shrink-0 flex items-center justify-center rounded-full"
       style={{ width: size, height: size, backgroundColor: bgColor(score) }}
-    />
+    >
+      <span
+        className="font-black text-white tabular-nums leading-none"
+        style={{
+          fontSize,
+          textShadow:
+            "-1px -1px 0 rgba(0,0,0,0.55), 1px -1px 0 rgba(0,0,0,0.55)," +
+            "-1px  1px 0 rgba(0,0,0,0.55), 1px  1px 0 rgba(0,0,0,0.55)",
+        }}
+      >
+        {score.toFixed(1)}
+      </span>
+    </div>
   );
 }

@@ -4,20 +4,17 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Swords, ArrowLeft, Flame } from "lucide-react";
+import { Swords, ArrowLeft, Flame, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { ratingElo, updateElo, eloToDisplayScore } from "@/lib/elo";
 import ScoreCircle from "@/components/ScoreCircle";
 
 interface BattleSong {
   ratingId: string;
-  songId: string;
   title: string;
   artist: string;
   albumArt: string | null;
   albumName: string;
-  elo: number;
-  displayScore: number;
+  score: number;
 }
 
 export default function BattlePage() {
@@ -29,35 +26,28 @@ export default function BattlePage() {
   const [streak, setStreak] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selecting, setSelecting] = useState(false);
-  const [lastResult, setLastResult] = useState<{ winner: string; delta: number } | null>(null);
-  const [authChecked, setAuthChecked] = useState(false);
+  const [lastResult, setLastResult] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/auth/login"); return; }
-      setAuthChecked(true);
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("ratings")
-        .select("id, overall_score, elo_score, song:songs(id, title, artist, album_art_url, album_name)")
+        .select("id, overall_score, song:songs(id, title, artist, album_art_url, album_name)")
         .eq("user_id", user.id);
 
-      if (!data) { setLoading(false); return; }
+      if (error || !data) { setLoading(false); return; }
 
-      const songs: BattleSong[] = (data as any[]).map((r) => {
-        const elo = ratingElo(r);
-        return {
-          ratingId: r.id,
-          songId: r.song?.id,
-          title: r.song?.title ?? "Unknown",
-          artist: r.song?.artist ?? "Unknown",
-          albumArt: r.song?.album_art_url ?? null,
-          albumName: r.song?.album_name ?? "",
-          elo,
-          displayScore: eloToDisplayScore(elo),
-        };
-      });
+      const songs: BattleSong[] = (data as any[]).map((r) => ({
+        ratingId: r.id,
+        title: r.song?.title ?? "Unknown",
+        artist: r.song?.artist ?? "",
+        albumArt: r.song?.album_art_url ?? null,
+        albumName: r.song?.album_name ?? "",
+        score: r.overall_score ?? 5,
+      }));
 
       setAllRatings(songs);
       setLoading(false);
@@ -68,21 +58,15 @@ export default function BattlePage() {
   const pickPair = useCallback((songs: BattleSong[]) => {
     if (songs.length < 2) { setPair(null); return; }
 
-    // Sort by ELO, find consecutive pairs within 200
-    const sorted = [...songs].sort((a, b) => a.elo - b.elo);
+    const sorted = [...songs].sort((a, b) => a.score - b.score);
     const closePairs: [BattleSong, BattleSong][] = [];
     for (let i = 0; i < sorted.length - 1; i++) {
-      if (Math.abs(sorted[i].elo - sorted[i + 1].elo) <= 200) {
+      if (Math.abs(sorted[i].score - sorted[i + 1].score) <= 2.0) {
         closePairs.push([sorted[i], sorted[i + 1]]);
       }
     }
-
-    // Fall back to any pair if none within 200
-    const pool = closePairs.length > 0 ? closePairs
-      : [[sorted[0], sorted[sorted.length - 1]] as [BattleSong, BattleSong]];
-
+    const pool = closePairs.length > 0 ? closePairs : [[sorted[0], sorted[sorted.length - 1]] as [BattleSong, BattleSong]];
     const chosen = pool[Math.floor(Math.random() * pool.length)];
-    // Randomly swap so "left" isn't always lower-ELO
     setPair(Math.random() > 0.5 ? chosen : [chosen[1], chosen[0]]);
   }, []);
 
@@ -94,29 +78,27 @@ export default function BattlePage() {
     if (selecting) return;
     setSelecting(true);
 
-    const { winner: newW, loser: newL } = updateElo(winner.elo, loser.elo);
-    const delta = newW - winner.elo;
+    // Nudge scores slightly: winner +0.1, loser -0.1, capped 1–10
+    const newWinnerScore = Math.min(10, Math.round((winner.score + 0.1) * 10) / 10);
+    const newLoserScore  = Math.max(1,  Math.round((loser.score  - 0.1) * 10) / 10);
 
-    // Optimistically update local state
     setAllRatings((prev) =>
       prev.map((s) => {
-        if (s.ratingId === winner.ratingId) return { ...s, elo: newW, displayScore: eloToDisplayScore(newW) };
-        if (s.ratingId === loser.ratingId)  return { ...s, elo: newL, displayScore: eloToDisplayScore(newL) };
+        if (s.ratingId === winner.ratingId) return { ...s, score: newWinnerScore };
+        if (s.ratingId === loser.ratingId)  return { ...s, score: newLoserScore };
         return s;
       })
     );
 
-    setLastResult({ winner: winner.title, delta });
+    setLastResult(`${winner.title} wins!`);
     setStreak((s) => s + 1);
 
-    // Persist
     await Promise.all([
-      supabase.from("ratings").update({ elo_score: newW, overall_score: eloToDisplayScore(newW) }).eq("id", winner.ratingId),
-      supabase.from("ratings").update({ elo_score: newL, overall_score: eloToDisplayScore(newL) }).eq("id", loser.ratingId),
+      supabase.from("ratings").update({ overall_score: newWinnerScore }).eq("id", winner.ratingId),
+      supabase.from("ratings").update({ overall_score: newLoserScore  }).eq("id", loser.ratingId),
     ]);
 
-    // Brief pause then next pair
-    await new Promise((r) => setTimeout(r, 600));
+    await new Promise((r) => setTimeout(r, 500));
     setLastResult(null);
     setSelecting(false);
     setAllRatings((current) => {
@@ -125,7 +107,7 @@ export default function BattlePage() {
     });
   }
 
-  if (!authChecked || loading) {
+  if (loading) {
     return (
       <div className="flex justify-center py-24">
         <div className="w-6 h-6 border-2 border-[#4fc3f7] border-t-transparent rounded-full animate-spin" />
@@ -137,7 +119,7 @@ export default function BattlePage() {
     return (
       <div className="page-enter text-center py-20">
         <Swords size={40} className="text-slate-600 mx-auto mb-4" />
-        <p className="font-bold text-slate-100 text-lg mb-2">Not enough songs yet</p>
+        <p className="font-bold text-slate-100 text-lg mb-2">Not enough rated songs</p>
         <p className="text-slate-500 text-sm mb-6">Rate at least 2 songs to start battling</p>
         <Link href="/search" className="inline-block px-6 py-3 bg-[#4fc3f7]/80 text-white font-semibold rounded-2xl hover:bg-[#4fc3f7] transition-colors">
           Rate songs →
@@ -158,74 +140,62 @@ export default function BattlePage() {
             <h1 className="font-black text-xl text-slate-100 flex items-center gap-2">
               <Swords size={20} className="text-[#4fc3f7]" /> Battle mode
             </h1>
-            <p className="text-xs text-slate-500">Pick your preference — ELO updates live</p>
+            <p className="text-xs text-slate-500">Pick your preference — scores adjust live</p>
           </div>
         </div>
-        {streak > 0 && (
-          <div className="flex items-center gap-1.5 bg-[#fb923c]/10 border border-[#fb923c]/20 px-3 py-1.5 rounded-full">
-            <Flame size={14} className="text-[#fb923c]" />
-            <span className="text-sm font-bold text-[#fb923c] tabular-nums">{streak}</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {streak > 0 && (
+            <div className="flex items-center gap-1.5 bg-[#fb923c]/10 border border-[#fb923c]/20 px-3 py-1.5 rounded-full">
+              <Flame size={14} className="text-[#fb923c]" />
+              <span className="text-sm font-bold text-[#fb923c] tabular-nums">{streak}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Last result flash */}
       {lastResult && (
-        <div className="text-center mb-4 animate-pulse">
-          <p className="text-sm text-[#4ade80] font-semibold">
-            +{lastResult.delta} ELO for {lastResult.winner}
-          </p>
+        <div className="text-center mb-4">
+          <p className="text-sm text-[#4ade80] font-semibold animate-pulse">{lastResult}</p>
         </div>
       )}
 
       {/* Battle cards */}
       {pair && (
         <div className="flex gap-3 mb-5">
-          {pair.map((song, idx) => {
-            const isWinnerFlash = lastResult?.winner === song.title;
-            return (
-              <button
-                key={song.ratingId}
-                onClick={() => handlePick(song, pair[1 - idx]!)}
-                disabled={selecting}
-                className={`flex-1 flex flex-col rounded-3xl border-2 overflow-hidden transition-all duration-200 disabled:opacity-70 ${
-                  isWinnerFlash
-                    ? "border-[#4ade80] bg-[#4ade80]/10 scale-[1.02]"
-                    : "border-white/10 bg-[#1e2d3d] hover:border-[#4fc3f7]/50 hover:scale-[1.01]"
-                }`}
-              >
-                {/* Album art */}
-                <div className="relative w-full aspect-square bg-white/5">
-                  {song.albumArt ? (
-                    <Image src={song.albumArt} alt={song.albumName} fill className="object-cover" sizes="50vw" />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />
-                  )}
-                  <div className="absolute bottom-2 right-2">
-                    <ScoreCircle score={song.displayScore} size={36} />
-                  </div>
+          {pair.map((song, idx) => (
+            <button key={song.ratingId} onClick={() => handlePick(song, pair[1 - idx]!)} disabled={selecting}
+              className="flex-1 flex flex-col rounded-3xl border-2 border-white/10 bg-[#1e2d3d] overflow-hidden hover:border-[#4fc3f7]/50 hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 disabled:opacity-60">
+              <div className="relative w-full aspect-square bg-white/5">
+                {song.albumArt
+                  ? <Image src={song.albumArt} alt={song.albumName} fill className="object-cover" sizes="50vw" />
+                  : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
+                <div className="absolute bottom-2 right-2">
+                  <ScoreCircle score={song.score} size={32} />
                 </div>
-                {/* Info */}
-                <div className="p-3 text-left">
-                  <p className="font-bold text-sm text-slate-100 line-clamp-2 leading-tight">{song.title}</p>
-                  <p className="text-xs text-slate-500 truncate mt-0.5">{song.artist}</p>
-                  <p className="text-xs text-slate-600 mt-1 tabular-nums">ELO {song.elo}</p>
-                </div>
-              </button>
-            );
-          })}
+              </div>
+              <div className="p-3 text-left">
+                <p className="font-bold text-sm text-slate-100 line-clamp-2 leading-tight">{song.title}</p>
+                <p className="text-xs text-slate-500 truncate mt-0.5">{song.artist}</p>
+              </div>
+            </button>
+          ))}
         </div>
       )}
 
-      <p className="text-center text-xs text-slate-600 mb-6">Tap the song you prefer</p>
+      <p className="text-center text-xs text-slate-600 mb-5">Tap the song you prefer</p>
 
       {/* Skip */}
-      <button
-        onClick={() => pickPair(allRatings)}
-        className="w-full py-3 rounded-2xl border border-white/10 text-xs font-semibold text-slate-500 hover:bg-white/5 transition-colors"
-      >
+      <button onClick={() => pickPair(allRatings)} disabled={selecting}
+        className="w-full py-3 rounded-2xl border border-white/10 text-xs font-semibold text-slate-500 hover:bg-white/5 transition-colors mb-3">
         Skip this matchup
       </button>
+
+      {/* Rerate a song */}
+      <Link href="/search"
+        className="w-full py-3 rounded-2xl border border-white/5 text-xs font-semibold text-slate-600 hover:text-slate-400 transition-colors flex items-center justify-center gap-1.5">
+        <RefreshCw size={12} /> Re-rate a song
+      </Link>
     </div>
   );
 }
