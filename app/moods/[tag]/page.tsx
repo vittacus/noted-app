@@ -166,12 +166,29 @@ export default function MoodDetailPage() {
         )}
       </div>
 
-      {/* Add songs picker */}
+      {/* Add songs picker — full bottom sheet above all content */}
       {showPicker && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-[#1e2d3d] rounded-t-3xl border-t border-white/5 flex flex-col" style={{ maxHeight: "78vh" }}>
+        <div
+          className="fixed inset-0 z-[100] flex flex-col justify-end"
+          style={{ isolation: "isolate" }}
+        >
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => { setShowPicker(false); setSelectedIds(new Set()); }}
+          />
+
+          {/* Sheet */}
+          <div className="relative w-full bg-[#1a2332] rounded-t-3xl flex flex-col"
+            style={{ maxHeight: "80vh", boxShadow: "0 -8px 40px rgba(0,0,0,0.6)" }}>
+
+            {/* Drag handle */}
+            <div className="flex justify-center pt-3 pb-1 shrink-0">
+              <div className="w-10 h-1 rounded-full bg-white/20" />
+            </div>
+
             {/* Picker header */}
-            <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-white/5 shrink-0">
+            <div className="flex items-center justify-between px-5 pt-2 pb-3 border-b border-white/5 shrink-0">
               <div>
                 <h3 className="font-bold text-slate-100">Add to {moodName}</h3>
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -184,8 +201,8 @@ export default function MoodDetailPage() {
               </button>
             </div>
 
-            {/* Song list */}
-            <div className="flex-1 overflow-y-auto px-5 py-3 space-y-2">
+            {/* Song list — scrollable */}
+            <div className="flex-1 overflow-y-auto px-5 py-3 space-y-2 min-h-0">
               {pickerLoading && (
                 <div className="flex justify-center py-10">
                   <div className="w-5 h-5 border-2 border-[#4fc3f7] border-t-transparent rounded-full animate-spin" />
@@ -223,8 +240,8 @@ export default function MoodDetailPage() {
               })}
             </div>
 
-            {/* Confirm */}
-            <div className="px-5 pb-6 pt-3 border-t border-white/5 shrink-0">
+            {/* Confirm — sticky at bottom of sheet */}
+            <div className="px-5 pb-8 pt-3 border-t border-white/5 shrink-0 bg-[#1a2332]">
               <button onClick={addToMood}
                 disabled={selectedIds.size === 0 || adding}
                 className={`w-full h-12 rounded-2xl font-semibold text-sm transition-all ${

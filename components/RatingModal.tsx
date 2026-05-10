@@ -145,10 +145,10 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
   }, []);
 
   const hasComparison = librarySongs.length >= 2;
-  // With comparison: 1=Vibe 2=Dims 3=Compare 4=Tags 5=Reveal
-  // Without:         1=Vibe 2=Dims 3=Tags 4=Reveal
-  const STEP_COMPARE = hasComparison ? 3 : -1;
-  const STEP_TAGS    = hasComparison ? 4 : 3;
+  // New order: 1=Vibe  2=Dims  3=Tags  4=Compare(optional)  5=Reveal
+  //    no cmp: 1=Vibe  2=Dims  3=Tags  4=Reveal
+  const STEP_COMPARE = hasComparison ? 4 : -1;
+  const STEP_TAGS    = 3;                          // always step 3
   const STEP_REVEAL  = hasComparison ? 5 : 4;
   const totalSteps   = hasComparison ? 5 : 4;
 
@@ -170,7 +170,7 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
     if (newResults.length < compCandidates.length) {
       setCompRoundIdx((i) => i + 1);
     } else {
-      setStep(STEP_TAGS);
+      setStep(STEP_REVEAL);        // All rounds done → score reveal
     }
   }
 
@@ -181,13 +181,15 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
   };
 
   function advance() {
-    // During comparison step, the footer button skips all remaining rounds
+    // Footer "skip" button during comparison skips remaining rounds
     if (step === STEP_COMPARE) {
-      setStep(STEP_TAGS);
+      setStep(STEP_REVEAL);
       return;
     }
     if (step === 2) {
-      // Freeze comparison candidates based on current score
+      setStep(STEP_TAGS);           // Dims → Tags
+    } else if (step === STEP_TAGS) {
+      // Tags → freeze comparison candidates → Compare (or straight to Reveal)
       if (hasComparison && baseScore !== null) {
         const cands = librarySongs
           .filter((s) => Math.abs(s.score - baseScore) <= 1.5)
@@ -196,12 +198,10 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         setCompCandidates(cands);
         setCompRoundIdx(0);
         setCompResults([]);
-        setStep(cands.length > 0 ? STEP_COMPARE : STEP_TAGS);
+        setStep(cands.length > 0 ? STEP_COMPARE : STEP_REVEAL);
       } else {
-        setStep(STEP_TAGS);
+        setStep(STEP_REVEAL);
       }
-    } else if (step === STEP_TAGS) {
-      setStep(STEP_REVEAL);
     } else if (step === STEP_REVEAL) {
       handleSave();
     } else {
@@ -360,61 +360,69 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
             </div>
           )}
 
-          {/* 3 — Head to head comparison (only when library has ≥2 songs) */}
-          {step === STEP_COMPARE && compCandidates.length > 0 && (
-            <div className="page-enter">
-              <h2 className="text-lg font-bold text-slate-100 mb-0.5">Head to head</h2>
-              <p className="text-sm text-slate-500 mb-1">
-                Round {compRoundIdx + 1} of {compCandidates.length} — which do you prefer?
-              </p>
-              <p className="text-xs text-slate-700 mb-5">
-                Your choice nudges the final score slightly.
-              </p>
+          {/* Head to head comparison — after Tags, before Reveal */}
+          {step === STEP_COMPARE && compCandidates.length > 0 && (() => {
+            const opponent = compCandidates[compRoundIdx];
+            const [leftPicked, setLeftPicked] = [null, () => {}]; // unused, selection drives pickInComparison
+            return (
+              <div className="page-enter">
+                <h2 className="text-lg font-bold text-slate-100 mb-0.5">Head to head</h2>
+                <p className="text-sm text-slate-500 mb-5">
+                  Round {compRoundIdx + 1} of {compCandidates.length} — tap the song you prefer
+                </p>
 
-              <div className="flex gap-3 mb-4">
-                {/* New track */}
-                <button
-                  onClick={() => pickInComparison("won")}
-                  className="flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-white/10 bg-white/5 hover:border-[#4fc3f7]/50 transition-all active:scale-95"
-                >
-                  {albumArt && (
-                    <div className="relative w-full aspect-square rounded-xl overflow-hidden">
-                      <Image src={albumArt} alt={track.name} fill className="object-cover" sizes="200px" />
-                    </div>
-                  )}
-                  <div className="text-center">
-                    <p className="font-semibold text-sm text-slate-100 line-clamp-2">{track.name}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{track.artists.map((a) => a.name).join(", ")}</p>
-                    <p className="text-xs font-bold text-[#4fc3f7] mt-1">This one ✓</p>
-                  </div>
-                </button>
+                <div className="flex gap-3 mb-4">
+                  {/* Symmetric card helper */}
+                  {[
+                    {
+                      art: albumArt,
+                      title: track.name,
+                      artist: track.artists.map((a) => a.name).join(", "),
+                      score: baseScore ?? 5,
+                      onPick: () => pickInComparison("won"),
+                      label: "New",
+                    },
+                    {
+                      art: opponent?.albumArt ?? null,
+                      title: opponent?.title ?? "",
+                      artist: opponent?.artist ?? "",
+                      score: opponent?.score ?? 5,
+                      onPick: () => pickInComparison("lost"),
+                      label: "Library",
+                    },
+                  ].map((card) => (
+                    <button key={card.label} onClick={card.onPick}
+                      className="flex-1 flex flex-col rounded-2xl border-2 border-white/10 bg-white/5 hover:border-[#4fc3f7]/60 hover:bg-[#4fc3f7]/5 active:scale-[0.98] transition-all overflow-hidden">
+                      {/* Album art */}
+                      <div className="relative w-full aspect-square bg-white/5">
+                        {card.art
+                          ? <Image src={card.art} alt={card.title} fill className="object-cover" sizes="200px" />
+                          : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
+                        <span className="absolute top-2 left-2 text-xs font-bold px-1.5 py-0.5 rounded bg-black/50 text-white/70">
+                          {card.label}
+                        </span>
+                      </div>
+                      {/* Info — identical layout for both */}
+                      <div className="p-3 flex flex-col items-center gap-1.5">
+                        <p className="font-semibold text-sm text-slate-100 text-center line-clamp-2 leading-tight">
+                          {card.title}
+                        </p>
+                        <p className="text-xs text-slate-500 text-center truncate w-full">{card.artist}</p>
+                        <div className="mt-1">
+                          <ScoreCircle score={card.score} size={32} />
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
 
-                {/* Library track */}
-                <button
-                  onClick={() => pickInComparison("lost")}
-                  className="flex-1 flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-white/10 bg-white/5 hover:border-[#4fc3f7]/50 transition-all active:scale-95"
-                >
-                  {compCandidates[compRoundIdx]?.albumArt && (
-                    <div className="relative w-full aspect-square rounded-xl overflow-hidden">
-                      <Image src={compCandidates[compRoundIdx].albumArt!} alt={compCandidates[compRoundIdx].title} fill className="object-cover" sizes="200px" />
-                    </div>
-                  )}
-                  <div className="text-center">
-                    <p className="font-semibold text-sm text-slate-100 line-clamp-2">{compCandidates[compRoundIdx]?.title}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{compCandidates[compRoundIdx]?.artist}</p>
-                    <ScoreCircle score={compCandidates[compRoundIdx]?.score ?? 5} size={28} />
-                  </div>
+                <button onClick={() => pickInComparison("skipped")}
+                  className="w-full py-2.5 rounded-xl border border-white/10 text-xs font-semibold text-slate-500 hover:bg-white/5 transition-colors">
+                  Too close to call — skip this round
                 </button>
               </div>
-
-              <button
-                onClick={() => pickInComparison("skipped")}
-                className="w-full py-2.5 rounded-xl border border-white/10 text-xs font-semibold text-slate-500 hover:bg-white/5 transition-colors"
-              >
-                Too close to call — skip this round
-              </button>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Tags — step number depends on whether comparison is active */}
           {step === STEP_TAGS && (

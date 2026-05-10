@@ -49,16 +49,25 @@ export default function RatingComments({ ratingId }: { ratingId: string }) {
     e.preventDefault();
     const trimmed = text.trim();
     if (!trimmed) return;
+
+    // Guard: ratingId must be a non-empty string
+    if (!ratingId || ratingId === "undefined") {
+      setError("Cannot save comment — rating ID is missing.");
+      console.error("[comments] missing ratingId prop, got:", ratingId);
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
 
-    // Always fetch user fresh at submit time — avoids stale state race
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       setError("Please sign in to comment.");
       setSubmitting(false);
       return;
     }
+
+    console.log("[comments] inserting: ratingId=", ratingId, "userId=", user.id);
 
     const { data, error: insertErr } = await supabase
       .from("comments")
@@ -67,13 +76,17 @@ export default function RatingComments({ ratingId }: { ratingId: string }) {
       .single();
 
     if (insertErr) {
-      setError("Failed to save comment. Please try again.");
-      console.error("[comments] insert error:", insertErr.message);
+      // Show the actual Supabase error so it's visible during debugging
+      const msg = insertErr.message.includes("relation")
+        ? "Comments table not found — run the schema migration in Supabase."
+        : insertErr.message;
+      setError(msg);
+      console.error("[comments] insert error:", insertErr.message, "| ratingId:", ratingId);
     } else if (data) {
       setComments((c) => [...c, data as unknown as Comment]);
       setCount((c) => (c ?? 0) + 1);
       setText("");
-      setExpanded(true); // ensure visible
+      setExpanded(true);
     }
     setSubmitting(false);
   }
