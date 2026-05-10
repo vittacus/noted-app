@@ -6,7 +6,7 @@ import { ArrowUpDown, Music2, LayoutGrid, Swords } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Rating, Song } from "@/types";
-import { formatDuration, genreAccentColor } from "@/lib/utils";
+import { formatDuration, genreAccentColor, displayGenres } from "@/lib/utils";
 import RatingModal from "@/components/RatingModal";
 import { SpotifyTrack } from "@/types";
 import Link from "next/link";
@@ -334,7 +334,7 @@ export default function LibraryPage() {
                           </div>
                           <p className="text-xs text-slate-500 truncate">{r.song.artist}</p>
                           <div className="flex gap-1.5 mt-1">
-                            {(r.genre_tags ?? []).slice(0, 2).map((t: string) => (
+                            {displayGenres(r.genre_tags ?? []).map((t: string) => (
                               <span key={t} className="text-xs bg-white/5 text-slate-500 px-2 py-0.5 rounded-full">{t}</span>
                             ))}
                           </div>

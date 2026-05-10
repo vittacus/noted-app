@@ -58,6 +58,16 @@ export function genreAccentColor(tags: string[]): string | null {
   return null;
 }
 
+/**
+ * Return up to 2 genre tags to display on a card.
+ * Hides "Other" when non-Other genres exist (Other = unmapped Spotify genre).
+ */
+export function displayGenres(genreTags: string[]): string[] {
+  const tags = genreTags ?? [];
+  const nonOther = tags.filter((g) => g !== "Other");
+  return nonOther.length > 0 ? nonOther.slice(0, 2) : tags.slice(0, 1);
+}
+
 export function scoreColor(score: number): string {
   if (score >= 8) return "text-[#4ade80]";   // green
   if (score >= 6) return "text-[#fbbf24]";   // yellow

@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 
 // Steps: 1=Vibe  2=Dimensions  3=Tags  4=Compare(optional)  5=Reveal
 
-// Mood tiles — single select, 2-column grid
+// Mood tiles — multi-select, 2-column grid
 const MOOD_TILES = [
   { tag: "Late Night", emoji: "🌙" },
   { tag: "Workout",    emoji: "💪" },
@@ -129,12 +129,16 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
     });
   }
 
-  // Single-select mood tile — deselects previous choice
+  // Multi-select mood tile toggle — auto-checks playlist row, unchecking allowed separately
   function selectMoodTile(tag: string) {
-    setForm((f) => ({
-      ...f,
-      best_for_tags: f.best_for_tags[0] === tag ? [] : [tag],
-    }));
+    const isSelected = form.best_for_tags.includes(tag);
+    if (isSelected) {
+      setForm((f) => ({ ...f, best_for_tags: f.best_for_tags.filter((t) => t !== tag) }));
+      setMoodCheckboxes((prev) => { const n = new Set(prev); n.delete(tag); return n; });
+    } else {
+      setForm((f) => ({ ...f, best_for_tags: [...f.best_for_tags, tag] }));
+      setMoodCheckboxes((prev) => new Set([...prev, tag])); // auto-check
+    }
   }
 
   function addCustomMoodEntry() {
@@ -299,14 +303,24 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         notes: form.notes || null,
         best_for_tags: form.best_for_tags,
         genre_tags: await (async () => {
-          // Silently fetch genre from Spotify artist metadata
+          // Silently fetch up to 2 genres from Spotify artist metadata
           try {
-            const artistId = (track.artists[0] as any)?.id;
+            const artistId = track.artists[0]?.id;
             if (artistId) {
               const res = await fetch(`/api/spotify/artist/${artistId}`);
               if (res.ok) {
                 const data = await res.json();
-                if (data.genres?.length) return [mapSpotifyGenre(data.genres[0])];
+                if (data.genres?.length) {
+                  // Map each genre, deduplicate, drop "Other" if non-Other mapped values exist
+                  const mapped: string[] = [];
+                  for (const g of data.genres) {
+                    const m = mapSpotifyGenre(g);
+                    if (!mapped.includes(m)) mapped.push(m);
+                    if (mapped.filter((x) => x !== "Other").length >= 2) break;
+                  }
+                  const nonOther = mapped.filter((g) => g !== "Other");
+                  return nonOther.length > 0 ? nonOther.slice(0, 2) : ["Other"];
+                }
               }
             }
           } catch {}
@@ -479,22 +493,22 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
             );
           })()}
 
-          {/* Tags — mood tile grid (single select) */}
+          {/* Tags — mood tile grid (multi-select) */}
           {step === STEP_TAGS && (
             <div className="page-enter">
               <h2 className="text-lg font-bold text-slate-100 mb-1">What's the vibe?</h2>
-              <p className="text-sm text-slate-500 mb-5">Pick the mood that fits best</p>
+              <p className="text-sm text-slate-500 mb-5">Pick all moods that fit — tap to select multiple</p>
 
-              {/* 2-column grid of mood tiles — single select */}
+              {/* 2-column grid of mood tiles — multi-select */}
               <div className="grid grid-cols-2 gap-3 mb-5">
                 {MOOD_TILES.map(({ tag, emoji }) => {
-                  const selected = form.best_for_tags[0] === tag;
+                  const selected = form.best_for_tags.includes(tag);
                   return (
                     <button key={tag} onClick={() => selectMoodTile(tag)}
                       className={`flex items-center gap-3 px-4 py-4 rounded-2xl border-2 transition-all text-left active:scale-[0.97] ${
                         selected
                           ? "border-[#4fc3f7] bg-[#4fc3f7]/15 text-slate-100 shadow-md shadow-[#4fc3f7]/20"
-                          : "border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:bg-white/8"
+                          : "border-white/10 bg-white/5 text-slate-400 hover:border-white/20"
                       }`}>
                       <span className="text-2xl shrink-0">{emoji}</span>
                       <span className="font-semibold text-sm leading-tight">{tag}</span>
@@ -508,25 +522,35 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                 })}
               </div>
 
-              {/* Add to mood list — appears once a tile is selected */}
+              {/* Add to mood list — one row per selected tile, pre-checked, opt-out allowed */}
               {(form.best_for_tags.length > 0 || customMoodEntries.length > 0) && (
                 <div className="mb-5 space-y-2.5">
-                  <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Add to mood list</p>
+                  <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Add to mood playlist</p>
                   {[...form.best_for_tags, ...customMoodEntries]
                     .filter((v, i, a) => a.indexOf(v) === i)
-                    .map((name) => (
-                      <label key={name} className="flex items-center gap-2.5 cursor-pointer group">
-                        <button type="button" onClick={() => toggleMoodCheckbox(name)}
-                          className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center shrink-0 transition-all ${
-                            moodCheckboxes.has(name) ? "bg-[#4fc3f7] border-[#4fc3f7]" : "border-white/25 group-hover:border-white/40"
-                          }`}>
-                          {moodCheckboxes.has(name) && <Check size={11} className="text-[#0d1f35]" strokeWidth={3} />}
-                        </button>
-                        <span className="text-sm text-slate-300">
-                          Add to <span className="text-slate-100 font-medium">{name}</span> mood list
-                        </span>
-                      </label>
-                    ))}
+                    .map((name) => {
+                      const checked = moodCheckboxes.has(name);
+                      return (
+                        <div key={name}>
+                          <label className="flex items-center gap-2.5 cursor-pointer group">
+                            <button type="button" onClick={() => toggleMoodCheckbox(name)}
+                              className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center shrink-0 transition-all ${
+                                checked ? "bg-[#4fc3f7] border-[#4fc3f7]" : "border-white/25 group-hover:border-white/40"
+                              }`}>
+                              {checked && <Check size={11} className="text-[#0d1f35]" strokeWidth={3} />}
+                            </button>
+                            <span className="text-sm text-slate-300">
+                              Add to <span className="text-slate-100 font-medium">{name}</span> playlist
+                            </span>
+                          </label>
+                          {!checked && (
+                            <p className="text-xs text-slate-600 italic ml-7 mt-0.5">
+                              This song won&apos;t appear in your {name} playlist.
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
                   <div className="flex items-center gap-2 pt-0.5">
                     <span className="text-[#4fc3f7] text-base font-bold leading-none shrink-0">+</span>
                     <input value={customMoodInput}

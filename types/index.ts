@@ -88,7 +88,7 @@ export type GenreTag = (typeof GENRE_TAGS)[number];
 export interface SpotifyTrack {
   id: string;
   name: string;
-  artists: { name: string }[];
+  artists: { id?: string; name: string }[];
   album: {
     id: string;
     name: string;
