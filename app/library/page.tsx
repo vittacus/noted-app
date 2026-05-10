@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { ArrowUpDown, Music2, LayoutGrid, Swords } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 import { Rating, Song } from "@/types";
 import { formatDuration, genreAccentColor } from "@/lib/utils";
 import RatingModal from "@/components/RatingModal";
@@ -29,6 +30,17 @@ interface AlbumGroup {
 
 export default function LibraryPage() {
   const supabase = createClient();
+  const router = useRouter();
+
+  function handleAlbumTap(a: AlbumGroup) {
+    console.log("[library/albums] tap — spotifyAlbumId:", a.spotifyAlbumId, "| albumName:", a.albumName, "| key:", a.key);
+    if (a.spotifyAlbumId) {
+      router.push(`/album/${a.spotifyAlbumId}`);
+    } else {
+      // No Spotify ID — search so user can find the album
+      router.push(`/search?q=${encodeURIComponent(a.albumName)}`);
+    }
+  }
   const [ratings, setRatings] = useState<RatingWithSong[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortKey>("date");
@@ -222,14 +234,13 @@ export default function LibraryPage() {
                 </div>
               );
 
-              // Wrap entire card in Link when we have a Spotify album ID
-              return a.spotifyAlbumId ? (
-                <Link key={a.key} href={`/album/${a.spotifyAlbumId}`}
-                  className="block bg-[#1e2d3d] rounded-2xl border border-white/5 hover:border-white/10 hover:bg-[#243347] transition-colors overflow-hidden">
-                  {inner}
-                </Link>
-              ) : (
-                <div key={a.key} className="bg-[#1e2d3d] rounded-2xl border border-white/5 overflow-hidden">
+              // Every album card is clickable — onClick logs the ID then navigates
+              return (
+                <div
+                  key={a.key}
+                  onClick={() => handleAlbumTap(a)}
+                  className="bg-[#1e2d3d] rounded-2xl border border-white/5 hover:border-white/10 hover:bg-[#243347] active:scale-[0.99] transition-all overflow-hidden cursor-pointer"
+                >
                   {inner}
                 </div>
               );

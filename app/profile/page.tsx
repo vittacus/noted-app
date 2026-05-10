@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { Menu, Share2, Settings } from "lucide-react";
 import ScoreCircle from "@/components/ScoreCircle";
 import TasteRadar, { type TasteItem } from "@/components/TasteRadar";
 import { calculateStreak } from "@/lib/utils";
@@ -28,6 +29,11 @@ export default async function ProfilePage() {
       ? (ratings!.reduce((s, r) => s + r.overall_score, 0) / totalRated).toFixed(1)
       : null;
 
+  // Member since
+  const memberSince = profile?.created_at
+    ? new Date(profile.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+    : "recently";
+
   // Genre counts
   const genreCounts: Record<string, number> = {};
   ratings?.forEach((r: any) => {
@@ -41,7 +47,6 @@ export default async function ProfilePage() {
     "Lyrics":       totalRated > 0 ? ratings!.reduce((s, r) => s + r.lyrics, 0) / totalRated : 0,
     "Production":   totalRated > 0 ? ratings!.reduce((s, r) => s + r.production, 0) / totalRated : 0,
   };
-  const topDim = Object.entries(dimAvg).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
 
   // Top artist
   const artistCounts: Record<string, number> = {};
@@ -51,24 +56,39 @@ export default async function ProfilePage() {
   });
   const topArtist = Object.entries(artistCounts).sort((a, b) => b[1] - a[1])[0] ?? null;
 
-  // Albums in progress
-  const albumMap = new Map<string, { name: string; artist: string; art: string | null; count: number; albumId: string }>();
+  // Top 5 songs by score
+  const top5Songs = ratings?.slice(0, 5) ?? [];
+
+  // Top 5 albums by avg score
+  const albumScoreMap = new Map<string, {
+    name: string; art: string | null; totalScore: number; count: number; spotifyId: string | null;
+  }>();
   ratings?.forEach((r: any) => {
-    const s = r.song;
-    if (!s?.spotify_album_id) return;
-    if (!albumMap.has(s.spotify_album_id)) {
-      albumMap.set(s.spotify_album_id, { name: s.album_name, artist: s.artist, art: s.album_art_url, count: 0, albumId: s.spotify_album_id });
+    const key = (r.song?.spotify_album_id && r.song.spotify_album_id.trim())
+      ? r.song.spotify_album_id.trim()
+      : r.song?.album_name?.trim().toLowerCase() ?? "unknown";
+    if (!albumScoreMap.has(key)) {
+      albumScoreMap.set(key, {
+        name: r.song?.album_name ?? "",
+        art: r.song?.album_art_url ?? null,
+        totalScore: 0,
+        count: 0,
+        spotifyId: (r.song?.spotify_album_id && r.song.spotify_album_id.trim()) ? r.song.spotify_album_id.trim() : null,
+      });
     }
-    albumMap.get(s.spotify_album_id)!.count++;
+    const entry = albumScoreMap.get(key)!;
+    entry.totalScore += r.overall_score;
+    entry.count++;
   });
-  const albumsInProgress = Array.from(albumMap.values()).slice(0, 6);
+  const topAlbums = Array.from(albumScoreMap.values())
+    .map((a) => ({ ...a, avgScore: Math.round((a.totalScore / a.count) * 10) / 10 }))
+    .sort((a, b) => b.avgScore - a.avgScore)
+    .slice(0, 5);
 
-  const top5 = ratings?.slice(0, 5) ?? [];
-
-  // Stats (moved from Home)
+  // Stats for taste card
   const streak = calculateStreak((ratings ?? []).map((r: any) => r.listened_at));
-  const albumNames = new Set((ratings ?? []).map((r: any) => r.song?.album_name?.trim()).filter(Boolean));
-  const albumsCount = albumNames.size;
+  const albumNamesSet = new Set((ratings ?? []).map((r: any) => r.song?.album_name?.trim()).filter(Boolean));
+  const albumsCount = albumNamesSet.size;
 
   const STATS = [
     { icon: "🔥", value: streak > 0 ? streak : "—", label: "day streak",  accent: "#fb923c", bg: "rgba(251,146,60,0.07)"  },
@@ -114,16 +134,14 @@ export default async function ProfilePage() {
       color: VIBE_COLORS[i % VIBE_COLORS.length],
     }));
 
-  // Generated headline
-  const topGenreName  = genreItems[0]?.label ?? "";
-  const topGenrePct   = genreItems[0]?.rawPct ?? 0;
-  const topVibeName   = vibeItems[0]?.label ?? "";
+  const topGenrePct = genreItems[0]?.rawPct ?? 0;
+  const topGenreName = genreItems[0]?.label ?? "";
+  const topVibeName = vibeItems[0]?.label ?? "";
   const tasteHeadline = totalRated >= 3
     ? topGenreName && topVibeName
       ? `Your music is ${topGenrePct}% ${topGenreName} and you love ${topVibeName} vibes ✨`
-      : topGenreName
-        ? `You're ${topGenrePct}% into ${topGenreName} right now ✨`
-        : `You're building your taste ✨`
+      : topGenreName ? `You're ${topGenrePct}% into ${topGenreName} right now ✨`
+      : `You're building your taste ✨`
     : "";
 
   async function handleSignOut() {
@@ -134,42 +152,117 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="page-enter space-y-4">
-      {/* Profile header */}
-      <div className="bg-[#1e2d3d] rounded-3xl p-5 border border-white/5">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#4fc3f7] to-[#0f3a5c] flex items-center justify-center text-white text-2xl font-black overflow-hidden">
-            {profile?.avatar_url
-              ? <Image src={profile.avatar_url} alt={profile.username} width={64} height={64} className="object-cover" />
-              : (profile?.username?.[0] ?? "?").toUpperCase()}
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-slate-100">{profile?.username}</h1>
-            <p className="text-sm text-slate-500">{profile?.email}</p>
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <div className="flex-1 bg-white/5 rounded-2xl p-3 text-center">
-            <p className="text-2xl font-black text-slate-100">{totalRated}</p>
-            <p className="text-xs text-slate-500 mt-0.5">Rated</p>
-          </div>
-          <div className="flex-1 bg-white/5 rounded-2xl p-3 text-center">
-            <p className="text-2xl font-black text-[#4fc3f7]">{avgScore ?? "—"}</p>
-            <p className="text-xs text-slate-500 mt-0.5">Avg score</p>
-          </div>
-          <div className="flex-1 bg-white/5 rounded-2xl p-3 text-center">
-            <p className="text-base font-black text-slate-100 leading-tight mt-1">{topGenre ?? "—"}</p>
-            <p className="text-xs text-slate-500 mt-0.5">Top genre</p>
-          </div>
+    <div className="page-enter -mt-2">
+
+      {/* ── HEADER ROW ── */}
+      <div className="flex items-center justify-between mb-6">
+        <button className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+          <Menu size={17} className="text-slate-400" />
+        </button>
+        <p className="font-bold text-base text-slate-100 tracking-tight">{profile?.username}</p>
+        <div className="flex gap-2">
+          <button className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">
+            <Share2 size={15} className="text-slate-400" />
+          </button>
+          <button className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">
+            <Settings size={15} className="text-slate-400" />
+          </button>
         </div>
       </div>
 
-      {/* Taste profile — only shows once you have ≥3 ratings */}
+      {/* ── AVATAR + NAME ── */}
+      <div className="flex flex-col items-center mb-6">
+        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#4fc3f7] to-[#0f3a5c] flex items-center justify-center text-white text-3xl font-black mb-3 overflow-hidden shadow-xl shadow-[#4fc3f7]/20">
+          {profile?.avatar_url
+            ? <Image src={profile.avatar_url} alt={profile.username} width={80} height={80} className="object-cover" />
+            : (profile?.username?.[0] ?? "?").toUpperCase()}
+        </div>
+        <h1 className="text-2xl font-black text-slate-100 tracking-tight">{profile?.username}</h1>
+        <p className="text-xs text-slate-500 mt-1">Member since {memberSince}</p>
+      </div>
+
+      {/* ── STATS PILLS ── */}
+      <div className="flex gap-2 mb-8">
+        {[
+          { label: "Followers", value: "0" },
+          { label: "Following", value: "0" },
+          { label: "Avg Rating", value: avgScore ?? "—" },
+        ].map((s) => (
+          <div key={s.label} className="flex-1 bg-[#1e2d3d] rounded-2xl py-3 text-center border border-white/5">
+            <p className="text-lg font-black text-slate-100 tabular-nums">{s.value}</p>
+            <p className="text-xs text-slate-500 mt-0.5">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* ── TOP SONGS ── */}
+      {top5Songs.length > 0 && (
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="font-bold text-base text-slate-100">Top Songs</h2>
+            <Link href="/library" className="text-xs text-[#4fc3f7] hover:underline">See all →</Link>
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4">
+            {top5Songs.map((r: any, i: number) => (
+              <Link key={r.id} href={`/song/${r.id}`} className="shrink-0 flex flex-col items-center gap-1.5">
+                <div className="relative">
+                  <div className="w-[72px] h-[72px] rounded-2xl overflow-hidden bg-white/5">
+                    {r.song?.album_art_url
+                      ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="72px" />
+                      : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
+                  </div>
+                  <div className="absolute -top-1.5 -left-1.5 w-[18px] h-[18px] rounded-full bg-[#1a2332] border border-white/15 flex items-center justify-center">
+                    <span className="text-[9px] font-black text-slate-300">{i + 1}</span>
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-400 text-center w-[72px] truncate leading-tight">{r.song?.title}</p>
+                <p className="text-[9px] text-slate-600 text-center w-[72px] truncate">{r.song?.artist?.split(",")[0]}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── TOP ALBUMS ── */}
+      {topAlbums.length > 0 && (
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="font-bold text-base text-slate-100">Top Albums</h2>
+            <Link href="/library" className="text-xs text-[#4fc3f7] hover:underline">See all →</Link>
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4">
+            {topAlbums.map((album, i) => {
+              const content = (
+                <div className="shrink-0 flex flex-col items-center gap-1.5">
+                  <div className="relative">
+                    <div className="w-[72px] h-[72px] rounded-2xl overflow-hidden bg-white/5">
+                      {album.art
+                        ? <Image src={album.art} alt={album.name} fill className="object-cover" sizes="72px" />
+                        : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
+                    </div>
+                    <div className="absolute -top-1.5 -left-1.5 w-[18px] h-[18px] rounded-full bg-[#1a2332] border border-white/15 flex items-center justify-center">
+                      <span className="text-[9px] font-black text-slate-300">{i + 1}</span>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-slate-400 text-center w-[72px] truncate leading-tight">{album.name}</p>
+                </div>
+              );
+              return album.spotifyId ? (
+                <Link key={i} href={`/album/${album.spotifyId}`}>{content}</Link>
+              ) : (
+                <div key={i}>{content}</div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── TASTE CARD ── */}
       {totalRated >= 3 && (
-        <div className="bg-[#1e2d3d] rounded-3xl p-5 border border-white/5">
+        <div className="bg-[#1e2d3d] rounded-3xl p-5 border border-white/5 mb-4">
           <h2 className="font-bold text-base text-slate-100 mb-4">Your taste</h2>
 
-          {/* Stats bar — lives inside the taste card */}
+          {/* Stats bar inside taste card */}
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 mb-6">
             {STATS.map((s) => (
               <div key={s.label} className="shrink-0 rounded-2xl border border-white/5 px-4 py-3 text-center min-w-[74px]"
@@ -181,39 +274,36 @@ export default async function ProfilePage() {
             ))}
           </div>
 
-          {/* Dimension circles — Replay / Lyrics / Production */}
-          {totalRated > 0 && (
-            <div className="mb-6">
-              <p className="text-xs text-slate-600 uppercase tracking-wide font-semibold mb-4">Dimension scores</p>
-              <div className="flex justify-around items-end">
-                {([
-                  { key: "Replay Value", label: "Replay",     color: "#4fc3f7", short: "RV" },
-                  { key: "Lyrics",       label: "Lyrics",     color: "#a78bfa", short: "LY" },
-                  { key: "Production",   label: "Production", color: "#fb923c", short: "PR" },
-                ] as const).map(({ key, label, color, short }) => {
-                  const val = dimAvg[key] ?? 0;
-                  // Size scales from 72px (score=1) to 100px (score=10)
-                  const sz = Math.round(72 + (val / 10) * 28);
-                  return (
-                    <div key={key} className="flex flex-col items-center gap-2">
-                      <div className="flex items-center justify-center rounded-full"
-                        style={{ width: sz, height: sz, backgroundColor: `${color}22`, border: `3px solid ${color}` }}>
-                        <div className="text-center">
-                          <p className="font-black leading-none tabular-nums" style={{ fontSize: Math.round(sz * 0.26), color }}>
-                            {val.toFixed(1)}
-                          </p>
-                          <p className="font-semibold leading-none mt-0.5" style={{ fontSize: Math.round(sz * 0.13), color: `${color}aa` }}>
-                            /10
-                          </p>
-                        </div>
+          {/* Dimension circles */}
+          <div className="mb-6">
+            <p className="text-xs text-slate-600 uppercase tracking-wide font-semibold mb-4">Dimension scores</p>
+            <div className="flex justify-around items-end">
+              {([
+                { key: "Replay Value", label: "Replay",     color: "#4fc3f7" },
+                { key: "Lyrics",       label: "Lyrics",     color: "#a78bfa" },
+                { key: "Production",   label: "Production", color: "#fb923c" },
+              ] as const).map(({ key, label, color }) => {
+                const val = dimAvg[key] ?? 0;
+                const sz = Math.round(72 + (val / 10) * 28);
+                return (
+                  <div key={key} className="flex flex-col items-center gap-2">
+                    <div className="flex items-center justify-center rounded-full"
+                      style={{ width: sz, height: sz, backgroundColor: `${color}22`, border: `3px solid ${color}` }}>
+                      <div className="text-center">
+                        <p className="font-black leading-none tabular-nums" style={{ fontSize: Math.round(sz * 0.26), color }}>
+                          {val.toFixed(1)}
+                        </p>
+                        <p className="font-semibold leading-none mt-0.5" style={{ fontSize: Math.round(sz * 0.13), color: `${color}aa` }}>
+                          /10
+                        </p>
                       </div>
-                      <p className="text-xs font-semibold text-slate-400">{label}</p>
                     </div>
-                  );
-                })}
-              </div>
+                    <p className="text-xs font-semibold text-slate-400">{label}</p>
+                  </div>
+                );
+              })}
             </div>
-          )}
+          </div>
 
           {topArtist && (
             <div className="mb-5">
@@ -225,75 +315,14 @@ export default async function ProfilePage() {
             </div>
           )}
 
-          {/* Genre / Vibe DNA radar */}
-          <TasteRadar
-            genreItems={genreItems}
-            vibeItems={vibeItems}
-            headline={tasteHeadline}
-          />
+          <TasteRadar genreItems={genreItems} vibeItems={vibeItems} headline={tasteHeadline} />
         </div>
       )}
 
-      {/* Albums in progress */}
-      {albumsInProgress.length > 0 && (
-        <div>
-          <h2 className="font-bold text-base text-slate-100 mb-3">Albums in progress</h2>
-          <div className="space-y-2">
-            {albumsInProgress.map((a) => (
-              <Link
-                key={a.albumId}
-                href={`/album/${a.albumId}`}
-                className="flex items-center gap-3 bg-[#1e2d3d] rounded-2xl p-3 border border-white/5 hover:border-white/10 transition-colors block"
-              >
-                <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
-                  {a.art
-                    ? <Image src={a.art} alt={a.name} fill className="object-cover" sizes="40px" />
-                    : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-slate-100 truncate">{a.name}</p>
-                  <p className="text-xs text-slate-500 truncate">{a.artist.split(",")[0]}</p>
-                </div>
-                <span className="text-xs text-slate-500 shrink-0">{a.count} rated</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Top 5 */}
-      {top5.length > 0 && (
-        <div>
-          <h2 className="font-bold text-base text-slate-100 mb-3">Top rated</h2>
-          <div className="space-y-2">
-            {top5.map((r: any, i: number) => (
-              <Link
-                key={r.id}
-                href={`/song/${r.id}`}
-                className="flex items-center gap-3 bg-[#1e2d3d] rounded-2xl p-3 border border-white/5 hover:border-white/10 transition-colors block"
-              >
-                <span className="text-lg font-black text-slate-700 w-6 text-center shrink-0">{i + 1}</span>
-                <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
-                  {r.song?.album_art_url
-                    ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="40px" />
-                    : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
-                  <p className="text-xs text-slate-500 truncate">{r.song?.artist}</p>
-                </div>
-                <ScoreCircle score={r.overall_score} size={40} />
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
+      {/* Sign out */}
       <form action={handleSignOut}>
-        <button
-          type="submit"
-          className="w-full py-3 rounded-2xl border border-white/10 text-slate-500 text-sm font-semibold hover:bg-white/5 transition-colors"
-        >
+        <button type="submit"
+          className="w-full py-3 rounded-2xl border border-white/10 text-slate-500 text-sm font-semibold hover:bg-white/5 transition-colors">
           Sign out
         </button>
       </form>
