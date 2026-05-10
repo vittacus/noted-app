@@ -195,62 +195,66 @@ export default async function ProfilePage() {
         ))}
       </div>
 
-      {/* ── TOP SONGS ── */}
+      {/* ── TOP SONGS — full-width list rows ── */}
       {top5Songs.length > 0 && (
         <div className="mb-8">
           <div className="flex justify-between items-center mb-3">
             <h2 className="font-bold text-base text-slate-100">Top Songs</h2>
             <Link href="/library" className="text-xs text-[#4fc3f7] hover:underline">See all →</Link>
           </div>
-          <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4">
+          <div className="space-y-2">
             {top5Songs.map((r: any, i: number) => (
-              <Link key={r.id} href={`/song/${r.id}`} className="shrink-0 flex flex-col items-center gap-1.5">
-                <div className="relative">
-                  <div className="w-[72px] h-[72px] rounded-2xl overflow-hidden bg-white/5">
-                    {r.song?.album_art_url
-                      ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="72px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
-                  </div>
-                  <div className="absolute -top-1.5 -left-1.5 w-[18px] h-[18px] rounded-full bg-[#1a2332] border border-white/15 flex items-center justify-center">
-                    <span className="text-[9px] font-black text-slate-300">{i + 1}</span>
-                  </div>
+              <Link key={r.id} href={`/song/${r.id}`}
+                className="flex items-center gap-3 bg-[#1e2d3d] rounded-2xl p-3 border border-white/5 hover:border-white/10 transition-colors block">
+                <span className="text-sm font-black text-slate-600 w-5 text-right shrink-0">{i + 1}</span>
+                <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
+                  {r.song?.album_art_url
+                    ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="40px" />
+                    : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
                 </div>
-                <p className="text-[10px] text-slate-400 text-center w-[72px] truncate leading-tight">{r.song?.title}</p>
-                <p className="text-[9px] text-slate-600 text-center w-[72px] truncate">{r.song?.artist?.split(",")[0]}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
+                  <p className="text-xs text-slate-500 truncate">{r.song?.artist}</p>
+                </div>
+                <ScoreCircle score={r.overall_score} size={40} />
               </Link>
             ))}
           </div>
         </div>
       )}
 
-      {/* ── TOP ALBUMS ── */}
+      {/* ── TOP ALBUMS — full-width list rows ── */}
       {topAlbums.length > 0 && (
         <div className="mb-8">
           <div className="flex justify-between items-center mb-3">
             <h2 className="font-bold text-base text-slate-100">Top Albums</h2>
-            <Link href="/library" className="text-xs text-[#4fc3f7] hover:underline">See all →</Link>
+            {/* Links to Albums tab in Library */}
+            <Link href="/library?view=albums" className="text-xs text-[#4fc3f7] hover:underline">See all →</Link>
           </div>
-          <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4">
+          <div className="space-y-2">
             {topAlbums.map((album, i) => {
-              const content = (
-                <div className="shrink-0 flex flex-col items-center gap-1.5">
-                  <div className="relative">
-                    <div className="w-[72px] h-[72px] rounded-2xl overflow-hidden bg-white/5">
-                      {album.art
-                        ? <Image src={album.art} alt={album.name} fill className="object-cover" sizes="72px" />
-                        : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
-                    </div>
-                    <div className="absolute -top-1.5 -left-1.5 w-[18px] h-[18px] rounded-full bg-[#1a2332] border border-white/15 flex items-center justify-center">
-                      <span className="text-[9px] font-black text-slate-300">{i + 1}</span>
-                    </div>
+              const row = (
+                <div className="flex items-center gap-3 p-3">
+                  <span className="text-sm font-black text-slate-600 w-5 text-right shrink-0">{i + 1}</span>
+                  <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
+                    {album.art
+                      ? <Image src={album.art} alt={album.name} fill className="object-cover" sizes="40px" />
+                      : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
                   </div>
-                  <p className="text-[10px] text-slate-400 text-center w-[72px] truncate leading-tight">{album.name}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm text-slate-100 truncate">{album.name}</p>
+                    <p className="text-xs text-slate-600 mt-0.5">{album.count} track{album.count !== 1 ? "s" : ""} rated</p>
+                  </div>
+                  <ScoreCircle score={album.avgScore} size={40} />
                 </div>
               );
               return album.spotifyId ? (
-                <Link key={i} href={`/album/${album.spotifyId}`}>{content}</Link>
+                <Link key={i} href={`/album/${album.spotifyId}`}
+                  className="block bg-[#1e2d3d] rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                  {row}
+                </Link>
               ) : (
-                <div key={i}>{content}</div>
+                <div key={i} className="bg-[#1e2d3d] rounded-2xl border border-white/5">{row}</div>
               );
             })}
           </div>
