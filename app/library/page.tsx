@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
-import { ArrowUpDown, Music2, LayoutGrid } from "lucide-react";
+import { ArrowUpDown, Music2, LayoutGrid, Swords } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Rating, Song } from "@/types";
 import { formatDuration, genreAccentColor } from "@/lib/utils";
@@ -142,12 +142,17 @@ export default function LibraryPage() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="font-bold text-xl text-slate-100">Library</h1>
         <div className="flex gap-2 items-center">
-          <Link href="/battle" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
-            ⚔ Battle mode
+          {/* Battle mode icon button */}
+          <Link href="/battle"
+            className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+            title="Battle mode">
+            <Swords size={15} className="text-slate-400" />
           </Link>
+          {/* List/grid toggle — songs mode only */}
           {libraryMode === "songs" && (
             <button onClick={() => setView(view === "list" ? "grid" : "list")}
-              className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">
+              className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+              title={view === "list" ? "Grid view" : "List view"}>
               {view === "list" ? <LayoutGrid size={16} className="text-slate-400" /> : <Music2 size={16} className="text-slate-400" />}
             </button>
           )}
@@ -184,46 +189,48 @@ export default function LibraryPage() {
               const pct = total ? Math.round((rated / total) * 100) : null;
               const isComplete = total !== null && rated >= total;
 
-              const CardWrapper = a.spotifyAlbumId
-                ? ({ children }: { children: React.ReactNode }) => (
-                    <Link href={`/album/${a.spotifyAlbumId}`} className="block">{children}</Link>
-                  )
-                : ({ children }: { children: React.ReactNode }) => <>{children}</>;
-
-              return (
-                <div key={a.key} className="bg-[#1e2d3d] rounded-2xl border border-white/5 hover:border-white/10 transition-colors overflow-hidden">
-                  <CardWrapper>
-                  <div className="flex items-center gap-3 p-3">
-                    <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0">
-                      {a.albumArt
-                        ? <Image src={a.albumArt} alt={a.albumName} fill className="object-cover" sizes="64px" />
-                        : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-sm text-slate-100 truncate">{a.albumName}</p>
-                      <p className="text-xs text-slate-500 truncate mt-0.5">{a.artist.split(",")[0]}</p>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <p className="text-xs text-slate-600">
-                          {rated}{total ? `/${total}` : ""} tracks
-                        </p>
-                        {total !== null && (
-                          <span className={`text-xs px-1.5 py-0.5 rounded font-semibold ${
-                            isComplete ? "bg-emerald-500/20 text-emerald-400" : "bg-orange-500/20 text-orange-400"
-                          }`}>
-                            {isComplete ? "Complete" : "In progress"}
-                          </span>
-                        )}
-                      </div>
-                      {pct !== null && (
-                        <div className="mt-1.5 h-1 bg-white/5 rounded-full overflow-hidden w-full">
-                          <div className={`h-full rounded-full transition-all ${isComplete ? "bg-emerald-500" : "bg-[#4fc3f7]/60"}`}
-                            style={{ width: `${Math.min(100, pct)}%` }} />
-                        </div>
+              const inner = (
+                <div className="flex items-center gap-3 p-3">
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0">
+                    {a.albumArt
+                      ? <Image src={a.albumArt} alt={a.albumName} fill className="object-cover" sizes="64px" />
+                      : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-sm text-slate-100 truncate">{a.albumName}</p>
+                    <p className="text-xs text-slate-500 truncate mt-0.5">{a.artist.split(",")[0]}</p>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <p className="text-xs text-slate-600">
+                        {rated}{total ? `/${total}` : ""} tracks
+                      </p>
+                      {total !== null && (
+                        <span className={`text-xs px-1.5 py-0.5 rounded font-semibold ${
+                          isComplete ? "bg-emerald-500/20 text-emerald-400" : "bg-orange-500/20 text-orange-400"
+                        }`}>
+                          {isComplete ? "Complete" : "In progress"}
+                        </span>
                       )}
                     </div>
-                    <ScoreCircle score={a.avgScore} size={36} />
+                    {pct !== null && (
+                      <div className="mt-1.5 h-1 bg-white/5 rounded-full overflow-hidden w-full">
+                        <div className={`h-full rounded-full transition-all ${isComplete ? "bg-emerald-500" : "bg-[#4fc3f7]/60"}`}
+                          style={{ width: `${Math.min(100, pct)}%` }} />
+                      </div>
+                    )}
                   </div>
-                  </CardWrapper>
+                  <ScoreCircle score={a.avgScore} size={40} />
+                </div>
+              );
+
+              // Wrap entire card in Link when we have a Spotify album ID
+              return a.spotifyAlbumId ? (
+                <Link key={a.key} href={`/album/${a.spotifyAlbumId}`}
+                  className="block bg-[#1e2d3d] rounded-2xl border border-white/5 hover:border-white/10 hover:bg-[#243347] transition-colors overflow-hidden">
+                  {inner}
+                </Link>
+              ) : (
+                <div key={a.key} className="bg-[#1e2d3d] rounded-2xl border border-white/5 overflow-hidden">
+                  {inner}
                 </div>
               );
             })}
@@ -299,7 +306,7 @@ export default function LibraryPage() {
                           </div>
                         </div>
                         <button onClick={(e) => { e.preventDefault(); openReRate(r); }} className="hover:opacity-75 transition-opacity">
-                          <ScoreCircle score={r.overall_score} size={38} />
+                          <ScoreCircle score={r.overall_score} size={44} />
                         </button>
                       </div>
                     </div>
