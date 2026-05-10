@@ -154,22 +154,27 @@ export default function BattlePage() {
   if (allDone) {
     return (
       <div className="page-enter text-center py-20">
-        <div className="text-5xl mb-4">✅</div>
-        <p className="font-black text-slate-100 text-xl mb-2">All caught up!</p>
-        <p className="text-slate-500 text-sm mb-2">
+        <div className="text-6xl mb-5">✅</div>
+        <p className="font-black text-slate-100 mb-3" style={{ fontSize: 28 }}>
+          All caught up!
+        </p>
+        <p className="text-white/70 mb-2" style={{ fontSize: 16 }}>
           {battleCount >= MAX_BATTLES
-            ? `You've done ${MAX_BATTLES} battles this session.`
+            ? `You've completed ${MAX_BATTLES} battles this session.`
             : "You've compared all similar songs in your library."}
         </p>
-        <p className="text-xs text-slate-600 mb-8">Scores have been updated based on your picks.</p>
+        <p className="text-sm text-slate-500 mb-10">Scores updated based on your picks.</p>
         <div className="flex flex-col gap-3 items-center">
-          <button onClick={() => { setUsedPairs(new Set()); setBattleCount(0); setAllDone(false); pickPair(allRatings, new Set(), 0); }}
-            className="px-6 py-3 bg-[#4fc3f7]/80 text-white font-semibold rounded-2xl hover:bg-[#4fc3f7] transition-colors">
+          <button
+            onClick={() => { setUsedPairs(new Set()); setBattleCount(0); setAllDone(false); pickPair(allRatings, new Set(), 0); }}
+            className="px-8 py-3.5 bg-[#4fc3f7]/80 text-white font-bold rounded-2xl hover:bg-[#4fc3f7] transition-colors text-base">
             Battle again
           </button>
-          <Link href="/library" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
+          <button
+            onClick={() => router.push("/library")}
+            className="px-8 py-3.5 border-2 border-white/20 text-white/80 font-semibold rounded-2xl hover:bg-white/10 hover:border-white/30 transition-colors text-base">
             Back to library
-          </Link>
+          </button>
         </div>
       </div>
     );
