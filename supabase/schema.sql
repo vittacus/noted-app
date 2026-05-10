@@ -115,17 +115,23 @@ create policy "Follows viewable by all" on public.follows for select using (true
 create policy "Users can manage their own follows" on public.follows for insert with check (auth.uid() = follower_id);
 create policy "Users can delete their own follows" on public.follows for delete using (auth.uid() = follower_id);
 
--- ⚠️  REQUIRED: Run this block in Supabase Dashboard → SQL Editor before comments will work
-create table if not exists public.comments (
-  id uuid default gen_random_uuid() primary key,
-  rating_id uuid references public.ratings(id) on delete cascade not null,
-  user_id uuid references auth.users(id) on delete cascade not null,
-  content text not null,
-  created_at timestamp with time zone default now()
+-- ⚠️  REQUIRED — run this ENTIRE BLOCK in Supabase Dashboard → SQL Editor
+-- (no foreign keys to avoid reference failures on first run)
+drop table if exists public.comments cascade;
+create table public.comments (
+  id          uuid         default gen_random_uuid() primary key,
+  rating_id   uuid         not null,
+  user_id     uuid         not null,
+  content     text         not null,
+  created_at  timestamptz  default now()
 );
 alter table public.comments enable row level security;
-create policy "Anyone can read comments"     on public.comments for select using (true);
-create policy "Users can insert own comments" on public.comments for insert with check (auth.uid() = user_id);
+create policy "select_comments" on public.comments for select using (true);
+create policy "insert_comments" on public.comments for insert with check (auth.uid() = user_id);
+
+-- Multi-artist support (run once; safe to re-run)
+alter table public.ratings add column if not exists artist_ids   text[] default '{}';
+alter table public.ratings add column if not exists artist_names text[] default '{}';
 create policy "Users can insert their own comments" on public.comments for insert with check (auth.uid() = user_id);
 create policy "Users can delete their own comments" on public.comments for delete using (auth.uid() = user_id);
 

@@ -23,10 +23,20 @@ export default function RatingComments({ ratingId }: { ratingId: string }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Get comment count
-    supabase.from("comments").select("id", { count: "exact", head: true })
-      .eq("rating_id", ratingId)
-      .then(({ count: c }) => setCount(c ?? 0));
+    // Table health check — if this errors, the table doesn't exist yet
+    supabase.from("comments").select("count", { count: "exact", head: true })
+      .then(({ count: c, error }) => {
+        if (error) {
+          console.error("[comments] TABLE HEALTH CHECK FAILED:", error.message,
+            "\n→ Run the schema SQL in Supabase Dashboard → SQL Editor");
+        } else {
+          console.log(`[comments] table OK — ${c ?? 0} total rows`);
+          // Now fetch count for this specific rating
+          supabase.from("comments").select("id", { count: "exact", head: true })
+            .eq("rating_id", ratingId)
+            .then(({ count: rc }) => setCount(rc ?? 0));
+        }
+      });
     // Check auth status
     supabase.auth.getUser().then(({ data: { user } }) => setIsLoggedIn(!!user));
   }, [ratingId]);
