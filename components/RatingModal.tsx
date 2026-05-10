@@ -391,7 +391,7 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         songId = newSong!.id;
       }
 
-      const { error: ratingErr } = await supabase.from("ratings").upsert({
+      const baseRating: Record<string, unknown> = {
         user_id: user.id,
         song_id: songId,
         vibe: form.vibe,
@@ -402,11 +402,23 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         notes: form.notes || null,
         best_for_tags: form.best_for_tags,
         genre_tags: computeGenreTags(),
-        listened_at: new Date().toISOString().split("T")[0], // auto today
-        // All collaborating artists — enables proper crediting for collabs
+        listened_at: new Date().toISOString().split("T")[0],
         artist_ids:   track.artists.map((a) => a.id ?? "").filter(Boolean),
         artist_names: track.artists.map((a) => a.name),
-      }, { onConflict: "user_id,song_id" });
+      };
+
+      let { error: ratingErr } = await supabase
+        .from("ratings").upsert(baseRating, { onConflict: "user_id,song_id" });
+
+      // Graceful fallback: if artist columns haven't been added yet, retry without them
+      if (ratingErr?.message?.includes("artist_ids") ||
+          ratingErr?.message?.includes("artist_names") ||
+          ratingErr?.message?.includes("schema cache")) {
+        const { artist_ids, artist_names, ...withoutArtist } = baseRating;
+        console.warn("[save] artist columns missing — retrying without them. Run migration SQL.");
+        ({ error: ratingErr } = await supabase
+          .from("ratings").upsert(withoutArtist, { onConflict: "user_id,song_id" }));
+      }
       if (ratingErr) throw new Error(`Could not save rating: ${ratingErr.message}`);
 
       // Add song to checked mood lists (find-or-create each collection by name)
