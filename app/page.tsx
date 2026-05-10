@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
-import { genreAccentColor } from "@/lib/utils";
+import { genreAccentColor, displayGenres } from "@/lib/utils";
 import FeedTabs from "@/components/FeedTabs";
 import RatingComments from "@/components/RatingComments";
 import RecommendedTracks from "@/components/RecommendedTracks";
@@ -199,7 +199,7 @@ export default async function HomePage({
                     <p className="text-sm text-slate-500 truncate mt-0.5">{r.song?.artist}</p>
                     <div className="flex items-center gap-2 mt-2 flex-wrap">
                       <span className="text-sm">{vibeEmoji[r.vibe] ?? ""}</span>
-                      {(r.genre_tags ?? []).slice(0, 1).map((tag: string) => (
+                      {displayGenres(r.genre_tags ?? []).map((tag: string) => (
                         <span key={tag} className="text-xs bg-white/5 text-slate-500 px-2 py-0.5 rounded-full">{tag}</span>
                       ))}
                       {(r.best_for_tags ?? [])
