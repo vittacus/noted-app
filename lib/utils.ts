@@ -68,6 +68,19 @@ export function displayGenres(genreTags: string[]): string[] {
   return nonOther.length > 0 ? nonOther.slice(0, 2) : tags.slice(0, 1);
 }
 
+/** Format large counts with k/m shorthand: 1000→"1k", 67000→"67k" */
+export function formatCount(n: number): string {
+  if (n >= 1_000_000) {
+    const v = n / 1_000_000;
+    return `${v % 1 === 0 ? v : v.toFixed(1)}m`;
+  }
+  if (n >= 1_000) {
+    const v = n / 1_000;
+    return `${v % 1 === 0 ? v : v.toFixed(1)}k`;
+  }
+  return String(n);
+}
+
 export function scoreColor(score: number): string {
   if (score >= 8) return "text-[#4ade80]";   // green
   if (score >= 6) return "text-[#fbbf24]";   // yellow

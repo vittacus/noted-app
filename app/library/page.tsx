@@ -58,7 +58,7 @@ export default function LibraryPage() {
 
   const [ratings, setRatings] = useState<RatingWithSong[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sort, setSort] = useState<SortKey>("date");
+  const [sort, setSort] = useState<SortKey>("score");
   const [genre, setGenre] = useState<string>("all");
   const [view, setView] = useState<ViewMode>("list");
   const [libraryMode, setLibraryMode] = useState<LibraryMode>("songs");
@@ -277,7 +277,7 @@ export default function LibraryPage() {
         <>
           {/* Sort + genre filter */}
           <div className="flex gap-2 mb-4 overflow-x-auto pb-1 -mx-4 px-4">
-            {(["date", "score", "artist"] as SortKey[]).map((s) => (
+            {(["score", "artist", "date"] as SortKey[]).map((s) => (
               <button key={s} onClick={() => setSort(s)}
                 className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
                   sort === s ? "bg-[#4fc3f7]/50 text-white border-[#4fc3f7]" : "bg-white/5 text-slate-400 border-white/10 hover:border-white/20"
@@ -333,11 +333,14 @@ export default function LibraryPage() {
                             <span className="text-xs text-slate-600 shrink-0 mt-0.5">{formatDuration(r.song.duration_seconds)}</span>
                           </div>
                           <p className="text-xs text-slate-500 truncate">{r.song.artist}</p>
-                          <div className="flex gap-1.5 mt-1">
+                          <div className="flex gap-1.5 mt-1 flex-wrap">
                             {displayGenres(r.genre_tags ?? []).map((t: string) => (
                               <span key={t} className="text-xs bg-white/5 text-slate-500 px-2 py-0.5 rounded-full">{t}</span>
                             ))}
                           </div>
+                          <p className="text-xs text-slate-700 mt-0.5">
+                            Rated {new Date(r.created_at).getMonth() + 1}/{new Date(r.created_at).getDate()}
+                          </p>
                         </div>
                         <button onClick={(e) => { e.preventDefault(); openReRate(r); }} className="hover:opacity-75 transition-opacity">
                           <ScoreCircle score={r.overall_score} size={44} />
