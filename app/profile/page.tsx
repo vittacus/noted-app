@@ -48,11 +48,19 @@ export default async function ProfilePage() {
     "Production":   totalRated > 0 ? ratings!.reduce((s, r) => s + r.production, 0) / totalRated : 0,
   };
 
-  // Top artist
+  // Top artist — credit all collaborators via artist_names array when available
   const artistCounts: Record<string, number> = {};
   ratings?.forEach((r: any) => {
-    const a = r.song?.artist?.trim();
-    if (a) artistCounts[a] = (artistCounts[a] ?? 0) + 1;
+    // Prefer artist_names (multi-artist array) saved since the collab fix,
+    // fall back to splitting song.artist string for older ratings
+    const names: string[] =
+      (r.artist_names as string[] | undefined)?.length
+        ? (r.artist_names as string[])
+        : (r.song?.artist as string | undefined)
+            ?.split(",").map((s: string) => s.trim()).filter(Boolean) ?? [];
+    for (const a of names) {
+      artistCounts[a] = (artistCounts[a] ?? 0) + 1;
+    }
   });
   const topArtist = Object.entries(artistCounts).sort((a, b) => b[1] - a[1])[0] ?? null;
 

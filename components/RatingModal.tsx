@@ -177,27 +177,73 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
   const [manualGenres, setManualGenres] = useState<string[]>([]);
 
   useEffect(() => {
-    async function fetchArtistGenres() {
+    async function fetchGenresWithFallback() {
       const artistId = track.artists[0]?.id;
-      console.log(`[genre] fetching for "${track.name}" — artist ID: ${artistId}`);
-      if (!artistId) {
-        console.log("[genre] no artist ID on track — will show manual picker");
-        setGenresLoaded(true);
-        return;
-      }
-      try {
-        const res = await fetch(`/api/spotify/artist/${artistId}`);
-        if (res.ok) {
+      const albumId   = track.album?.id;
+      console.log(`[genre] "${track.name}" — track artist ID: ${artistId}, album ID: ${albumId}`);
+
+      // Helper: fetch an artist by ID and return their genres (or [])
+      async function getArtistGenres(id: string): Promise<string[]> {
+        try {
+          const res  = await fetch(`/api/spotify/artist/${id}`);
           const data = await res.json();
-          console.log("[genre] raw Spotify genres:", data.genres);
-          setSpotifyGenres(data.genres ?? []);
+          console.log(`[genre] artist ${id} full response:`, JSON.stringify(data));
+          return data.genres ?? [];
+        } catch (e) {
+          console.error(`[genre] artist ${id} fetch error:`, e);
+          return [];
         }
-      } catch (e) {
-        console.error("[genre] fetch failed:", e);
       }
+
+      // 1️⃣ Track's primary artist
+      if (artistId) {
+        const genres = await getArtistGenres(artistId);
+        if (genres.length > 0) {
+          setSpotifyGenres(genres);
+          setGenresLoaded(true);
+          return;
+        }
+        console.log("[genre] track artist genres empty — trying remaining track artists...");
+      }
+
+      // 2️⃣ Other artists on the track
+      for (const artist of track.artists.slice(1)) {
+        if (!artist.id) continue;
+        const genres = await getArtistGenres(artist.id);
+        if (genres.length > 0) {
+          setSpotifyGenres(genres);
+          setGenresLoaded(true);
+          return;
+        }
+      }
+
+      // 3️⃣ Album's artists (sometimes album-level has richer genre data)
+      if (albumId) {
+        try {
+          const albumRes  = await fetch(`/api/spotify/album/${albumId}`);
+          const albumData = await albumRes.json();
+          const albumArtists: { id?: string; name: string }[] = albumData.artists ?? [];
+          console.log("[genre] album artists:", albumArtists.map((a) => a.name));
+
+          for (const artist of albumArtists) {
+            if (!artist.id) continue;
+            const genres = await getArtistGenres(artist.id);
+            if (genres.length > 0) {
+              setSpotifyGenres(genres);
+              setGenresLoaded(true);
+              return;
+            }
+          }
+        } catch (e) {
+          console.error("[genre] album artist fallback error:", e);
+        }
+      }
+
+      // 4️⃣ True last resort — show manual picker
+      console.log("[genre] all genre fetches exhausted — showing manual picker");
       setGenresLoaded(true);
     }
-    fetchArtistGenres();
+    fetchGenresWithFallback();
   }, []);
 
   function toggleManualGenre(g: string) {
@@ -357,6 +403,9 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         best_for_tags: form.best_for_tags,
         genre_tags: computeGenreTags(),
         listened_at: new Date().toISOString().split("T")[0], // auto today
+        // All collaborating artists — enables proper crediting for collabs
+        artist_ids:   track.artists.map((a) => a.id ?? "").filter(Boolean),
+        artist_names: track.artists.map((a) => a.name),
       }, { onConflict: "user_id,song_id" });
       if (ratingErr) throw new Error(`Could not save rating: ${ratingErr.message}`);
 
