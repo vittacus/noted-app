@@ -21,7 +21,9 @@ function HexagonChart({ items }: { items: TasteItem[] }) {
   if (n < 3) return null;
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
-  const cx = 142, cy = 148, r = 105, labelR = 136;
+  // Wider chart: cx pushed inward so left-side labels (anchor="end") have ~72px
+  // of clearance before the SVG edge. Right-side labels get equal clearance.
+  const cx = 180, cy = 155, r = 105, labelR = 125;
   const angles = Array.from({ length: n }, (_, i) =>
     ((i * (360 / n) - 90) * Math.PI) / 180
   );
@@ -54,7 +56,10 @@ function HexagonChart({ items }: { items: TasteItem[] }) {
       .join(" ") + " Z";
 
   return (
-    <svg width={284} height={296} viewBox="0 0 284 296">
+    // 360×310 viewBox gives enough horizontal room for all labels at every axis.
+    // Left labels (anchor="end") are at x≈72; right labels at x≈288; both clear edges.
+    // overflow="visible" prevents clipping on smaller viewports.
+    <svg width="100%" viewBox="0 0 360 310" style={{ overflow: "visible" }}>
       {/* Background rings */}
       {[0.25, 0.5, 0.75, 1].map((frac) => (
         <path key={frac} d={ringPath(frac)} fill="none"
@@ -90,7 +95,7 @@ function HexagonChart({ items }: { items: TasteItem[] }) {
         const ly = cy + labelR * Math.sin(a);
         const ca = Math.cos(a);
         const anchor = Math.abs(ca) < 0.15 ? "middle" : ca < 0 ? "end" : "start";
-        const shortLabel = items[i].label.length > 9 ? items[i].label.slice(0, 8) + "…" : items[i].label;
+        const shortLabel = items[i].label.length > 11 ? items[i].label.slice(0, 10) + "…" : items[i].label;
         const isHovered = hoveredIdx === i;
         return (
           <g key={i} style={{ cursor: "pointer" }}
@@ -167,7 +172,8 @@ export default function TasteRadar({ genreItems, vibeItems, headline }: Props) {
 
       {hasEnough ? (
         <>
-          <div className="flex justify-center -mx-2">
+          {/* Use full card width; overflow:visible lets labels clear the edges */}
+          <div className="w-full" style={{ overflow: "visible" }}>
             <HexagonChart items={items} />
           </div>
 

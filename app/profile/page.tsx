@@ -53,11 +53,13 @@ export default async function ProfilePage() {
   ratings?.forEach((r: any) => {
     // Prefer artist_names (multi-artist array) saved since the collab fix,
     // fall back to splitting song.artist string for older ratings
+    // Use stored artist_names array (supports multi-artist) when available.
+    // For older ratings without artist_names, treat song.artist as ONE name —
+    // never split on commas because artist names can contain commas ("Tyler, The Creator").
     const names: string[] =
       (r.artist_names as string[] | undefined)?.length
         ? (r.artist_names as string[])
-        : (r.song?.artist as string | undefined)
-            ?.split(",").map((s: string) => s.trim()).filter(Boolean) ?? [];
+        : r.song?.artist ? [r.song.artist.trim()] : [];
     for (const a of names) {
       artistCounts[a] = (artistCounts[a] ?? 0) + 1;
     }
