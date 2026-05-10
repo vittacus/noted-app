@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Menu, Share2, Settings } from "lucide-react";
 import ScoreCircle from "@/components/ScoreCircle";
 import TasteRadar, { type TasteItem } from "@/components/TasteRadar";
-import { calculateStreak } from "@/lib/utils";
+import { calculateStreak, formatCount } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -57,7 +57,7 @@ export default async function ProfilePage() {
   const topArtist = Object.entries(artistCounts).sort((a, b) => b[1] - a[1])[0] ?? null;
 
   // Top 5 songs by score
-  const top5Songs = ratings?.slice(0, 5) ?? [];
+  const top5Songs = ratings?.slice(0, 3) ?? [];
 
   // Top 5 albums by avg score
   const albumScoreMap = new Map<string, {
@@ -83,7 +83,7 @@ export default async function ProfilePage() {
   const topAlbums = Array.from(albumScoreMap.values())
     .map((a) => ({ ...a, avgScore: Math.round((a.totalScore / a.count) * 10) / 10 }))
     .sort((a, b) => b.avgScore - a.avgScore)
-    .slice(0, 5);
+    .slice(0, 3);
 
   // Stats for taste card
   const streak = calculateStreak((ratings ?? []).map((r: any) => r.listened_at));
@@ -184,8 +184,8 @@ export default async function ProfilePage() {
       {/* ── STATS PILLS ── */}
       <div className="flex gap-2 mb-8">
         {[
-          { label: "Followers", value: "0" },
-          { label: "Following", value: "0" },
+          { label: "Followers", value: formatCount(67_000) },
+          { label: "Following", value: formatCount(0) },
           { label: "Avg Rating", value: avgScore ?? "—" },
         ].map((s) => (
           <div key={s.label} className="flex-1 bg-[#1e2d3d] rounded-2xl py-3 text-center border border-white/5">

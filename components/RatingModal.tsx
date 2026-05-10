@@ -171,6 +171,59 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
       [field]: f[field].includes(tag) ? f[field].filter((t) => t !== tag) : [...f[field], tag],
     }));
 
+  // Genre state — fetched from Spotify at modal mount
+  const [spotifyGenres, setSpotifyGenres] = useState<string[]>([]);
+  const [genresLoaded, setGenresLoaded] = useState(false);
+  const [manualGenres, setManualGenres] = useState<string[]>([]);
+
+  useEffect(() => {
+    async function fetchArtistGenres() {
+      const artistId = track.artists[0]?.id;
+      console.log(`[genre] fetching for "${track.name}" — artist ID: ${artistId}`);
+      if (!artistId) {
+        console.log("[genre] no artist ID on track — will show manual picker");
+        setGenresLoaded(true);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/spotify/artist/${artistId}`);
+        if (res.ok) {
+          const data = await res.json();
+          console.log("[genre] raw Spotify genres:", data.genres);
+          setSpotifyGenres(data.genres ?? []);
+        }
+      } catch (e) {
+        console.error("[genre] fetch failed:", e);
+      }
+      setGenresLoaded(true);
+    }
+    fetchArtistGenres();
+  }, []);
+
+  function toggleManualGenre(g: string) {
+    setManualGenres((prev) => {
+      if (prev.includes(g)) return prev.filter((x) => x !== g);
+      if (prev.length >= 2) return [prev[1], g]; // replace oldest when at max 2
+      return [...prev, g];
+    });
+  }
+
+  // Compute genres to save (synchronous — already loaded at mount)
+  function computeGenreTags(): string[] {
+    if (spotifyGenres.length > 0) {
+      const mapped: string[] = [];
+      for (const g of spotifyGenres) {
+        const m = mapSpotifyGenre(g);
+        if (!mapped.includes(m)) mapped.push(m);
+        if (mapped.filter((x) => x !== "Other").length >= 2) break;
+      }
+      const nonOther = mapped.filter((g) => g !== "Other");
+      return nonOther.length > 0 ? nonOther.slice(0, 2) : ["Other"];
+    }
+    if (manualGenres.length > 0) return manualGenres.slice(0, 2);
+    return ["Other"];
+  }
+
   // Load library on mount for comparison candidates
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -302,30 +355,7 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         overall_score: displayScore ?? 5.0,
         notes: form.notes || null,
         best_for_tags: form.best_for_tags,
-        genre_tags: await (async () => {
-          // Silently fetch up to 2 genres from Spotify artist metadata
-          try {
-            const artistId = track.artists[0]?.id;
-            if (artistId) {
-              const res = await fetch(`/api/spotify/artist/${artistId}`);
-              if (res.ok) {
-                const data = await res.json();
-                if (data.genres?.length) {
-                  // Map each genre, deduplicate, drop "Other" if non-Other mapped values exist
-                  const mapped: string[] = [];
-                  for (const g of data.genres) {
-                    const m = mapSpotifyGenre(g);
-                    if (!mapped.includes(m)) mapped.push(m);
-                    if (mapped.filter((x) => x !== "Other").length >= 2) break;
-                  }
-                  const nonOther = mapped.filter((g) => g !== "Other");
-                  return nonOther.length > 0 ? nonOther.slice(0, 2) : ["Other"];
-                }
-              }
-            }
-          } catch {}
-          return ["Other"];
-        })(),
+        genre_tags: computeGenreTags(),
         listened_at: new Date().toISOString().split("T")[0], // auto today
       }, { onConflict: "user_id,song_id" });
       if (ratingErr) throw new Error(`Could not save rating: ${ratingErr.message}`);
@@ -559,6 +589,24 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                       onBlur={addCustomMoodEntry}
                       placeholder="Custom mood list…"
                       className="flex-1 bg-transparent text-sm text-slate-300 placeholder-slate-700 outline-none border-b border-white/10 pb-0.5 focus:border-[#4fc3f7]/50 transition-colors" />
+                  </div>
+                </div>
+              )}
+
+              {/* Inline genre picker — only shown when Spotify returned no genres */}
+              {genresLoaded && spotifyGenres.length === 0 && (
+                <div className="mb-5">
+                  <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">Genre</p>
+                  <p className="text-xs text-slate-700 mb-2.5">Spotify didn't return a genre — pick up to 2:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {["Rap","R&B","Pop","Latin","Indie","Electronic","Jazz","Country","Soul","Other"].map((g) => (
+                      <button key={g} onClick={() => toggleManualGenre(g)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                          manualGenres.includes(g)
+                            ? "bg-slate-100 border-slate-100 text-slate-900"
+                            : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20"
+                        }`}>{g}</button>
+                    ))}
                   </div>
                 </div>
               )}

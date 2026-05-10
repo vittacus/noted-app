@@ -37,10 +37,17 @@ function HexagonChart({ items }: { items: TasteItem[] }) {
     );
   }
 
+  // Minimum plot radius = 30% for any genre that has data, so even small genres
+  // produce a visible shape rather than collapsing to near-center
+  function plotV(value: number) {
+    if (value <= 0) return 0;
+    return Math.min(1, Math.max(0.30, value));
+  }
+
   const profilePath =
     items
       .map((item, i) => {
-        const v = Math.min(1, Math.max(0, item.value));
+        const v = plotV(item.value);
         const a = angles[i];
         return `${i === 0 ? "M" : "L"} ${cx + r * v * Math.cos(a)},${cy + r * v * Math.sin(a)}`;
       })
@@ -65,9 +72,9 @@ function HexagonChart({ items }: { items: TasteItem[] }) {
       <path d={profilePath} fill="rgba(79,195,247,0.14)"
         stroke="#4fc3f7" strokeWidth={3} strokeLinejoin="round" />
 
-      {/* Colored vertex dots — no % numbers inline */}
+      {/* Colored vertex dots — positioned at the same plotV radius as the polygon */}
       {items.map((item, i) => {
-        const v = Math.min(1, Math.max(0, item.value));
+        const v = plotV(item.value);
         const a = angles[i];
         const px = cx + r * v * Math.cos(a);
         const py = cy + r * v * Math.sin(a);
