@@ -4,11 +4,48 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { X, ChevronRight, ChevronLeft, Check } from "lucide-react";
 import ScoreCircle from "@/components/ScoreCircle";
-import { SpotifyTrack, VibeOption, RatingFormState, BEST_FOR_TAGS, GENRE_TAGS } from "@/types";
+import { SpotifyTrack, VibeOption, RatingFormState } from "@/types";
 import { scoreColor, calculateScore } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 
-// Steps: 1=Vibe  2=Dimensions  3=Tags  4=Reveal+Save
+// Steps: 1=Vibe  2=Dimensions  3=Tags  4=Compare(optional)  5=Reveal
+
+// Mood tiles — single select, 2-column grid
+const MOOD_TILES = [
+  { tag: "Late Night", emoji: "🌙" },
+  { tag: "Workout",    emoji: "💪" },
+  { tag: "Focus",      emoji: "🧠" },
+  { tag: "Heartbreak", emoji: "💔" },
+  { tag: "Hype",       emoji: "🔥" },
+  { tag: "Road Trip",  emoji: "🚗" },
+  { tag: "Chill",      emoji: "🫶" },
+  { tag: "Other",      emoji: "🎵" },
+] as const;
+
+// Map Spotify genre string to our genre tag vocabulary
+function mapSpotifyGenre(spotifyGenre: string): string {
+  const g = spotifyGenre.toLowerCase();
+  if (g.includes("rap") || g.includes("hip hop") || g.includes("hip-hop")) return "Rap";
+  if (g.includes("r&b") || g.includes("r & b") || g.includes("neo soul")) return "R&B";
+  if (g.includes("soul")) return "Soul";
+  if (g.includes("pop")) return "Pop";
+  if (g.includes("indie")) return "Indie";
+  if (g.includes("electronic") || g.includes("edm") || g.includes("techno")) return "Electronic";
+  if (g.includes("house")) return "House";
+  if (g.includes("trap")) return "Trap";
+  if (g.includes("drill")) return "Drill";
+  if (g.includes("rock") || g.includes("alternative") || g.includes("punk")) return "Alternative";
+  if (g.includes("metal")) return "Metal";
+  if (g.includes("jazz")) return "Jazz";
+  if (g.includes("classical") || g.includes("orchestral")) return "Classical";
+  if (g.includes("country")) return "Country";
+  if (g.includes("latin") || g.includes("reggaeton")) return "Latin";
+  if (g.includes("afro")) return "Afrobeats";
+  if (g.includes("k-pop") || g.includes("k pop") || g.includes("korean")) return "K-Pop";
+  if (g.includes("folk") || g.includes("acoustic")) return "Folk";
+  if (g.includes("ambient")) return "Ambient";
+  return "Other";
+}
 
 interface RatingModalProps {
   track: SpotifyTrack;
@@ -79,8 +116,7 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
   const [compRoundIdx, setCompRoundIdx] = useState(0);
   const [compResults, setCompResults] = useState<("won"|"lost"|"skipped")[]>([]);
 
-  // Inline "Other" expansion and mood-list checkboxes
-  const [otherVibeText, setOtherVibeText] = useState("");
+  // Mood-list checkboxes (add to collection)
   const [moodCheckboxes, setMoodCheckboxes] = useState<Set<string>>(new Set());
   const [customMoodEntries, setCustomMoodEntries] = useState<string[]>([]);
   const [customMoodInput, setCustomMoodInput] = useState("");
@@ -91,6 +127,14 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
       if (next.has(name)) next.delete(name); else next.add(name);
       return next;
     });
+  }
+
+  // Single-select mood tile — deselects previous choice
+  function selectMoodTile(tag: string) {
+    setForm((f) => ({
+      ...f,
+      best_for_tags: f.best_for_tags[0] === tag ? [] : [tag],
+    }));
   }
 
   function addCustomMoodEntry() {
@@ -253,11 +297,22 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         production: form.production,
         overall_score: displayScore ?? 5.0,
         notes: form.notes || null,
-        best_for_tags: form.best_for_tags.map((t) =>
-          t === "Other" && otherVibeText.trim() ? otherVibeText.trim() : t
-        ),
-        genre_tags: form.genre_tags,
-        listened_at: form.listened_at,
+        best_for_tags: form.best_for_tags,
+        genre_tags: await (async () => {
+          // Silently fetch genre from Spotify artist metadata
+          try {
+            const artistId = (track.artists[0] as any)?.id;
+            if (artistId) {
+              const res = await fetch(`/api/spotify/artist/${artistId}`);
+              if (res.ok) {
+                const data = await res.json();
+                if (data.genres?.length) return [mapSpotifyGenre(data.genres[0])];
+              }
+            }
+          } catch {}
+          return ["Other"];
+        })(),
+        listened_at: new Date().toISOString().split("T")[0], // auto today
       }, { onConflict: "user_id,song_id" });
       if (ratingErr) throw new Error(`Could not save rating: ${ratingErr.message}`);
 
@@ -424,119 +479,67 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
             );
           })()}
 
-          {/* Tags — step number depends on whether comparison is active */}
+          {/* Tags — mood tile grid (single select) */}
           {step === STEP_TAGS && (
             <div className="page-enter">
-              <h2 className="text-lg font-bold text-slate-100 mb-1">Tags & details</h2>
-              <p className="text-sm text-slate-500 mb-5">Tell more about how you heard it</p>
+              <h2 className="text-lg font-bold text-slate-100 mb-1">What's the vibe?</h2>
+              <p className="text-sm text-slate-500 mb-5">Pick the mood that fits best</p>
 
-              {/* Best for — "Other" expands inline */}
-              <div className="mb-5">
-                <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2.5">Best for</p>
-                <div className="flex flex-wrap gap-2">
-                  {BEST_FOR_TAGS.map((tag) => {
-                    const selected = form.best_for_tags.includes(tag);
-                    if (tag === "Other" && selected) {
-                      // Expanded inline input
-                      return (
-                        <div key="Other"
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#4fc3f7] bg-[#4fc3f7]/20 text-white">
-                          <span className="text-sm font-medium shrink-0">Other:</span>
-                          <input
-                            autoFocus
-                            value={otherVibeText}
-                            onChange={(e) => setOtherVibeText(e.target.value.slice(0, 30))}
-                            placeholder="e.g. Sunday morning"
-                            className="w-28 bg-transparent text-sm text-white placeholder-white/30 outline-none"
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                          <button
-                            onClick={() => { toggleTag("Other", "best_for_tags"); setOtherVibeText(""); }}
-                            className="text-white/50 hover:text-white text-base leading-none ml-0.5"
-                          >×</button>
+              {/* 2-column grid of mood tiles — single select */}
+              <div className="grid grid-cols-2 gap-3 mb-5">
+                {MOOD_TILES.map(({ tag, emoji }) => {
+                  const selected = form.best_for_tags[0] === tag;
+                  return (
+                    <button key={tag} onClick={() => selectMoodTile(tag)}
+                      className={`flex items-center gap-3 px-4 py-4 rounded-2xl border-2 transition-all text-left active:scale-[0.97] ${
+                        selected
+                          ? "border-[#4fc3f7] bg-[#4fc3f7]/15 text-slate-100 shadow-md shadow-[#4fc3f7]/20"
+                          : "border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:bg-white/8"
+                      }`}>
+                      <span className="text-2xl shrink-0">{emoji}</span>
+                      <span className="font-semibold text-sm leading-tight">{tag}</span>
+                      {selected && (
+                        <div className="ml-auto w-4 h-4 rounded-full bg-[#4fc3f7] flex items-center justify-center shrink-0">
+                          <Check size={10} className="text-[#0d1f35]" strokeWidth={3} />
                         </div>
-                      );
-                    }
-                    return (
-                      <button key={tag} onClick={() => toggleTag(tag, "best_for_tags")}
-                        className={`px-3.5 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                          selected
-                            ? "bg-[#4fc3f7]/50 border-[#4fc3f7] text-white"
-                            : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20"
-                        }`}>{tag}</button>
-                    );
-                  })}
-                </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
 
-                {/* Checkboxes — one per selected tag, plus custom entries */}
-                {(form.best_for_tags.length > 0 || customMoodEntries.length > 0) && (
-                  <div className="mt-4 space-y-2.5">
-                    <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Add to mood list</p>
-                    {[
-                      ...form.best_for_tags.map((t) =>
-                        t === "Other" && otherVibeText.trim() ? otherVibeText.trim() : t
-                      ),
-                      ...customMoodEntries,
-                    ]
-                      .filter((v, i, a) => a.indexOf(v) === i) // dedupe
-                      .map((name) => (
-                        <label key={name} className="flex items-center gap-2.5 cursor-pointer group">
-                          <button
-                            type="button"
-                            onClick={() => toggleMoodCheckbox(name)}
-                            className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center shrink-0 transition-all ${
-                              moodCheckboxes.has(name)
-                                ? "bg-[#4fc3f7] border-[#4fc3f7]"
-                                : "border-white/25 bg-transparent group-hover:border-white/40"
-                            }`}
-                          >
-                            {moodCheckboxes.has(name) && (
-                              <Check size={11} className="text-[#0d1f35]" strokeWidth={3} />
-                            )}
-                          </button>
-                          <span className="text-sm text-slate-300">
-                            Add to <span className="text-slate-100 font-medium">{name}</span> mood list
-                          </span>
-                        </label>
-                      ))}
-
-                    {/* "+" custom mood list */}
-                    <div className="flex items-center gap-2 pt-0.5">
-                      <span className="text-[#4fc3f7] text-base font-bold leading-none shrink-0">+</span>
-                      <input
-                        value={customMoodInput}
-                        onChange={(e) => setCustomMoodInput(e.target.value.slice(0, 50))}
-                        onKeyDown={(e) => e.key === "Enter" && addCustomMoodEntry()}
-                        onBlur={addCustomMoodEntry}
-                        placeholder="Custom mood list… (press Enter)"
-                        className="flex-1 bg-transparent text-sm text-slate-300 placeholder-slate-700 outline-none border-b border-white/10 pb-0.5 focus:border-[#4fc3f7]/50 transition-colors"
-                      />
-                    </div>
+              {/* Add to mood list — appears once a tile is selected */}
+              {(form.best_for_tags.length > 0 || customMoodEntries.length > 0) && (
+                <div className="mb-5 space-y-2.5">
+                  <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Add to mood list</p>
+                  {[...form.best_for_tags, ...customMoodEntries]
+                    .filter((v, i, a) => a.indexOf(v) === i)
+                    .map((name) => (
+                      <label key={name} className="flex items-center gap-2.5 cursor-pointer group">
+                        <button type="button" onClick={() => toggleMoodCheckbox(name)}
+                          className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center shrink-0 transition-all ${
+                            moodCheckboxes.has(name) ? "bg-[#4fc3f7] border-[#4fc3f7]" : "border-white/25 group-hover:border-white/40"
+                          }`}>
+                          {moodCheckboxes.has(name) && <Check size={11} className="text-[#0d1f35]" strokeWidth={3} />}
+                        </button>
+                        <span className="text-sm text-slate-300">
+                          Add to <span className="text-slate-100 font-medium">{name}</span> mood list
+                        </span>
+                      </label>
+                    ))}
+                  <div className="flex items-center gap-2 pt-0.5">
+                    <span className="text-[#4fc3f7] text-base font-bold leading-none shrink-0">+</span>
+                    <input value={customMoodInput}
+                      onChange={(e) => setCustomMoodInput(e.target.value.slice(0, 50))}
+                      onKeyDown={(e) => e.key === "Enter" && addCustomMoodEntry()}
+                      onBlur={addCustomMoodEntry}
+                      placeholder="Custom mood list…"
+                      className="flex-1 bg-transparent text-sm text-slate-300 placeholder-slate-700 outline-none border-b border-white/10 pb-0.5 focus:border-[#4fc3f7]/50 transition-colors" />
                   </div>
-                )}
-              </div>
-
-              <div className="mb-5">
-                <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2.5">Genre</p>
-                <div className="flex flex-wrap gap-2">
-                  {GENRE_TAGS.map((tag) => (
-                    <button key={tag} onClick={() => toggleTag(tag, "genre_tags")}
-                      className={`px-3.5 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                        form.genre_tags.includes(tag)
-                          ? "bg-slate-100 border-slate-100 text-slate-900"
-                          : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20"
-                      }`}>{tag}</button>
-                  ))}
                 </div>
-              </div>
+              )}
 
-              <div className="mb-5">
-                <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide block mb-2">Date listened</label>
-                <input type="date" value={form.listened_at}
-                  onChange={(e) => setForm((f) => ({ ...f, listened_at: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm bg-white/5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#4fc3f7]/50 [color-scheme:dark]" />
-              </div>
-
+              {/* Notes — optional */}
               <div>
                 <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide block mb-2">
                   Notes <span className="normal-case font-normal text-slate-600">(optional)</span>
