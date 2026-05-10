@@ -32,21 +32,44 @@ export default function LibraryPage() {
   const supabase = createClient();
   const router = useRouter();
 
-  function handleAlbumTap(a: AlbumGroup) {
-    console.log("[library/albums] tap — spotifyAlbumId:", a.spotifyAlbumId, "| albumName:", a.albumName, "| key:", a.key);
+  // Async album tap: uses stored Spotify ID directly, or looks it up via search API
+  async function handleAlbumTap(a: AlbumGroup) {
+    console.log("[library/albums] tap — spotifyAlbumId:", a.spotifyAlbumId, "| albumName:", a.albumName);
     if (a.spotifyAlbumId) {
       router.push(`/album/${a.spotifyAlbumId}`);
-    } else {
-      // No Spotify ID — search so user can find the album
-      router.push(`/search?q=${encodeURIComponent(a.albumName)}`);
+      return;
+    }
+    // No stored ID — search Spotify by album name + artist to get the real ID
+    try {
+      const q = encodeURIComponent(`${a.albumName} ${a.artist}`);
+      const res = await fetch(`/api/spotify/search?q=${q}&type=album`);
+      const data = await res.json();
+      const found = data.albums?.items?.[0]?.id;
+      console.log("[library/albums] Spotify lookup result:", found);
+      if (found) {
+        router.push(`/album/${found}`);
+      } else {
+        console.warn("[library/albums] album not found on Spotify:", a.albumName);
+      }
+    } catch (err) {
+      console.error("[library/albums] lookup failed:", err);
     }
   }
+
   const [ratings, setRatings] = useState<RatingWithSong[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortKey>("date");
   const [genre, setGenre] = useState<string>("all");
   const [view, setView] = useState<ViewMode>("list");
   const [libraryMode, setLibraryMode] = useState<LibraryMode>("songs");
+
+  // Read ?view=albums from URL on mount (used by profile "See all" links)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("view") === "albums") setLibraryMode("albums");
+    }
+  }, []);
   const [genres, setGenres] = useState<string[]>([]);
   const [ratingTrack, setRatingTrack] = useState<SpotifyTrack | null>(null);
   // Spotify total track counts keyed by spotify_album_id

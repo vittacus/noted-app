@@ -115,7 +115,7 @@ create policy "Follows viewable by all" on public.follows for select using (true
 create policy "Users can manage their own follows" on public.follows for insert with check (auth.uid() = follower_id);
 create policy "Users can delete their own follows" on public.follows for delete using (auth.uid() = follower_id);
 
--- COMMENTS (run this exact SQL in Supabase SQL Editor)
+-- ⚠️  REQUIRED: Run this block in Supabase Dashboard → SQL Editor before comments will work
 create table if not exists public.comments (
   id uuid default gen_random_uuid() primary key,
   rating_id uuid references public.ratings(id) on delete cascade not null,
@@ -124,8 +124,8 @@ create table if not exists public.comments (
   created_at timestamp with time zone default now()
 );
 alter table public.comments enable row level security;
-create policy "Users can insert their own comments" on public.comments for insert with check (auth.uid() = user_id);
-create policy "Comments are viewable by everyone" on public.comments for select using (true);
+create policy "Anyone can read comments"     on public.comments for select using (true);
+create policy "Users can insert own comments" on public.comments for insert with check (auth.uid() = user_id);
 create policy "Users can insert their own comments" on public.comments for insert with check (auth.uid() = user_id);
 create policy "Users can delete their own comments" on public.comments for delete using (auth.uid() = user_id);
 
