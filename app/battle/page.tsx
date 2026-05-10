@@ -27,6 +27,14 @@ export default function BattlePage() {
   const [loading, setLoading] = useState(true);
   const [selecting, setSelecting] = useState(false);
   const [lastResult, setLastResult] = useState<string | null>(null);
+  const [usedPairs, setUsedPairs] = useState<Set<string>>(new Set());
+  const [battleCount, setBattleCount] = useState(0);
+  const [allDone, setAllDone] = useState(false);
+  const MAX_BATTLES = 10;
+
+  function pairKey(a: BattleSong, b: BattleSong) {
+    return [a.ratingId, b.ratingId].sort().join("__");
+  }
 
   useEffect(() => {
     async function load() {
@@ -55,23 +63,32 @@ export default function BattlePage() {
     load();
   }, []);
 
-  const pickPair = useCallback((songs: BattleSong[]) => {
-    if (songs.length < 2) { setPair(null); return; }
+  const pickPair = useCallback((songs: BattleSong[], used: Set<string>, count: number) => {
+    if (songs.length < 2 || count >= MAX_BATTLES) { setAllDone(true); setPair(null); return; }
 
     const sorted = [...songs].sort((a, b) => a.score - b.score);
     const closePairs: [BattleSong, BattleSong][] = [];
     for (let i = 0; i < sorted.length - 1; i++) {
-      if (Math.abs(sorted[i].score - sorted[i + 1].score) <= 2.0) {
+      const key = pairKey(sorted[i], sorted[i + 1]);
+      if (!used.has(key) && Math.abs(sorted[i].score - sorted[i + 1].score) <= 2.0) {
         closePairs.push([sorted[i], sorted[i + 1]]);
       }
     }
-    const pool = closePairs.length > 0 ? closePairs : [[sorted[0], sorted[sorted.length - 1]] as [BattleSong, BattleSong]];
+    // Fallback: any unused pair regardless of score distance
+    const anyUnused: [BattleSong, BattleSong][] = [];
+    for (let i = 0; i < sorted.length - 1; i++) {
+      for (let j = i + 1; j < sorted.length; j++) {
+        if (!used.has(pairKey(sorted[i], sorted[j]))) anyUnused.push([sorted[i], sorted[j]]);
+      }
+    }
+    const pool = closePairs.length > 0 ? closePairs : anyUnused;
+    if (pool.length === 0) { setAllDone(true); setPair(null); return; }
     const chosen = pool[Math.floor(Math.random() * pool.length)];
     setPair(Math.random() > 0.5 ? chosen : [chosen[1], chosen[0]]);
   }, []);
 
   useEffect(() => {
-    if (!loading && allRatings.length >= 2) pickPair(allRatings);
+    if (!loading && allRatings.length >= 2) pickPair(allRatings, usedPairs, battleCount);
   }, [loading, allRatings]);
 
   async function handlePick(winner: BattleSong, loser: BattleSong) {
@@ -93,6 +110,12 @@ export default function BattlePage() {
     setLastResult(`${winner.title} wins!`);
     setStreak((s) => s + 1);
 
+    const key = pairKey(winner, loser);
+    const newUsed = new Set([...usedPairs, key]);
+    const newCount = battleCount + 1;
+    setUsedPairs(newUsed);
+    setBattleCount(newCount);
+
     await Promise.all([
       supabase.from("ratings").update({ overall_score: newWinnerScore }).eq("id", winner.ratingId),
       supabase.from("ratings").update({ overall_score: newLoserScore  }).eq("id", loser.ratingId),
@@ -102,7 +125,7 @@ export default function BattlePage() {
     setLastResult(null);
     setSelecting(false);
     setAllRatings((current) => {
-      pickPair(current);
+      pickPair(current, newUsed, newCount);
       return current;
     });
   }
@@ -124,6 +147,30 @@ export default function BattlePage() {
         <Link href="/search" className="inline-block px-6 py-3 bg-[#4fc3f7]/80 text-white font-semibold rounded-2xl hover:bg-[#4fc3f7] transition-colors">
           Rate songs →
         </Link>
+      </div>
+    );
+  }
+
+  if (allDone) {
+    return (
+      <div className="page-enter text-center py-20">
+        <div className="text-5xl mb-4">✅</div>
+        <p className="font-black text-slate-100 text-xl mb-2">All caught up!</p>
+        <p className="text-slate-500 text-sm mb-2">
+          {battleCount >= MAX_BATTLES
+            ? `You've done ${MAX_BATTLES} battles this session.`
+            : "You've compared all similar songs in your library."}
+        </p>
+        <p className="text-xs text-slate-600 mb-8">Scores have been updated based on your picks.</p>
+        <div className="flex flex-col gap-3 items-center">
+          <button onClick={() => { setUsedPairs(new Set()); setBattleCount(0); setAllDone(false); pickPair(allRatings, new Set(), 0); }}
+            className="px-6 py-3 bg-[#4fc3f7]/80 text-white font-semibold rounded-2xl hover:bg-[#4fc3f7] transition-colors">
+            Battle again
+          </button>
+          <Link href="/library" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
+            Back to library
+          </Link>
+        </div>
       </div>
     );
   }
@@ -186,10 +233,11 @@ export default function BattlePage() {
       <p className="text-center text-xs text-slate-600 mb-5">Tap the song you prefer</p>
 
       {/* Skip */}
-      <button onClick={() => pickPair(allRatings)} disabled={selecting}
+      <button onClick={() => pickPair(allRatings, usedPairs, battleCount)} disabled={selecting}
         className="w-full py-3 rounded-2xl border border-white/10 text-xs font-semibold text-slate-500 hover:bg-white/5 transition-colors mb-3">
         Skip this matchup
       </button>
+      <p className="text-center text-xs text-slate-700 mb-3">{battleCount} of {MAX_BATTLES} battles</p>
 
       {/* Rerate a song */}
       <Link href="/search"
