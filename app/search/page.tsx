@@ -82,7 +82,7 @@ export default function SearchPage() {
     <div className="page-enter">
       {/* Search bar */}
       <div className="relative mb-5">
-        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8686AC]" />
         <input
           type="text"
           value={query}
@@ -91,11 +91,11 @@ export default function SearchPage() {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setTimeout(() => setIsFocused(false), 150)}
           placeholder="Search songs and albums…"
-          className="w-full pl-10 pr-4 py-3 rounded-2xl border border-white/10 bg-[#1e2d3d] text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-[#4fc3f7]/50"
+          className="w-full pl-10 pr-4 py-3 rounded-2xl border border-[#505081]/60 bg-[#272757] text-sm text-slate-100 placeholder-[#8686AC]/60 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
           autoFocus
         />
         {loading && (
-          <Loader2 size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#4fc3f7] animate-spin" />
+          <Loader2 size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#4fa8ff] animate-spin" />
         )}
       </div>
 
@@ -114,13 +114,13 @@ export default function SearchPage() {
 
       {/* Search results tabs */}
       {(tracks.length > 0 || albums.length > 0) && (
-        <div className="flex gap-1 mb-4 bg-white/5 rounded-2xl p-1">
+        <div className="flex gap-1 mb-4 bg-[#505081]/20 rounded-2xl p-1">
           {(["tracks", "albums"] as Tab[]).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
               className={`flex-1 py-2 text-sm font-semibold rounded-xl transition-all capitalize ${
-                tab === t ? "bg-[#1e2d3d] text-[#4fc3f7] shadow-sm" : "text-slate-500 hover:text-slate-300"
+                tab === t ? "bg-[#272757] text-[#4fa8ff] shadow-sm" : "text-[#8686AC] hover:text-slate-300"
               }`}
             >
               {t} ({t === "tracks" ? tracks.length : albums.length})
@@ -132,25 +132,25 @@ export default function SearchPage() {
       {tab === "tracks" && (
         <div className="space-y-2">
           {tracks.map((track) => (
-            <div key={track.id} className="flex items-center gap-3 bg-[#1e2d3d] rounded-2xl p-3 border border-white/5 hover:border-white/10 transition-colors">
-              <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
+            <div key={track.id} className="flex items-center gap-3 bg-[#272757] rounded-2xl p-3 border border-[#505081]/40 hover:border-[#505081]/60 transition-colors">
+              <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
                 {track.album.images[0] ? (
                   <Image src={track.album.images[0].url} alt={track.album.name} fill className="object-cover" sizes="48px" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />
+                  <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
                   <p className="font-semibold text-sm text-slate-100 truncate">{track.name}</p>
-                  <span className="text-xs text-slate-600 shrink-0 mt-0.5">{formatDuration(Math.round(track.duration_ms / 1000))}</span>
+                  <span className="text-xs text-[#8686AC]/75 shrink-0 mt-0.5">{formatDuration(Math.round(track.duration_ms / 1000))}</span>
                 </div>
-                <p className="text-xs text-slate-500 truncate mt-0.5">{track.artists.map((a) => a.name).join(", ")}</p>
-                <p className="text-xs text-slate-600 truncate">{track.album.name}</p>
+                <p className="text-xs text-[#8686AC] truncate mt-0.5">{track.artists.map((a) => a.name).join(", ")}</p>
+                <p className="text-xs text-[#8686AC]/75 truncate">{track.album.name}</p>
               </div>
               <button
                 onClick={() => handleRate(track)}
-                className="shrink-0 px-3 py-1.5 rounded-xl bg-[#4fc3f7]/10 text-[#4fc3f7] text-xs font-semibold hover:bg-[#4fc3f7]/20 transition-colors border border-[#4fc3f7]/20"
+                className="shrink-0 px-3 py-1.5 rounded-xl bg-[#4fa8ff]/10 text-[#4fa8ff] text-xs font-semibold hover:bg-[#4fa8ff]/20 transition-colors border border-[#4fa8ff]/20"
               >
                 Rate
               </button>
@@ -165,37 +165,37 @@ export default function SearchPage() {
             <Link
               key={album.id}
               href={`/album/${album.id}`}
-              className="flex items-center gap-3 bg-[#1e2d3d] rounded-2xl p-3 border border-white/5 hover:border-white/10 transition-colors block"
+              className="flex items-center gap-3 bg-[#272757] rounded-2xl p-3 border border-[#505081]/40 hover:border-[#505081]/60 transition-colors block"
             >
-              <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
+              <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
                 {album.images[0] ? (
                   <Image src={album.images[0].url} alt={album.name} fill className="object-cover" sizes="48px" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />
+                  <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm text-slate-100 truncate">{album.name}</p>
-                <p className="text-xs text-slate-500 truncate">{album.artists.map((a) => a.name).join(", ")}</p>
-                <p className="text-xs text-slate-600">{album.release_date?.split("-")[0]} · {album.total_tracks} tracks</p>
+                <p className="text-xs text-[#8686AC] truncate">{album.artists.map((a) => a.name).join(", ")}</p>
+                <p className="text-xs text-[#8686AC]/75">{album.release_date?.split("-")[0]} · {album.total_tracks} tracks</p>
               </div>
-              <span className="text-xs text-slate-600 shrink-0">→</span>
+              <span className="text-xs text-[#8686AC]/75 shrink-0">→</span>
             </Link>
           ))}
         </div>
       )}
 
       {!loading && query && tracks.length === 0 && albums.length === 0 && (
-        <div className="text-center py-12 text-slate-600">
+        <div className="text-center py-12 text-[#8686AC]/75">
           <p className="text-3xl mb-2">🔍</p>
-          <p className="font-medium text-slate-400">No results for &ldquo;{query}&rdquo;</p>
+          <p className="font-medium text-[#8686AC]">No results for &ldquo;{query}&rdquo;</p>
         </div>
       )}
 
       {!query && !showSuggested && (
-        <div className="text-center py-16 text-slate-600">
+        <div className="text-center py-16 text-[#8686AC]/75">
           <p className="text-4xl mb-3">🎵</p>
-          <p className="font-medium text-slate-400">Search for a song or album to rate</p>
+          <p className="font-medium text-[#8686AC]">Search for a song or album to rate</p>
         </div>
       )}
 

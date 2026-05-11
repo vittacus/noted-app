@@ -82,18 +82,18 @@ export default function AddToCollectionButton({ songId }: { songId: string }) {
     <>
       <button
         onClick={() => { setOpen(true); loadCollections(); }}
-        className="w-full h-12 rounded-2xl border border-white/10 text-slate-400 text-sm font-semibold hover:bg-white/5 transition-colors flex items-center justify-center gap-2"
+        className="w-full h-12 rounded-2xl border border-[#505081]/60 text-[#8686AC] text-sm font-semibold hover:bg-[#505081]/20 transition-colors flex items-center justify-center gap-2"
       >
         <FolderPlus size={16} /> Add to collection
       </button>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-[#1e2d3d] rounded-t-3xl border-t border-white/5 p-5 max-h-[70vh] flex flex-col">
+          <div className="w-full max-w-lg bg-[#272757] rounded-t-3xl border-t border-[#505081]/40 p-5 max-h-[70vh] flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-slate-100">Add to collection</h3>
-              <button onClick={() => setOpen(false)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
-                <X size={14} className="text-slate-400" />
+              <button onClick={() => setOpen(false)} className="w-8 h-8 rounded-full bg-[#505081]/30 flex items-center justify-center hover:bg-[#505081]/50 transition-colors">
+                <X size={14} className="text-[#8686AC]" />
               </button>
             </div>
 
@@ -104,12 +104,12 @@ export default function AddToCollectionButton({ songId }: { songId: string }) {
                 onChange={(e) => setNewName(e.target.value.slice(0, 50))}
                 onKeyDown={(e) => e.key === "Enter" && createCollection()}
                 placeholder="New collection name…"
-                className="flex-1 px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-[#4fc3f7]/50"
+                className="flex-1 px-3 py-2.5 rounded-xl border border-[#505081]/60 bg-[#505081]/20 text-sm text-slate-100 placeholder-[#8686AC]/50 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
               />
               <button
                 onClick={createCollection}
                 disabled={!newName.trim() || creating}
-                className="px-3.5 py-2.5 rounded-xl bg-[#4fc3f7]/20 text-[#4fc3f7] text-sm font-semibold hover:bg-[#4fc3f7]/30 transition-colors disabled:opacity-40 flex items-center gap-1.5"
+                className="px-3.5 py-2.5 rounded-xl bg-[#4fa8ff]/20 text-[#4fa8ff] text-sm font-semibold hover:bg-[#4fa8ff]/30 transition-colors disabled:opacity-40 flex items-center gap-1.5"
               >
                 <Plus size={14} /> Create
               </button>
@@ -117,9 +117,9 @@ export default function AddToCollectionButton({ songId }: { songId: string }) {
 
             {/* Existing collections */}
             <div className="flex-1 overflow-y-auto space-y-2">
-              {loading && <p className="text-xs text-slate-600 text-center py-4">Loading…</p>}
+              {loading && <p className="text-xs text-[#8686AC]/75 text-center py-4">Loading…</p>}
               {!loading && collections.length === 0 && (
-                <p className="text-xs text-slate-600 text-center py-4">No collections yet. Create one above.</p>
+                <p className="text-xs text-[#8686AC]/75 text-center py-4">No collections yet. Create one above.</p>
               )}
               {collections.map((col) => {
                 const inCollection = memberOf.has(col.id);
@@ -129,12 +129,12 @@ export default function AddToCollectionButton({ songId }: { songId: string }) {
                     onClick={() => toggle(col.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all text-left ${
                       inCollection
-                        ? "border-[#4fc3f7]/40 bg-[#4fc3f7]/10"
-                        : "border-white/5 bg-white/5 hover:border-white/10"
+                        ? "border-[#4fa8ff]/40 bg-[#4fa8ff]/10"
+                        : "border-[#505081]/40 bg-[#505081]/20 hover:border-[#505081]/60"
                     }`}
                   >
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                      inCollection ? "border-[#4fc3f7] bg-[#4fc3f7]" : "border-white/20"
+                      inCollection ? "border-[#4fa8ff] bg-[#4fa8ff]" : "border-[#505081]/80"
                     }`}>
                       {inCollection && <Check size={11} className="text-white" strokeWidth={3} />}
                     </div>

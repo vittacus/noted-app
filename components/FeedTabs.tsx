@@ -18,11 +18,11 @@ export default function FeedTabs({ isLoggedIn }: { isLoggedIn: boolean }) {
   }
 
   return (
-    <div className="flex gap-1 bg-white/5 rounded-2xl p-1 mb-5">
+    <div className="flex gap-1 bg-[#505081]/20 rounded-2xl p-1 mb-5">
       {/* Everyone */}
       <button onClick={() => go("everyone")}
         className={`flex-1 py-2 text-sm font-semibold rounded-xl transition-all ${
-          tab === "everyone" ? "bg-[#1e2d3d] text-[#4fc3f7] shadow-sm" : "text-slate-500 hover:text-slate-300"
+          tab === "everyone" ? "bg-[#272757] text-[#4fa8ff] shadow-sm" : "text-[#8686AC] hover:text-slate-300"
         }`}>
         Everyone
       </button>
@@ -30,7 +30,7 @@ export default function FeedTabs({ isLoggedIn }: { isLoggedIn: boolean }) {
       {/* My ratings */}
       <button onClick={() => go("mine")}
         className={`flex-1 py-2 text-sm font-semibold rounded-xl transition-all ${
-          tab === "mine" ? "bg-[#1e2d3d] text-[#4fc3f7] shadow-sm" : "text-slate-500 hover:text-slate-300"
+          tab === "mine" ? "bg-[#272757] text-[#4fa8ff] shadow-sm" : "text-[#8686AC] hover:text-slate-300"
         }`}>
         My ratings
       </button>
@@ -38,10 +38,10 @@ export default function FeedTabs({ isLoggedIn }: { isLoggedIn: boolean }) {
       {/* Friends — coming soon scaffold */}
       <div className="relative flex-1 group">
         <button disabled
-          className="w-full py-2 text-sm font-semibold rounded-xl text-slate-700 cursor-not-allowed select-none">
+          className="w-full py-2 text-sm font-semibold rounded-xl text-[#8686AC]/55 cursor-not-allowed select-none">
           Friends
         </button>
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-[#1e2d3d] border border-white/10 rounded-xl text-xs text-slate-400 whitespace-nowrap shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-20">
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-[#272757] border border-[#505081]/60 rounded-xl text-xs text-[#8686AC] whitespace-nowrap shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-20">
           Coming soon
         </div>
       </div>
