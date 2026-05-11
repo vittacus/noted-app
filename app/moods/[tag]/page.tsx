@@ -18,6 +18,14 @@ export default function MoodDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
   const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [scoreFilter, setScoreFilter] = useState<"all" | "6+" | "7+" | "8+" | "9+">("all");
+
+  const SCORE_FILTERS = ["all", "6+", "7+", "8+", "9+"] as const;
+
+  function minScore(f: typeof scoreFilter): number {
+    if (f === "all") return 0;
+    return parseFloat(f);
+  }
 
   // Picker state
   const [showPicker, setShowPicker] = useState(false);
@@ -95,19 +103,24 @@ export default function MoodDetailPage() {
     return <div className="flex justify-center py-24"><div className="w-6 h-6 border-2 border-[#4fc3f7] border-t-transparent rounded-full animate-spin" /></div>;
   }
 
-  const displayed = showAll ? songs : songs.slice(0, 10);
-  const hasMore = songs.length > 10;
+  const filteredSongs = scoreFilter === "all"
+    ? songs
+    : songs.filter((r: any) => r.overall_score >= minScore(scoreFilter));
+  const displayed = showAll ? filteredSongs : filteredSongs.slice(0, 10);
+  const hasMore = filteredSongs.length > 10;
 
   return (
     <div className="page-enter">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-4">
         <button onClick={() => router.back()} className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors shrink-0">
           <ArrowLeft size={16} className="text-slate-400" />
         </button>
         <div className="flex-1 min-w-0">
           <h1 className="font-black text-xl text-slate-100">{moodName}</h1>
-          <p className="text-xs text-slate-500">{songs.length} song{songs.length !== 1 ? "s" : ""} · sorted by score</p>
+          <p className="text-xs text-slate-500">
+            {filteredSongs.length}{scoreFilter !== "all" ? ` of ${songs.length}` : ""} song{filteredSongs.length !== 1 ? "s" : ""}
+          </p>
         </div>
         <button
           onClick={openPicker}
@@ -117,11 +130,40 @@ export default function MoodDetailPage() {
         </button>
       </div>
 
+      {/* Score filter pills */}
+      {songs.length > 0 && (
+        <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
+          {SCORE_FILTERS.map((f) => {
+            const active = scoreFilter === f;
+            return (
+              <button
+                key={f}
+                onClick={() => { setScoreFilter(f); setShowAll(false); }}
+                className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                  active
+                    ? "bg-[#4fc3f7] border-[#4fc3f7] text-[#0d1f35] shadow-md shadow-[#4fc3f7]/25"
+                    : "bg-transparent border-white/20 text-slate-400 hover:border-white/40"
+                }`}
+              >
+                {f === "all" ? "All" : f}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {songs.length === 0 && (
         <div className="text-center py-16">
           <p className="text-4xl mb-3">🎵</p>
           <p className="font-medium text-slate-400">No songs tagged with this mood</p>
           <p className="text-xs text-slate-600 mt-2">Tap + to add songs from your library</p>
+        </div>
+      )}
+
+      {filteredSongs.length === 0 && songs.length > 0 && (
+        <div className="text-center py-10">
+          <p className="font-medium text-slate-500">No {moodName} songs rated {scoreFilter}</p>
+          <button onClick={() => setScoreFilter("all")} className="text-[#4fc3f7] text-xs font-semibold mt-2 hover:underline">Show all →</button>
         </div>
       )}
 

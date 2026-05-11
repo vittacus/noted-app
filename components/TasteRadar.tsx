@@ -172,8 +172,9 @@ export default function TasteRadar({ genreItems, vibeItems, headline }: Props) {
 
       {hasEnough ? (
         <>
-          {/* Use full card width; overflow:visible lets labels clear the edges */}
-          <div className="w-full" style={{ overflow: "visible" }}>
+          {/* Max 260px keeps it as a compact widget (~28% smaller than full-width).
+              overflow:visible on both container and SVG ensures labels never clip. */}
+          <div className="max-w-[260px] mx-auto" style={{ overflow: "visible" }}>
             <HexagonChart items={items} />
           </div>
 

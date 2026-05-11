@@ -74,6 +74,8 @@ export default function LibraryPage() {
   const [ratingTrack, setRatingTrack] = useState<SpotifyTrack | null>(null);
   // Spotify total track counts keyed by spotify_album_id
   const [albumTotals, setAlbumTotals] = useState<Map<string, number>>(new Map());
+  // Correct artist names from Spotify (fixes "Tyler" → "Tyler, The Creator")
+  const [albumArtists, setAlbumArtists] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     async function load() {
@@ -139,12 +141,19 @@ export default function LibraryPage() {
       )
     ).then((results) => {
       const totals = new Map<string, number>();
+      const artists = new Map<string, string>();
       for (const result of results) {
         for (const album of (result?.albums ?? [])) {
-          if (album?.id) totals.set(album.id, album.total_tracks ?? 0);
+          if (album?.id) {
+            totals.set(album.id, album.total_tracks ?? 0);
+            // Use Spotify's album artist name — fixes "Tyler" → "Tyler, The Creator"
+            const artistName = album.artists?.[0]?.name;
+            if (artistName) artists.set(album.id, artistName);
+          }
         }
       }
       setAlbumTotals(totals);
+      setAlbumArtists(artists);
     });
   }, [albumGroups]);
 
@@ -224,6 +233,9 @@ export default function LibraryPage() {
               const pct = total ? Math.round((rated / total) * 100) : null;
               const isComplete = total !== null && rated >= total;
 
+              // Prefer Spotify's artist name to fix "Tyler" → "Tyler, The Creator"
+              const displayArtist = (a.spotifyAlbumId && albumArtists.get(a.spotifyAlbumId)) ?? a.artist;
+
               const inner = (
                 <div className="flex items-center gap-3 p-3">
                   <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0">
@@ -233,22 +245,28 @@ export default function LibraryPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-slate-100 truncate">{a.albumName}</p>
-                    <p className="text-xs text-slate-500 truncate mt-0.5">{a.artist.split(",")[0]}</p>
-                    <div className="flex items-center gap-2 mt-1.5">
-                      <p className="text-xs text-slate-600">
-                        {rated}{total ? `/${total}` : ""} tracks
-                      </p>
-                      {total !== null && (
-                        <span className={`text-xs px-1.5 py-0.5 rounded font-semibold ${
-                          isComplete ? "bg-emerald-500/20 text-emerald-400" : "bg-orange-500/20 text-orange-400"
+                    <p className="text-xs text-slate-500 truncate mt-0.5">{displayArtist}</p>
+
+                    {/* Completion badge */}
+                    {total !== null ? (
+                      <div className="mt-1.5 flex items-center gap-2">
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+                          isComplete
+                            ? "bg-emerald-500/20 text-emerald-400"
+                            : "bg-amber-500/20 text-amber-400"
                         }`}>
-                          {isComplete ? "Complete" : "In progress"}
+                          {isComplete
+                            ? "Complete ✓"
+                            : `In progress · ${rated}/${total}`}
                         </span>
-                      )}
-                    </div>
-                    {pct !== null && (
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate-600 mt-1.5">{rated} track{rated !== 1 ? "s" : ""} rated</p>
+                    )}
+
+                    {pct !== null && !isComplete && (
                       <div className="mt-1.5 h-1 bg-white/5 rounded-full overflow-hidden w-full">
-                        <div className={`h-full rounded-full transition-all ${isComplete ? "bg-emerald-500" : "bg-[#4fc3f7]/60"}`}
+                        <div className="h-full rounded-full transition-all bg-amber-500/50"
                           style={{ width: `${Math.min(100, pct)}%` }} />
                       </div>
                     )}
