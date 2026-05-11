@@ -1,10 +1,18 @@
 @import "tailwindcss";
 
+/* ── Blue Eclipse Palette ── */
 :root {
-  --background: #1a2332;
-  --foreground: #f1f5f9;
-  --card: #1e2d3d;
-  --primary: #4fc3f7;
+  --bg-primary:   #0F0E47;   /* darkest navy — main background */
+  --bg-card:      #272757;   /* dark blue-purple — card surfaces */
+  --bg-surface:   #505081;   /* medium purple-gray — borders, secondary surfaces */
+  --text-muted:   #8686AC;   /* light lavender — subtitles, placeholders */
+  --accent:       #4fa8ff;   /* cyan blue — kept unchanged */
+
+  /* legacy aliases used by @theme inline below */
+  --background: var(--bg-primary);
+  --foreground: #ffffff;
+  --card:       var(--bg-card);
+  --primary:    var(--accent);
 }
 
 @theme inline {
@@ -13,7 +21,7 @@
 }
 
 body {
-  background: var(--background);
+  background: var(--bg-primary);
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -52,4 +60,14 @@ body {
 /* Bar chart / dimension bars */
 .taste-bar {
   transition: width 0.6s cubic-bezier(0.34, 1.1, 0.64, 1);
+}
+
+/* Music notes texture */
+.music-note {
+  position: fixed;
+  color: #4fa8ff;
+  opacity: 0.06;
+  pointer-events: none;
+  user-select: none;
+  font-size: 0.9rem;
 }

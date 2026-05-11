@@ -27,7 +27,7 @@ export default function SongCard({
         {song.album_art_url ? (
           <Image src={song.album_art_url} alt={song.album_name} fill className="object-cover" sizes="52px" />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-[#4fc3f7]/10 to-[#4fc3f7]/20" />
+          <div className="w-full h-full bg-gradient-to-br from-[#4fa8ff]/10 to-[#4fa8ff]/20" />
         )}
       </div>
 
@@ -35,11 +35,11 @@ export default function SongCard({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <p className="font-semibold text-sm text-slate-900 truncate leading-tight">{song.title}</p>
-          <span className="text-xs text-slate-400 shrink-0 mt-0.5">
+          <span className="text-xs text-[#8686AC] shrink-0 mt-0.5">
             {formatDuration(song.duration_seconds)}
           </span>
         </div>
-        <p className="text-xs text-slate-500 truncate mt-0.5">{song.artist}</p>
+        <p className="text-xs text-[#8686AC] truncate mt-0.5">{song.artist}</p>
         {rating && (
           <div className="mt-1.5">
             <span className={`text-sm font-bold ${scoreColor(rating.overall_score)}`}>
@@ -54,15 +54,15 @@ export default function SongCard({
         <div className="flex flex-col gap-1.5 shrink-0">
           <button
             onClick={() => onRate?.(song)}
-            className="w-8 h-8 rounded-full bg-[#4fc3f7]/5 hover:bg-[#4fc3f7]/10 flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-full bg-[#4fa8ff]/5 hover:bg-[#4fa8ff]/10 flex items-center justify-center transition-colors"
           >
-            <Plus size={16} className="text-[#4fc3f7]" />
+            <Plus size={16} className="text-[#4fa8ff]" />
           </button>
           <button
             onClick={() => onBookmark?.(song)}
             className="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center transition-colors"
           >
-            <Bookmark size={15} className="text-slate-400" />
+            <Bookmark size={15} className="text-[#8686AC]" />
           </button>
         </div>
       )}

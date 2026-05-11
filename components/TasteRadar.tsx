@@ -75,7 +75,7 @@ function HexagonChart({ items }: { items: TasteItem[] }) {
 
       {/* Filled profile */}
       <path d={profilePath} fill="rgba(79,195,247,0.14)"
-        stroke="#4fc3f7" strokeWidth={3} strokeLinejoin="round" />
+        stroke="#4fa8ff" strokeWidth={3} strokeLinejoin="round" />
 
       {/* Colored vertex dots — positioned at the same plotV radius as the polygon */}
       {items.map((item, i) => {
@@ -145,26 +145,26 @@ export default function TasteRadar({ genreItems, vibeItems, headline }: Props) {
     <div>
       {/* Generated headline */}
       {headline && (
-        <p className="text-sm font-semibold text-slate-200 mb-4 leading-relaxed bg-white/5 rounded-2xl px-4 py-3 border border-white/5">
+        <p className="text-sm font-semibold text-slate-200 mb-4 leading-relaxed bg-[#505081]/20 rounded-2xl px-4 py-3 border border-[#505081]/40">
           {headline}
         </p>
       )}
 
       {/* Toggle pills */}
-      <div className="flex gap-1 bg-white/5 rounded-2xl p-1 mb-4">
+      <div className="flex gap-1 bg-[#505081]/20 rounded-2xl p-1 mb-4">
         <button onClick={() => setMode("genre")}
           className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all ${
             mode === "genre"
-              ? "bg-[#1e2d3d] text-[#4fc3f7] shadow-sm"
-              : "text-slate-500 hover:text-slate-300"
+              ? "bg-[#272757] text-[#4fa8ff] shadow-sm"
+              : "text-[#8686AC] hover:text-slate-300"
           }`}>
           🧬 Genre DNA
         </button>
         <button onClick={() => setMode("vibe")}
           className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all ${
             mode === "vibe"
-              ? "bg-[#1e2d3d] text-[#4fc3f7] shadow-sm"
-              : "text-slate-500 hover:text-slate-300"
+              ? "bg-[#272757] text-[#4fa8ff] shadow-sm"
+              : "text-[#8686AC] hover:text-slate-300"
           }`}>
           ✨ Vibe DNA
         </button>
@@ -183,7 +183,7 @@ export default function TasteRadar({ genreItems, vibeItems, headline }: Props) {
             {items.map((item) => (
               <div key={item.label} className="flex items-center gap-2 min-w-0">
                 <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
-                <span className="text-xs text-slate-400 truncate">{item.label}</span>
+                <span className="text-xs text-[#8686AC] truncate">{item.label}</span>
                 <span className="text-xs font-bold ml-auto tabular-nums shrink-0"
                   style={{ color: item.color }}>
                   {item.rawPct}%
@@ -193,7 +193,7 @@ export default function TasteRadar({ genreItems, vibeItems, headline }: Props) {
           </div>
         </>
       ) : (
-        <p className="text-xs text-slate-600 text-center py-6">
+        <p className="text-xs text-[#8686AC]/75 text-center py-6">
           Rate more songs with {mode === "genre" ? "genre" : "best-for"} tags to unlock this
         </p>
       )}

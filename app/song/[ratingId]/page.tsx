@@ -70,13 +70,13 @@ export default function SongDetailPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-24">
-        <div className="w-6 h-6 border-2 border-[#4fc3f7] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#4fa8ff] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!rating) {
-    return <p className="text-center py-16 text-slate-500">Rating not found.</p>;
+    return <p className="text-center py-16 text-[#8686AC]">Rating not found.</p>;
   }
 
   const song = rating.song;
@@ -97,7 +97,7 @@ export default function SongDetailPage() {
   };
 
   const dims = [
-    { label: "Replay Value", value: rating.replay_value, color: "#4fc3f7" },
+    { label: "Replay Value", value: rating.replay_value, color: "#4fa8ff" },
     { label: "Lyrics",       value: rating.lyrics,       color: "#a78bfa" },
     { label: "Production",   value: rating.production,   color: "#fb923c" },
   ];
@@ -109,10 +109,10 @@ export default function SongDetailPage() {
         {artUrl ? (
           <>
             <Image src={artUrl} alt={song.album_name} fill className="object-cover scale-110" sizes="100vw" />
-            <div className="absolute inset-0 bg-[#1a2332]/70 backdrop-blur-xl" />
+            <div className="absolute inset-0 bg-[#0F0E47]/70 backdrop-blur-xl" />
           </>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[#050e1a] to-[#1a2332]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#080735] to-[#0F0E47]" />
         )}
 
         {/* Back button */}
@@ -136,7 +136,7 @@ export default function SongDetailPage() {
             <button
               onClick={() => goToAlbum(song)}
               disabled={albumSearching}
-              className="mt-2.5 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/25 bg-white/10 hover:bg-white/20 active:scale-95 text-sm font-medium text-white transition-all disabled:opacity-50"
+              className="mt-2.5 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#505081] bg-[#505081]/30 hover:bg-[#505081]/50 active:scale-95 text-sm font-medium text-white transition-all disabled:opacity-50"
             >
               <Disc3 size={13} className="shrink-0" />
               <span className="truncate max-w-[160px]">
@@ -154,8 +154,8 @@ export default function SongDetailPage() {
       {/* Content */}
       <div className="px-4 pt-5 space-y-4">
         {/* Dimension breakdown */}
-        <div className="bg-[#1e2d3d] rounded-2xl border border-white/5 p-4">
-          <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Breakdown</p>
+        <div className="bg-[#272757] rounded-2xl border border-[#505081]/40 p-4">
+          <p className="text-xs font-semibold text-[#8686AC]/75 uppercase tracking-wide mb-3">Breakdown</p>
           <div className="space-y-4">
             {dims.map(({ label, value, color }) => (
               <div key={label}>
@@ -163,7 +163,7 @@ export default function SongDetailPage() {
                   <span className="font-semibold" style={{ color }}>{label}</span>
                   <span className="font-bold text-slate-200 tabular-nums">{value}/10</span>
                 </div>
-                <div className="h-3 bg-white/5 rounded-full overflow-hidden">
+                <div className="h-3 bg-[#505081]/20 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full taste-bar"
                     style={{ width: `${(value / 10) * 100}%`, backgroundColor: color, opacity: 0.85 }}
@@ -175,15 +175,15 @@ export default function SongDetailPage() {
         </div>
 
         {/* Vibe + date */}
-        <div className="bg-[#1e2d3d] rounded-2xl border border-white/5 p-4 flex gap-4">
+        <div className="bg-[#272757] rounded-2xl border border-[#505081]/40 p-4 flex gap-4">
           <div className="flex-1">
-            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">Vibe</p>
+            <p className="text-xs font-semibold text-[#8686AC]/75 uppercase tracking-wide mb-1">Vibe</p>
             <p className="text-sm font-semibold text-slate-200">
               {vibeEmoji[rating.vibe]} {vibeLabel(rating.vibe)}
             </p>
           </div>
           <div className="flex-1">
-            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">Listened</p>
+            <p className="text-xs font-semibold text-[#8686AC]/75 uppercase tracking-wide mb-1">Listened</p>
             <p className="text-sm font-semibold text-slate-200">
               {new Date(rating.listened_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
             </p>
@@ -192,23 +192,23 @@ export default function SongDetailPage() {
 
         {/* Tags */}
         {((rating.best_for_tags ?? []).length > 0 || (rating.genre_tags ?? []).length > 0) && (
-          <div className="bg-[#1e2d3d] rounded-2xl border border-white/5 p-4">
+          <div className="bg-[#272757] rounded-2xl border border-[#505081]/40 p-4">
             {(rating.best_for_tags ?? []).length > 0 && (
               <div className="mb-3">
-                <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Best for</p>
+                <p className="text-xs font-semibold text-[#8686AC]/75 uppercase tracking-wide mb-2">Best for</p>
                 <div className="flex flex-wrap gap-2">
                   {rating.best_for_tags.map((t: string) => (
-                    <span key={t} className="px-3 py-1 bg-[#4fc3f7]/10 border border-[#4fc3f7]/20 text-[#4fc3f7] text-xs rounded-full font-medium">{t}</span>
+                    <span key={t} className="px-3 py-1 bg-[#4fa8ff]/10 border border-[#4fa8ff]/20 text-[#4fa8ff] text-xs rounded-full font-medium">{t}</span>
                   ))}
                 </div>
               </div>
             )}
             {(rating.genre_tags ?? []).length > 0 && (
               <div>
-                <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Genre</p>
+                <p className="text-xs font-semibold text-[#8686AC]/75 uppercase tracking-wide mb-2">Genre</p>
                 <div className="flex flex-wrap gap-2">
                   {rating.genre_tags.map((t: string) => (
-                    <span key={t} className="px-3 py-1 bg-white/5 border border-white/10 text-slate-400 text-xs rounded-full font-medium">{t}</span>
+                    <span key={t} className="px-3 py-1 bg-[#505081]/20 border border-[#505081]/60 text-[#8686AC] text-xs rounded-full font-medium">{t}</span>
                   ))}
                 </div>
               </div>
@@ -218,16 +218,16 @@ export default function SongDetailPage() {
 
         {/* Notes */}
         {rating.notes && (
-          <div className="bg-[#1e2d3d] rounded-2xl border border-white/5 p-4">
-            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Notes</p>
+          <div className="bg-[#272757] rounded-2xl border border-[#505081]/40 p-4">
+            <p className="text-xs font-semibold text-[#8686AC]/75 uppercase tracking-wide mb-2">Notes</p>
             <p className="text-sm text-slate-300 italic leading-relaxed">&ldquo;{rating.notes}&rdquo;</p>
           </div>
         )}
 
         {/* Rated by (if not owner) */}
         {!isOwner && rating.user && (
-          <p className="text-xs text-slate-600 text-center">
-            Rated by <span className="text-slate-400 font-semibold">{rating.user.username}</span>
+          <p className="text-xs text-[#8686AC]/75 text-center">
+            Rated by <span className="text-[#8686AC] font-semibold">{rating.user.username}</span>
           </p>
         )}
 
@@ -236,7 +236,7 @@ export default function SongDetailPage() {
           <>
             <button
               onClick={() => setReRating(true)}
-              className="w-full h-12 rounded-2xl bg-[#4fc3f7]/50 text-white font-semibold text-sm hover:bg-[#3ab0d8] transition-colors shadow-lg shadow-[#050e1a]/50"
+              className="w-full h-12 rounded-2xl bg-[#4fa8ff]/50 text-white font-semibold text-sm hover:bg-[#3a90f0] transition-colors shadow-lg shadow-[#080735]/50"
             >
               Re-rate this song
             </button>

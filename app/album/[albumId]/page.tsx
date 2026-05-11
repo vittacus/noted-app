@@ -82,12 +82,12 @@ export default function AlbumPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="w-6 h-6 border-2 border-[#4fc3f7] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#4fa8ff] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
-  if (!album) return <p className="text-center py-10 text-slate-500">Album not found.</p>;
+  if (!album) return <p className="text-center py-10 text-[#8686AC]">Album not found.</p>;
 
   const artUrl = album.images[0]?.url;
   const artist = album.artists.map((a) => a.name).join(", ");
@@ -105,22 +105,22 @@ export default function AlbumPage() {
         )}
         <div className="flex-1 min-w-0 pt-1">
           <h1 className="font-black text-lg text-slate-100 leading-tight">{album.name}</h1>
-          <p className="text-sm text-slate-500 mt-0.5">{artist}</p>
-          <p className="text-xs text-slate-600">{year} · {album.total_tracks} tracks</p>
+          <p className="text-sm text-[#8686AC] mt-0.5">{artist}</p>
+          <p className="text-xs text-[#8686AC]/75">{year} · {album.total_tracks} tracks</p>
 
           {dbAlbumScore?.calculated !== null && dbAlbumScore && (
             <div className="mt-2">
               <p className={`text-lg font-black ${scoreColor(dbAlbumScore.calculated!)}`}>
                 {dbAlbumScore.calculated!.toFixed(1)}
               </p>
-              <p className="text-xs text-slate-600">avg of {ratedCount} rated</p>
+              <p className="text-xs text-[#8686AC]/75">avg of {ratedCount} rated</p>
             </div>
           )}
         </div>
       </div>
 
       {ratedCount > 0 && (
-        <p className="text-xs text-slate-600 mb-3">{ratedCount} of {album.total_tracks} tracks rated</p>
+        <p className="text-xs text-[#8686AC]/75 mb-3">{ratedCount} of {album.total_tracks} tracks rated</p>
       )}
 
       <div className="space-y-1.5">
@@ -132,16 +132,16 @@ export default function AlbumPage() {
               key={track.id}
               className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 border transition-all ${
                 rated
-                  ? "bg-[#1e2d3d] border-white/5"
-                  : "bg-white/[0.02] border-white/[0.03] opacity-60"
+                  ? "bg-[#272757] border-[#505081]/40"
+                  : "bg-[#505081]/10 border-white/[0.03] opacity-60"
               }`}
             >
-              <span className="text-xs text-slate-600 w-5 text-right shrink-0">{i + 1}</span>
+              <span className="text-xs text-[#8686AC]/75 w-5 text-right shrink-0">{i + 1}</span>
               <div className="flex-1 min-w-0">
-                <p className={`font-medium text-sm truncate ${rated ? "text-slate-100" : "text-slate-500"}`}>
+                <p className={`font-medium text-sm truncate ${rated ? "text-slate-100" : "text-[#8686AC]"}`}>
                   {track.name}
                 </p>
-                <p className="text-xs text-slate-600 truncate">
+                <p className="text-xs text-[#8686AC]/75 truncate">
                   {track.artists.map((a) => a.name).join(", ")} · {formatDuration(Math.round(track.duration_ms / 1000))}
                 </p>
               </div>
@@ -152,7 +152,7 @@ export default function AlbumPage() {
               ) : (
                 <button
                   onClick={() => handleRate(track)}
-                  className="shrink-0 px-2.5 py-1 rounded-lg bg-[#4fc3f7]/10 text-[#4fc3f7] text-xs font-semibold hover:bg-[#4fc3f7]/20 transition-colors border border-[#4fc3f7]/20"
+                  className="shrink-0 px-2.5 py-1 rounded-lg bg-[#4fa8ff]/10 text-[#4fa8ff] text-xs font-semibold hover:bg-[#4fa8ff]/20 transition-colors border border-[#4fa8ff]/20"
                 >
                   Rate
                 </button>

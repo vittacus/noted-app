@@ -89,7 +89,7 @@ export default function CollectionPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="w-6 h-6 border-2 border-[#4fc3f7] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#4fa8ff] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -98,12 +98,12 @@ export default function CollectionPage() {
     <div className="page-enter">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.back()} className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors shrink-0">
-          <ArrowLeft size={16} className="text-slate-400" />
+        <button onClick={() => router.back()} className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#505081]/60 flex items-center justify-center hover:bg-[#505081]/30 transition-colors shrink-0">
+          <ArrowLeft size={16} className="text-[#8686AC]" />
         </button>
         <div>
           <h1 className="font-black text-xl text-slate-100">{name}</h1>
-          <p className="text-xs text-slate-500">{songs.length} song{songs.length !== 1 ? "s" : ""}</p>
+          <p className="text-xs text-[#8686AC]">{songs.length} song{songs.length !== 1 ? "s" : ""}</p>
         </div>
       </div>
 
@@ -111,35 +111,35 @@ export default function CollectionPage() {
       {songs.length === 0 && (
         <div className="text-center py-16">
           <p className="text-4xl mb-3">📂</p>
-          <p className="font-medium text-slate-400">No songs yet</p>
-          <p className="text-xs text-slate-600 mt-1">Add songs from any song detail page</p>
-          <Link href="/library" className="text-[#4fc3f7] text-sm font-semibold hover:underline mt-3 block">Browse library →</Link>
+          <p className="font-medium text-[#8686AC]">No songs yet</p>
+          <p className="text-xs text-[#8686AC]/75 mt-1">Add songs from any song detail page</p>
+          <Link href="/library" className="text-[#4fa8ff] text-sm font-semibold hover:underline mt-3 block">Browse library →</Link>
         </div>
       )}
 
       <div className="space-y-2 mb-6">
         {songs.map((entry, i) => (
-          <div key={entry.id} className="flex items-center gap-3 bg-[#1e2d3d] rounded-2xl p-3 border border-white/5">
-            <span className="text-sm font-black text-slate-700 w-5 text-right shrink-0">{i + 1}</span>
-            <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-white/5 shrink-0">
+          <div key={entry.id} className="flex items-center gap-3 bg-[#272757] rounded-2xl p-3 border border-[#505081]/40">
+            <span className="text-sm font-black text-[#8686AC]/55 w-5 text-right shrink-0">{i + 1}</span>
+            <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
               {entry.song.album_art_url
                 ? <Image src={entry.song.album_art_url} alt={entry.song.album_name} fill className="object-cover" sizes="44px" />
-                : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
+                : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm text-slate-100 truncate">
                 {entry.rating_id
-                  ? <Link href={`/song/${entry.rating_id}`} className="hover:text-[#4fc3f7] transition-colors">{entry.song.title}</Link>
+                  ? <Link href={`/song/${entry.rating_id}`} className="hover:text-[#4fa8ff] transition-colors">{entry.song.title}</Link>
                   : entry.song.title}
               </p>
-              <p className="text-xs text-slate-500 truncate">{entry.song.artist}</p>
+              <p className="text-xs text-[#8686AC] truncate">{entry.song.artist}</p>
             </div>
             {entry.overall_score !== null
               ? <ScoreCircle score={entry.overall_score} size={38} />
-              : <span className="text-xs text-slate-600 shrink-0">—</span>}
+              : <span className="text-xs text-[#8686AC]/75 shrink-0">—</span>}
             {isOwner && (
-              <button onClick={() => removeFromCollection(entry.id)} className="ml-1 w-7 h-7 rounded-full bg-white/5 flex items-center justify-center hover:bg-rose-500/20 transition-colors shrink-0">
-                <Trash2 size={12} className="text-slate-500 hover:text-rose-400" />
+              <button onClick={() => removeFromCollection(entry.id)} className="ml-1 w-7 h-7 rounded-full bg-[#505081]/20 flex items-center justify-center hover:bg-rose-500/20 transition-colors shrink-0">
+                <Trash2 size={12} className="text-[#8686AC] hover:text-rose-400" />
               </button>
             )}
           </div>
@@ -152,12 +152,12 @@ export default function CollectionPage() {
           disabled
           onMouseEnter={() => setTooltipVisible(true)}
           onMouseLeave={() => setTooltipVisible(false)}
-          className="w-full py-3 rounded-2xl border border-white/10 text-slate-600 text-sm font-semibold cursor-not-allowed flex items-center justify-center gap-2 opacity-50"
+          className="w-full py-3 rounded-2xl border border-[#505081]/60 text-[#8686AC]/75 text-sm font-semibold cursor-not-allowed flex items-center justify-center gap-2 opacity-50"
         >
           <span>🎵</span> Export to Spotify playlist
         </button>
         {tooltipVisible && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#1e2d3d] border border-white/10 rounded-xl text-xs text-slate-400 whitespace-nowrap shadow-lg">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#272757] border border-[#505081]/60 rounded-xl text-xs text-[#8686AC] whitespace-nowrap shadow-lg">
             Coming soon — connect your Spotify account to enable this
           </div>
         )}

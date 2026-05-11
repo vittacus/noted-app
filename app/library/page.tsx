@@ -188,27 +188,27 @@ export default function LibraryPage() {
         <div className="flex gap-2 items-center">
           {/* Battle mode icon button */}
           <Link href="/battle"
-            className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+            className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#505081]/60 flex items-center justify-center hover:bg-[#505081]/30 transition-colors"
             title="Battle mode">
-            <Swords size={15} className="text-slate-400" />
+            <Swords size={15} className="text-[#8686AC]" />
           </Link>
           {/* List/grid toggle — songs mode only */}
           {libraryMode === "songs" && (
             <button onClick={() => setView(view === "list" ? "grid" : "list")}
-              className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+              className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#505081]/60 flex items-center justify-center hover:bg-[#505081]/30 transition-colors"
               title={view === "list" ? "Grid view" : "List view"}>
-              {view === "list" ? <LayoutGrid size={16} className="text-slate-400" /> : <Music2 size={16} className="text-slate-400" />}
+              {view === "list" ? <LayoutGrid size={16} className="text-[#8686AC]" /> : <Music2 size={16} className="text-[#8686AC]" />}
             </button>
           )}
         </div>
       </div>
 
       {/* Songs / Albums toggle */}
-      <div className="flex gap-1 bg-white/5 rounded-2xl p-1 mb-5">
+      <div className="flex gap-1 bg-[#505081]/20 rounded-2xl p-1 mb-5">
         {(["songs", "albums"] as LibraryMode[]).map((m) => (
           <button key={m} onClick={() => setLibraryMode(m)}
             className={`flex-1 py-2 text-sm font-semibold rounded-xl transition-all capitalize ${
-              libraryMode === m ? "bg-[#1e2d3d] text-[#4fc3f7] shadow-sm" : "text-slate-500 hover:text-slate-300"
+              libraryMode === m ? "bg-[#272757] text-[#4fa8ff] shadow-sm" : "text-[#8686AC] hover:text-slate-300"
             }`}>
             {m} {m === "songs" ? `(${ratings.length})` : `(${albumGroups.length})`}
           </button>
@@ -218,12 +218,12 @@ export default function LibraryPage() {
       {/* ── ALBUMS VIEW ── */}
       {libraryMode === "albums" && (
         <>
-          {loading && <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-[#4fc3f7] border-t-transparent rounded-full animate-spin" /></div>}
+          {loading && <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-[#4fa8ff] border-t-transparent rounded-full animate-spin" /></div>}
           {!loading && albumGroups.length === 0 && (
             <div className="text-center py-16">
               <p className="text-4xl mb-3">💿</p>
-              <p className="font-medium text-slate-400">No albums yet</p>
-              <Link href="/search" className="text-[#4fc3f7] text-sm font-semibold hover:underline mt-1 block">Rate songs →</Link>
+              <p className="font-medium text-[#8686AC]">No albums yet</p>
+              <Link href="/search" className="text-[#4fa8ff] text-sm font-semibold hover:underline mt-1 block">Rate songs →</Link>
             </div>
           )}
           <div className="space-y-2">
@@ -238,14 +238,14 @@ export default function LibraryPage() {
 
               const inner = (
                 <div className="flex items-center gap-3 p-3">
-                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0">
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
                     {a.albumArt
                       ? <Image src={a.albumArt} alt={a.albumName} fill className="object-cover" sizes="64px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
+                      : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-slate-100 truncate">{a.albumName}</p>
-                    <p className="text-xs text-slate-500 truncate mt-0.5">{displayArtist}</p>
+                    <p className="text-xs text-[#8686AC] truncate mt-0.5">{displayArtist}</p>
 
                     {/* Completion badge */}
                     {total !== null ? (
@@ -261,11 +261,11 @@ export default function LibraryPage() {
                         </span>
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-600 mt-1.5">{rated} track{rated !== 1 ? "s" : ""} rated</p>
+                      <p className="text-xs text-[#8686AC]/75 mt-1.5">{rated} track{rated !== 1 ? "s" : ""} rated</p>
                     )}
 
                     {pct !== null && !isComplete && (
-                      <div className="mt-1.5 h-1 bg-white/5 rounded-full overflow-hidden w-full">
+                      <div className="mt-1.5 h-1 bg-[#505081]/20 rounded-full overflow-hidden w-full">
                         <div className="h-full rounded-full transition-all bg-amber-500/50"
                           style={{ width: `${Math.min(100, pct)}%` }} />
                       </div>
@@ -280,7 +280,7 @@ export default function LibraryPage() {
                 <div
                   key={a.key}
                   onClick={() => handleAlbumTap(a)}
-                  className="bg-[#1e2d3d] rounded-2xl border border-white/5 hover:border-white/10 hover:bg-[#243347] active:scale-[0.99] transition-all overflow-hidden cursor-pointer"
+                  className="bg-[#272757] rounded-2xl border border-[#505081]/40 hover:border-[#505081]/60 hover:bg-[#383870] active:scale-[0.99] transition-all overflow-hidden cursor-pointer"
                 >
                   {inner}
                 </div>
@@ -298,31 +298,31 @@ export default function LibraryPage() {
             {(["score", "artist", "date"] as SortKey[]).map((s) => (
               <button key={s} onClick={() => setSort(s)}
                 className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
-                  sort === s ? "bg-[#4fc3f7]/50 text-white border-[#4fc3f7]" : "bg-white/5 text-slate-400 border-white/10 hover:border-white/20"
+                  sort === s ? "bg-[#4fa8ff]/50 text-white border-[#4fa8ff]" : "bg-[#505081]/20 text-[#8686AC] border-[#505081]/60 hover:border-[#505081]/80"
                 }`}>
                 <ArrowUpDown size={11} />
                 {s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
-            <div className="w-px bg-white/10 mx-1 self-stretch" />
+            <div className="w-px bg-[#505081]/30 mx-1 self-stretch" />
             <button onClick={() => setGenre("all")}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
-                genre === "all" ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-white/5 text-slate-400 border-white/10 hover:border-white/20"
+                genre === "all" ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#505081]/60 hover:border-[#505081]/80"
               }`}>All</button>
             {genres.map((g) => (
               <button key={g} onClick={() => setGenre(g)}
                 className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
-                  genre === g ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-white/5 text-slate-400 border-white/10 hover:border-white/20"
+                  genre === g ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#505081]/60 hover:border-[#505081]/80"
                 }`}>{g}</button>
             ))}
           </div>
 
-          {loading && <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-[#4fc3f7] border-t-transparent rounded-full animate-spin" /></div>}
+          {loading && <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-[#4fa8ff] border-t-transparent rounded-full animate-spin" /></div>}
           {!loading && filtered.length === 0 && (
             <div className="text-center py-16">
               <p className="text-4xl mb-3">📚</p>
-              <p className="font-medium text-slate-400">No ratings yet</p>
-              <Link href="/search" className="text-[#4fc3f7] text-sm font-semibold hover:underline mt-1 block">Rate your first song →</Link>
+              <p className="font-medium text-[#8686AC]">No ratings yet</p>
+              <Link href="/search" className="text-[#4fa8ff] text-sm font-semibold hover:underline mt-1 block">Rate your first song →</Link>
             </div>
           )}
 
@@ -332,7 +332,7 @@ export default function LibraryPage() {
                 const accentColor = genreAccentColor(r.genre_tags ?? []);
                 return (
                   <Link key={r.id} href={`/song/${r.id}`} className="block group">
-                    <div className="bg-[#1e2d3d] rounded-2xl border border-white/5 group-hover:border-white/10 transition-colors overflow-hidden">
+                    <div className="bg-[#272757] rounded-2xl border border-[#505081]/40 group-hover:border-[#505081]/60 transition-colors overflow-hidden">
                       {/* Pokemon accent */}
                       {accentColor && (
                         <div className="flex justify-center pt-2">
@@ -340,23 +340,23 @@ export default function LibraryPage() {
                         </div>
                       )}
                       <div className={`flex items-center gap-3 px-3 pb-3 ${accentColor ? "pt-2" : "pt-3"}`}>
-                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
+                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
                           {r.song.album_art_url
                             ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="48px" />
-                            : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
+                            : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
                             <p className="font-semibold text-sm text-slate-100 truncate">{r.song.title}</p>
-                            <span className="text-xs text-slate-600 shrink-0 mt-0.5">{formatDuration(r.song.duration_seconds)}</span>
+                            <span className="text-xs text-[#8686AC]/75 shrink-0 mt-0.5">{formatDuration(r.song.duration_seconds)}</span>
                           </div>
-                          <p className="text-xs text-slate-500 truncate">{r.song.artist}</p>
+                          <p className="text-xs text-[#8686AC] truncate">{r.song.artist}</p>
                           <div className="flex gap-1.5 mt-1 flex-wrap">
                             {displayGenres(r.genre_tags ?? []).map((t: string) => (
-                              <span key={t} className="text-xs bg-white/5 text-slate-500 px-2 py-0.5 rounded-full">{t}</span>
+                              <span key={t} className="text-xs bg-[#505081]/20 text-[#8686AC] px-2 py-0.5 rounded-full">{t}</span>
                             ))}
                           </div>
-                          <p className="text-xs text-slate-700 mt-0.5">
+                          <p className="text-xs text-[#8686AC]/55 mt-0.5">
                             Rated {new Date(r.created_at).getMonth() + 1}/{new Date(r.created_at).getDate()}
                           </p>
                         </div>
@@ -372,10 +372,10 @@ export default function LibraryPage() {
           ) : (
             <div className="grid grid-cols-3 gap-2.5">
               {filtered.map((r) => (
-                <Link key={r.id} href={`/song/${r.id}`} className="relative rounded-2xl overflow-hidden aspect-square bg-white/5 group block">
+                <Link key={r.id} href={`/song/${r.id}`} className="relative rounded-2xl overflow-hidden aspect-square bg-[#505081]/20 group block">
                   {r.song.album_art_url
                     ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="33vw" />
-                    : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
+                    : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
 
                   {/* Hover darkening */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />

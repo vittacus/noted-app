@@ -61,7 +61,7 @@ export default function CollectionsSection({ userId }: { userId: string }) {
         <h2 className="font-bold text-base text-slate-100">Collections</h2>
         <button
           onClick={() => setShowInput((v) => !v)}
-          className="flex items-center gap-1.5 text-xs text-[#4fc3f7] font-semibold hover:opacity-80 transition-opacity"
+          className="flex items-center gap-1.5 text-xs text-[#4fa8ff] font-semibold hover:opacity-80 transition-opacity"
         >
           <Plus size={14} /> New
         </button>
@@ -75,12 +75,12 @@ export default function CollectionsSection({ userId }: { userId: string }) {
             onChange={(e) => setNewName(e.target.value.slice(0, 50))}
             onKeyDown={(e) => e.key === "Enter" && create()}
             placeholder="Collection name…"
-            className="flex-1 px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-[#4fc3f7]/50"
+            className="flex-1 px-3 py-2.5 rounded-xl border border-[#505081]/60 bg-[#505081]/20 text-sm text-slate-100 placeholder-[#8686AC]/50 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
           />
           <button
             onClick={create}
             disabled={!newName.trim() || creating}
-            className="px-4 py-2.5 rounded-xl bg-[#4fc3f7]/20 text-[#4fc3f7] text-sm font-semibold hover:bg-[#4fc3f7]/30 transition-colors disabled:opacity-40"
+            className="px-4 py-2.5 rounded-xl bg-[#4fa8ff]/20 text-[#4fa8ff] text-sm font-semibold hover:bg-[#4fa8ff]/30 transition-colors disabled:opacity-40"
           >
             {creating ? "…" : "Create"}
           </button>
@@ -88,7 +88,7 @@ export default function CollectionsSection({ userId }: { userId: string }) {
       )}
 
       {collections.length === 0 && !showInput && (
-        <p className="text-xs text-slate-600 py-2">No collections yet. Tap + New to create one.</p>
+        <p className="text-xs text-[#8686AC]/75 py-2">No collections yet. Tap + New to create one.</p>
       )}
 
       <div className="space-y-2">
@@ -96,16 +96,16 @@ export default function CollectionsSection({ userId }: { userId: string }) {
           <Link
             key={col.id}
             href={`/collection/${col.id}`}
-            className="flex items-center gap-3 bg-[#1e2d3d] rounded-2xl p-3 border border-white/5 hover:border-white/10 transition-colors block"
+            className="flex items-center gap-3 bg-[#272757] rounded-2xl p-3 border border-[#505081]/40 hover:border-[#505081]/60 transition-colors block"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#4fc3f7]/10 border border-[#4fc3f7]/20 flex items-center justify-center shrink-0">
-              <FolderOpen size={18} className="text-[#4fc3f7]" />
+            <div className="w-10 h-10 rounded-xl bg-[#4fa8ff]/10 border border-[#4fa8ff]/20 flex items-center justify-center shrink-0">
+              <FolderOpen size={18} className="text-[#4fa8ff]" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm text-slate-100 truncate">{col.name}</p>
-              <p className="text-xs text-slate-500 mt-0.5">{col.song_count} song{col.song_count !== 1 ? "s" : ""}</p>
+              <p className="text-xs text-[#8686AC] mt-0.5">{col.song_count} song{col.song_count !== 1 ? "s" : ""}</p>
             </div>
-            <span className="text-xs text-slate-600">→</span>
+            <span className="text-xs text-[#8686AC]/75">→</span>
           </Link>
         ))}
       </div>
