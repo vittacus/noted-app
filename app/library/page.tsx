@@ -376,8 +376,27 @@ export default function LibraryPage() {
                   {r.song.album_art_url
                     ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="33vw" />
                     : <div className="w-full h-full bg-gradient-to-br from-[#050e1a] to-[#0a1f35]" />}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all" />
-                  <div className="absolute bottom-1.5 right-1.5">
+
+                  {/* Hover darkening */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
+
+                  {/* Bottom gradient + song info overlay */}
+                  <div className="absolute inset-x-0 bottom-0 h-[40%]"
+                    style={{ background: "linear-gradient(to bottom, transparent, rgba(0,0,0,0.75))" }}>
+                    <div className="absolute inset-x-0 bottom-0 px-2 pb-1.5 pr-8">
+                      <p className="text-white font-bold leading-tight line-clamp-2"
+                        style={{ fontSize: 13, textShadow: "0 1px 3px rgba(0,0,0,0.6)" }}>
+                        {r.song.title}
+                      </p>
+                      <p className="truncate mt-0.5"
+                        style={{ fontSize: 11, color: "rgba(255,255,255,0.65)", textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>
+                        {r.song.artist}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Score circle — above the overlay */}
+                  <div className="absolute bottom-1.5 right-1.5 z-10">
                     <ScoreCircle score={r.overall_score} size={28} />
                   </div>
                 </Link>
