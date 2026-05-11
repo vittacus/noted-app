@@ -145,7 +145,7 @@ export default function TasteRadar({ genreItems, vibeItems, headline }: Props) {
     <div>
       {/* Generated headline */}
       {headline && (
-        <p className="text-sm font-semibold text-slate-200 mb-4 leading-relaxed bg-[#505081]/20 rounded-2xl px-4 py-3 border border-[#505081]/40">
+        <p className="text-sm font-semibold text-slate-200 mb-4 leading-relaxed bg-[#505081]/20 rounded-2xl px-4 py-3 border border-[#8686AC]/20">
           {headline}
         </p>
       )}
@@ -155,7 +155,7 @@ export default function TasteRadar({ genreItems, vibeItems, headline }: Props) {
         <button onClick={() => setMode("genre")}
           className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all ${
             mode === "genre"
-              ? "bg-[#272757] text-[#4fa8ff] shadow-sm"
+              ? "bg-[#2D2D6B] text-[#4fa8ff] shadow-sm"
               : "text-[#8686AC] hover:text-slate-300"
           }`}>
           🧬 Genre DNA
@@ -163,7 +163,7 @@ export default function TasteRadar({ genreItems, vibeItems, headline }: Props) {
         <button onClick={() => setMode("vibe")}
           className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all ${
             mode === "vibe"
-              ? "bg-[#272757] text-[#4fa8ff] shadow-sm"
+              ? "bg-[#2D2D6B] text-[#4fa8ff] shadow-sm"
               : "text-[#8686AC] hover:text-slate-300"
           }`}>
           ✨ Vibe DNA

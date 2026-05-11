@@ -132,7 +132,7 @@ export default function AlbumPage() {
               key={track.id}
               className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 border transition-all ${
                 rated
-                  ? "bg-[#272757] border-[#505081]/40"
+                  ? "bg-[#2D2D6B] border-[#8686AC]/20"
                   : "bg-[#505081]/10 border-white/[0.03] opacity-60"
               }`}
             >

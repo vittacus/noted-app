@@ -113,7 +113,7 @@ export default function MoodDetailPage() {
     <div className="page-enter">
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
-        <button onClick={() => router.back()} className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#505081]/60 flex items-center justify-center hover:bg-[#505081]/30 transition-colors shrink-0">
+        <button onClick={() => router.back()} className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#8686AC]/30 flex items-center justify-center hover:bg-[#505081]/30 transition-colors shrink-0">
           <ArrowLeft size={16} className="text-[#8686AC]" />
         </button>
         <div className="flex-1 min-w-0">
@@ -141,8 +141,8 @@ export default function MoodDetailPage() {
                 onClick={() => { setScoreFilter(f); setShowAll(false); }}
                 className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                   active
-                    ? "bg-[#4fa8ff] border-[#4fa8ff] text-[#080735] shadow-md shadow-[#4fa8ff]/25"
-                    : "bg-transparent border-[#505081]/80 text-[#8686AC] hover:border-white/40"
+                    ? "bg-[#4fa8ff] border-[#4fa8ff] text-[#0F0E47] shadow-md shadow-[#4fa8ff]/25"
+                    : "bg-transparent border-[#8686AC]/40 text-[#8686AC] hover:border-white/40"
                 }`}
               >
                 {f === "all" ? "All" : f}
@@ -170,12 +170,12 @@ export default function MoodDetailPage() {
       {/* Song list */}
       <div className="space-y-2 mb-4">
         {displayed.map((r: any, i) => (
-          <Link key={r.id} href={`/song/${r.id}`} className="flex items-center gap-3 bg-[#272757] rounded-2xl p-3 border border-[#505081]/40 hover:border-[#505081]/60 transition-colors block">
+          <Link key={r.id} href={`/song/${r.id}`} className="flex items-center gap-3 bg-[#2D2D6B] rounded-2xl p-3 border border-[#8686AC]/20 hover:border-[#8686AC]/30 transition-colors block">
             <span className="text-sm font-black text-[#8686AC]/55 w-5 text-right shrink-0">{i + 1}</span>
             <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
               {r.song?.album_art_url
                 ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="48px" />
-                : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
+                : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
@@ -188,7 +188,7 @@ export default function MoodDetailPage() {
 
       {hasMore && (
         <button onClick={() => setShowAll((v) => !v)}
-          className="w-full py-2.5 rounded-2xl border border-[#505081]/60 text-xs font-semibold text-[#8686AC] hover:bg-[#505081]/20 transition-colors mb-4">
+          className="w-full py-2.5 rounded-2xl border border-[#8686AC]/30 text-xs font-semibold text-[#8686AC] hover:bg-[#505081]/20 transition-colors mb-4">
           {showAll ? "Show top 10 only" : `See all ${songs.length} songs →`}
         </button>
       )}
@@ -198,11 +198,11 @@ export default function MoodDetailPage() {
         <button disabled
           onMouseEnter={() => setTooltipVisible(true)}
           onMouseLeave={() => setTooltipVisible(false)}
-          className="w-full py-3 rounded-2xl border border-[#505081]/60 text-[#8686AC]/75 text-sm font-semibold cursor-not-allowed flex items-center justify-center gap-2 opacity-50">
+          className="w-full py-3 rounded-2xl border border-[#8686AC]/30 text-[#8686AC]/75 text-sm font-semibold cursor-not-allowed flex items-center justify-center gap-2 opacity-50">
           🎵 Export to Spotify playlist
         </button>
         {tooltipVisible && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#272757] border border-[#505081]/60 rounded-xl text-xs text-[#8686AC] whitespace-nowrap shadow-lg pointer-events-none">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#2D2D6B] border border-[#8686AC]/30 rounded-xl text-xs text-[#8686AC] whitespace-nowrap shadow-lg pointer-events-none">
             Coming soon — connect your Spotify account to enable this
           </div>
         )}
@@ -221,7 +221,7 @@ export default function MoodDetailPage() {
           />
 
           {/* Sheet */}
-          <div className="relative w-full bg-[#0F0E47] rounded-t-3xl flex flex-col"
+          <div className="relative w-full bg-[#1A1A4E] rounded-t-3xl flex flex-col"
             style={{ maxHeight: "80vh", boxShadow: "0 -8px 40px rgba(0,0,0,0.6)" }}>
 
             {/* Drag handle */}
@@ -230,7 +230,7 @@ export default function MoodDetailPage() {
             </div>
 
             {/* Picker header */}
-            <div className="flex items-center justify-between px-5 pt-2 pb-3 border-b border-[#505081]/40 shrink-0">
+            <div className="flex items-center justify-between px-5 pt-2 pb-3 border-b border-[#8686AC]/20 shrink-0">
               <div>
                 <h3 className="font-bold text-slate-100">Add to {moodName}</h3>
                 <p className="text-xs text-[#8686AC] mt-0.5">
@@ -260,17 +260,17 @@ export default function MoodDetailPage() {
                 return (
                   <button key={r.id} onClick={() => toggleSelect(r.id)}
                     className={`w-full flex items-center gap-3 rounded-2xl p-3 border transition-all text-left ${
-                      sel ? "border-[#4fa8ff]/40 bg-[#4fa8ff]/5" : "border-[#505081]/40 bg-[#505081]/20 hover:border-[#505081]/60"
+                      sel ? "border-[#4fa8ff]/40 bg-[#4fa8ff]/5" : "border-[#8686AC]/20 bg-[#505081]/20 hover:border-[#8686AC]/30"
                     }`}>
                     <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
-                      sel ? "bg-[#4fa8ff] border-[#4fa8ff]" : "border-[#505081]"
+                      sel ? "bg-[#4fa8ff] border-[#4fa8ff]" : "border-[#8686AC]/50"
                     }`}>
-                      {sel && <Check size={11} className="text-[#080735]" strokeWidth={3} />}
+                      {sel && <Check size={11} className="text-[#0F0E47]" strokeWidth={3} />}
                     </div>
                     <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
                       {r.song?.album_art_url
                         ? <Image src={r.song.album_art_url} alt="" fill className="object-cover" sizes="40px" />
-                        : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
+                        : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
@@ -283,7 +283,7 @@ export default function MoodDetailPage() {
             </div>
 
             {/* Confirm — sticky at bottom of sheet */}
-            <div className="px-5 pb-8 pt-3 border-t border-[#505081]/40 shrink-0 bg-[#0F0E47]">
+            <div className="px-5 pb-8 pt-3 border-t border-[#8686AC]/20 shrink-0 bg-[#1A1A4E]">
               <button onClick={addToMood}
                 disabled={selectedIds.size === 0 || adding}
                 className={`w-full h-12 rounded-2xl font-semibold text-sm transition-all ${

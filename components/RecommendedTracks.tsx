@@ -101,7 +101,7 @@ export default function RecommendedTracks({
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="shrink-0 w-[120px] bg-[#272757] rounded-2xl border border-[#505081]/40 overflow-hidden animate-pulse">
+            <div key={i} className="shrink-0 w-[120px] bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 overflow-hidden animate-pulse">
               <div className="w-full aspect-square bg-[#505081]/20" />
               <div className="p-2 space-y-1.5">
                 <div className="h-2 bg-[#505081]/20 rounded-full w-3/4" />
@@ -128,13 +128,13 @@ export default function RecommendedTracks({
           <button
             key={track.id}
             onClick={() => handleRate(track)}
-            className="shrink-0 w-[120px] bg-[#272757] rounded-2xl border border-[#505081]/40 overflow-hidden flex flex-col text-left hover:border-[#505081]/70 hover:bg-[#383870] active:scale-95 transition-all"
+            className="shrink-0 w-[120px] bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 overflow-hidden flex flex-col text-left hover:border-[#8686AC]/35 hover:bg-[#3A3A80] active:scale-95 transition-all"
           >
             <div className="relative w-full aspect-square bg-[#505081]/20">
               {track.album?.images?.[0] ? (
                 <Image src={track.album.images[0].url} alt={track.album?.name ?? ""} fill className="object-cover" sizes="120px" />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />
+                <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />
               )}
             </div>
             <div className="p-2 flex flex-col flex-1 gap-1">

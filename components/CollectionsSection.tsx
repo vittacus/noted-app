@@ -75,7 +75,7 @@ export default function CollectionsSection({ userId }: { userId: string }) {
             onChange={(e) => setNewName(e.target.value.slice(0, 50))}
             onKeyDown={(e) => e.key === "Enter" && create()}
             placeholder="Collection name…"
-            className="flex-1 px-3 py-2.5 rounded-xl border border-[#505081]/60 bg-[#505081]/20 text-sm text-slate-100 placeholder-[#8686AC]/50 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
+            className="flex-1 px-3 py-2.5 rounded-xl border border-[#8686AC]/30 bg-[#505081]/20 text-sm text-slate-100 placeholder-[#8686AC]/50 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
           />
           <button
             onClick={create}
@@ -96,7 +96,7 @@ export default function CollectionsSection({ userId }: { userId: string }) {
           <Link
             key={col.id}
             href={`/collection/${col.id}`}
-            className="flex items-center gap-3 bg-[#272757] rounded-2xl p-3 border border-[#505081]/40 hover:border-[#505081]/60 transition-colors block"
+            className="flex items-center gap-3 bg-[#2D2D6B] rounded-2xl p-3 border border-[#8686AC]/20 hover:border-[#8686AC]/30 transition-colors block"
           >
             <div className="w-10 h-10 rounded-xl bg-[#4fa8ff]/10 border border-[#4fa8ff]/20 flex items-center justify-center shrink-0">
               <FolderOpen size={18} className="text-[#4fa8ff]" />

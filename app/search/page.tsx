@@ -91,7 +91,7 @@ export default function SearchPage() {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setTimeout(() => setIsFocused(false), 150)}
           placeholder="Search songs and albums…"
-          className="w-full pl-10 pr-4 py-3 rounded-2xl border border-[#505081]/60 bg-[#272757] text-sm text-slate-100 placeholder-[#8686AC]/60 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
+          className="w-full pl-10 pr-4 py-3 rounded-2xl border border-[#8686AC]/30 bg-[#2D2D6B] text-sm text-slate-100 placeholder-[#8686AC]/60 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
           autoFocus
         />
         {loading && (
@@ -120,7 +120,7 @@ export default function SearchPage() {
               key={t}
               onClick={() => setTab(t)}
               className={`flex-1 py-2 text-sm font-semibold rounded-xl transition-all capitalize ${
-                tab === t ? "bg-[#272757] text-[#4fa8ff] shadow-sm" : "text-[#8686AC] hover:text-slate-300"
+                tab === t ? "bg-[#2D2D6B] text-[#4fa8ff] shadow-sm" : "text-[#8686AC] hover:text-slate-300"
               }`}
             >
               {t} ({t === "tracks" ? tracks.length : albums.length})
@@ -132,12 +132,12 @@ export default function SearchPage() {
       {tab === "tracks" && (
         <div className="space-y-2">
           {tracks.map((track) => (
-            <div key={track.id} className="flex items-center gap-3 bg-[#272757] rounded-2xl p-3 border border-[#505081]/40 hover:border-[#505081]/60 transition-colors">
+            <div key={track.id} className="flex items-center gap-3 bg-[#2D2D6B] rounded-2xl p-3 border border-[#8686AC]/20 hover:border-[#8686AC]/30 transition-colors">
               <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
                 {track.album.images[0] ? (
                   <Image src={track.album.images[0].url} alt={track.album.name} fill className="object-cover" sizes="48px" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />
+                  <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -165,13 +165,13 @@ export default function SearchPage() {
             <Link
               key={album.id}
               href={`/album/${album.id}`}
-              className="flex items-center gap-3 bg-[#272757] rounded-2xl p-3 border border-[#505081]/40 hover:border-[#505081]/60 transition-colors block"
+              className="flex items-center gap-3 bg-[#2D2D6B] rounded-2xl p-3 border border-[#8686AC]/20 hover:border-[#8686AC]/30 transition-colors block"
             >
               <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
                 {album.images[0] ? (
                   <Image src={album.images[0].url} alt={album.name} fill className="object-cover" sizes="48px" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />
+                  <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />
                 )}
               </div>
               <div className="flex-1 min-w-0">

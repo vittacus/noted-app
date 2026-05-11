@@ -109,7 +109,7 @@ export default function MoodsPage() {
               className={`relative rounded-3xl overflow-hidden border hover:brightness-110 transition-all min-h-[140px] flex flex-col ${
                 preset
                   ? `bg-gradient-to-br ${preset.gradient} ${preset.border}`
-                  : "bg-[#272757] border-[#505081]/60"
+                  : "bg-[#2D2D6B] border-[#8686AC]/30"
               }`}
             >
               {card.previews.length > 0 && (

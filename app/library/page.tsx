@@ -188,14 +188,14 @@ export default function LibraryPage() {
         <div className="flex gap-2 items-center">
           {/* Battle mode icon button */}
           <Link href="/battle"
-            className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#505081]/60 flex items-center justify-center hover:bg-[#505081]/30 transition-colors"
+            className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#8686AC]/30 flex items-center justify-center hover:bg-[#505081]/30 transition-colors"
             title="Battle mode">
             <Swords size={15} className="text-[#8686AC]" />
           </Link>
           {/* List/grid toggle — songs mode only */}
           {libraryMode === "songs" && (
             <button onClick={() => setView(view === "list" ? "grid" : "list")}
-              className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#505081]/60 flex items-center justify-center hover:bg-[#505081]/30 transition-colors"
+              className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#8686AC]/30 flex items-center justify-center hover:bg-[#505081]/30 transition-colors"
               title={view === "list" ? "Grid view" : "List view"}>
               {view === "list" ? <LayoutGrid size={16} className="text-[#8686AC]" /> : <Music2 size={16} className="text-[#8686AC]" />}
             </button>
@@ -208,7 +208,7 @@ export default function LibraryPage() {
         {(["songs", "albums"] as LibraryMode[]).map((m) => (
           <button key={m} onClick={() => setLibraryMode(m)}
             className={`flex-1 py-2 text-sm font-semibold rounded-xl transition-all capitalize ${
-              libraryMode === m ? "bg-[#272757] text-[#4fa8ff] shadow-sm" : "text-[#8686AC] hover:text-slate-300"
+              libraryMode === m ? "bg-[#2D2D6B] text-[#4fa8ff] shadow-sm" : "text-[#8686AC] hover:text-slate-300"
             }`}>
             {m} {m === "songs" ? `(${ratings.length})` : `(${albumGroups.length})`}
           </button>
@@ -241,7 +241,7 @@ export default function LibraryPage() {
                   <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
                     {a.albumArt
                       ? <Image src={a.albumArt} alt={a.albumName} fill className="object-cover" sizes="64px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
+                      : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-slate-100 truncate">{a.albumName}</p>
@@ -280,7 +280,7 @@ export default function LibraryPage() {
                 <div
                   key={a.key}
                   onClick={() => handleAlbumTap(a)}
-                  className="bg-[#272757] rounded-2xl border border-[#505081]/40 hover:border-[#505081]/60 hover:bg-[#383870] active:scale-[0.99] transition-all overflow-hidden cursor-pointer"
+                  className="bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 hover:border-[#8686AC]/30 hover:bg-[#3A3A80] active:scale-[0.99] transition-all overflow-hidden cursor-pointer"
                 >
                   {inner}
                 </div>
@@ -298,7 +298,7 @@ export default function LibraryPage() {
             {(["score", "artist", "date"] as SortKey[]).map((s) => (
               <button key={s} onClick={() => setSort(s)}
                 className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
-                  sort === s ? "bg-[#4fa8ff]/50 text-white border-[#4fa8ff]" : "bg-[#505081]/20 text-[#8686AC] border-[#505081]/60 hover:border-[#505081]/80"
+                  sort === s ? "bg-[#4fa8ff]/50 text-white border-[#4fa8ff]" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
                 }`}>
                 <ArrowUpDown size={11} />
                 {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -307,12 +307,12 @@ export default function LibraryPage() {
             <div className="w-px bg-[#505081]/30 mx-1 self-stretch" />
             <button onClick={() => setGenre("all")}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
-                genre === "all" ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#505081]/60 hover:border-[#505081]/80"
+                genre === "all" ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
               }`}>All</button>
             {genres.map((g) => (
               <button key={g} onClick={() => setGenre(g)}
                 className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
-                  genre === g ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#505081]/60 hover:border-[#505081]/80"
+                  genre === g ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
                 }`}>{g}</button>
             ))}
           </div>
@@ -332,7 +332,7 @@ export default function LibraryPage() {
                 const accentColor = genreAccentColor(r.genre_tags ?? []);
                 return (
                   <Link key={r.id} href={`/song/${r.id}`} className="block group">
-                    <div className="bg-[#272757] rounded-2xl border border-[#505081]/40 group-hover:border-[#505081]/60 transition-colors overflow-hidden">
+                    <div className="bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 group-hover:border-[#8686AC]/30 transition-colors overflow-hidden">
                       {/* Pokemon accent */}
                       {accentColor && (
                         <div className="flex justify-center pt-2">
@@ -343,7 +343,7 @@ export default function LibraryPage() {
                         <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
                           {r.song.album_art_url
                             ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="48px" />
-                            : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
+                            : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
@@ -375,7 +375,7 @@ export default function LibraryPage() {
                 <Link key={r.id} href={`/song/${r.id}`} className="relative rounded-2xl overflow-hidden aspect-square bg-[#505081]/20 group block">
                   {r.song.album_art_url
                     ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="33vw" />
-                    : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
+                    : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
 
                   {/* Hover darkening */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />

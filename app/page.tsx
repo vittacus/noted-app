@@ -72,7 +72,7 @@ export default async function HomePage({
       {/* Hero — logged-out */}
       {!user && (
         <div className="-mx-4 mb-10">
-          <div className="min-h-[42vh] flex flex-col items-center justify-center text-center bg-gradient-to-b from-[#0F0E47] via-[#0F0E47] to-[#0F0E47] px-6 py-12 relative overflow-hidden">
+          <div className="min-h-[42vh] flex flex-col items-center justify-center text-center bg-gradient-to-b from-[#1A1A4E] via-[#1A1A4E] to-[#1A1A4E] px-6 py-12 relative overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_20%,rgba(79,195,247,0.12),transparent)] pointer-events-none" />
             <div className="relative">
               <h1 className="text-6xl font-black tracking-tighter text-[#4fa8ff] mb-4 leading-none">noted</h1>
@@ -81,16 +81,16 @@ export default async function HomePage({
                 Track every song. Build your taste. Find your top 100.
               </p>
               <div className="flex gap-3 justify-center">
-                <Link href="/auth/signup" className="px-7 py-3.5 bg-[#4fa8ff] text-[#080735] font-bold text-sm rounded-2xl hover:bg-[#90c5ff] transition-colors shadow-lg shadow-[#4fa8ff]/25">
+                <Link href="/auth/signup" className="px-7 py-3.5 bg-[#4fa8ff] text-[#0F0E47] font-bold text-sm rounded-2xl hover:bg-[#90c5ff] transition-colors shadow-lg shadow-[#4fa8ff]/25">
                   Get started
                 </Link>
-                <Link href="/auth/login" className="px-7 py-3.5 border-2 border-[#505081]/80 text-white font-bold text-sm rounded-2xl hover:bg-[#505081]/30 transition-colors">
+                <Link href="/auth/login" className="px-7 py-3.5 border-2 border-[#8686AC]/40 text-white font-bold text-sm rounded-2xl hover:bg-[#505081]/30 transition-colors">
                   Sign in
                 </Link>
               </div>
             </div>
           </div>
-          <div className="text-center py-5 bg-[#272757]/60 border-y border-[#505081]/40">
+          <div className="text-center py-5 bg-[#2D2D6B]/60 border-y border-[#8686AC]/20">
             <p className="text-xs text-[#8686AC]">
               Join to rate songs →{" "}
               <Link href="/auth/signup" className="text-[#4fa8ff] font-semibold hover:underline">Create a free account</Link>
@@ -118,7 +118,7 @@ export default async function HomePage({
           <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
             {SUGGESTED_FRIENDS.map((f) => (
               <div key={f.username}
-                className="shrink-0 w-32 bg-[#272757] rounded-2xl border border-[#505081]/40 p-3 flex flex-col items-center gap-2">
+                className="shrink-0 w-32 bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 p-3 flex flex-col items-center gap-2">
                 <div className="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm text-white"
                   style={{ backgroundColor: f.color }}>
                   {f.initials}
@@ -128,7 +128,7 @@ export default async function HomePage({
                   <p className="text-xs font-bold" style={{ color: f.color }}>{f.match}% match</p>
                   <p className="text-xs text-[#8686AC]/75 text-center leading-tight">{f.genre}</p>
                 </div>
-                <button disabled className="w-full py-1 rounded-lg border border-[#505081]/60 text-xs text-[#8686AC]/75 cursor-not-allowed">
+                <button disabled className="w-full py-1 rounded-lg border border-[#8686AC]/30 text-xs text-[#8686AC]/75 cursor-not-allowed">
                   Follow
                 </button>
               </div>
@@ -165,7 +165,7 @@ export default async function HomePage({
         {ratings?.map((r: any) => {
           const accentColor = genreAccentColor(r.genre_tags ?? []);
           return (
-            <div key={r.id} className="bg-[#272757] rounded-2xl border border-[#505081]/40 overflow-hidden hover:border-[#505081]/60 transition-colors">
+            <div key={r.id} className="bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 overflow-hidden hover:border-[#8686AC]/30 transition-colors">
               {/* Pokemon accent bar */}
               {accentColor && (
                 <div className="flex justify-center pt-2">
@@ -192,7 +192,7 @@ export default async function HomePage({
                   <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0 shadow-lg">
                     {r.song?.album_art_url
                       ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="64px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
+                      : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-base text-slate-100 truncate leading-tight">{r.song?.title}</p>
@@ -214,14 +214,14 @@ export default async function HomePage({
                 </div>
 
                 {r.notes && (
-                  <p className="text-xs text-[#8686AC] italic mx-4 mb-4 line-clamp-2 border-t border-[#505081]/40 pt-3 leading-relaxed">
+                  <p className="text-xs text-[#8686AC] italic mx-4 mb-4 line-clamp-2 border-t border-[#8686AC]/20 pt-3 leading-relaxed">
                     &ldquo;{r.notes}&rdquo;
                   </p>
                 )}
               </Link>
 
               {tab === "everyone" && (
-                <div className="border-t border-[#505081]/40">
+                <div className="border-t border-[#8686AC]/20">
                   <RatingComments ratingId={r.id} />
                 </div>
               )}
