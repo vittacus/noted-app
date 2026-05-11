@@ -91,7 +91,7 @@ function RatingCircleRow({ label, description, value, color, onChange }: {
           return (
             <button key={n} onClick={() => onChange(n)}
               className={`rating-circle w-8 h-8 rounded-full text-xs font-bold border flex items-center justify-center transition-all ${
-                sel ? "text-white selected shadow-md" : "bg-[#505081]/20 border-[#505081]/60 text-[#8686AC] hover:text-white"
+                sel ? "text-white selected shadow-md" : "bg-[#505081]/20 border-[#8686AC]/30 text-[#8686AC] hover:text-white"
               }`}
               style={sel ? { backgroundColor: color, borderColor: color } : undefined}
             >{n}</button>
@@ -453,10 +453,10 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-[#272757] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col border border-[#505081]/40">
+      <div className="w-full max-w-lg bg-[#2D2D6B] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col border border-[#8686AC]/20">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-[#505081]/40">
+        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-[#8686AC]/20">
           <div className="flex items-center gap-3">
             {albumArt && (
               <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0">
@@ -497,7 +497,7 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                     className={`vibe-btn flex items-center gap-4 px-5 py-4 rounded-2xl border-2 font-semibold text-left transition-all ${
                       form.vibe === key
                         ? "border-[#4fa8ff] bg-[#4fa8ff]/10 text-slate-100 ring-2 ring-[#4fa8ff]/30"
-                        : "border-[#505081]/60 bg-[#505081]/20 text-slate-300 hover:border-[#505081]/80"
+                        : "border-[#8686AC]/30 bg-[#505081]/20 text-slate-300 hover:border-[#8686AC]/40"
                     }`}
                   >
                     <span className="text-2xl">{emoji}</span><span>{label}</span>
@@ -552,12 +552,12 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                     },
                   ].map((card) => (
                     <button key={card.label} onClick={card.onPick}
-                      className="flex-1 flex flex-col rounded-2xl border-2 border-[#505081]/60 bg-[#505081]/20 hover:border-[#4fa8ff]/60 hover:bg-[#4fa8ff]/5 active:scale-[0.98] transition-all overflow-hidden">
+                      className="flex-1 flex flex-col rounded-2xl border-2 border-[#8686AC]/30 bg-[#505081]/20 hover:border-[#4fa8ff]/60 hover:bg-[#4fa8ff]/5 active:scale-[0.98] transition-all overflow-hidden">
                       {/* Album art */}
                       <div className="relative w-full aspect-square bg-[#505081]/20">
                         {card.art
                           ? <Image src={card.art} alt={card.title} fill className="object-cover" sizes="200px" />
-                          : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
+                          : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
                         <span className="absolute top-2 left-2 text-xs font-bold px-1.5 py-0.5 rounded bg-black/50 text-white/70">
                           {card.label}
                         </span>
@@ -577,7 +577,7 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                 </div>
 
                 <button onClick={() => pickInComparison("skipped")}
-                  className="w-full py-2.5 rounded-xl border border-[#505081]/60 text-xs font-semibold text-[#8686AC] hover:bg-[#505081]/20 transition-colors">
+                  className="w-full py-2.5 rounded-xl border border-[#8686AC]/30 text-xs font-semibold text-[#8686AC] hover:bg-[#505081]/20 transition-colors">
                   Too close to call — skip this round
                 </button>
               </div>
@@ -599,13 +599,13 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                       className={`flex items-center gap-3 px-4 py-4 rounded-2xl border-2 transition-all text-left active:scale-[0.97] ${
                         selected
                           ? "border-[#4fa8ff] bg-[#4fa8ff]/15 text-slate-100 shadow-md shadow-[#4fa8ff]/20"
-                          : "border-[#505081]/60 bg-[#505081]/20 text-[#8686AC] hover:border-[#505081]/80"
+                          : "border-[#8686AC]/30 bg-[#505081]/20 text-[#8686AC] hover:border-[#8686AC]/40"
                       }`}>
                       <span className="text-2xl shrink-0">{emoji}</span>
                       <span className="font-semibold text-sm leading-tight">{tag}</span>
                       {selected && (
                         <div className="ml-auto w-4 h-4 rounded-full bg-[#4fa8ff] flex items-center justify-center shrink-0">
-                          <Check size={10} className="text-[#080735]" strokeWidth={3} />
+                          <Check size={10} className="text-[#0F0E47]" strokeWidth={3} />
                         </div>
                       )}
                     </button>
@@ -626,9 +626,9 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                           <label className="flex items-center gap-2.5 cursor-pointer group">
                             <button type="button" onClick={() => toggleMoodCheckbox(name)}
                               className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center shrink-0 transition-all ${
-                                checked ? "bg-[#4fa8ff] border-[#4fa8ff]" : "border-[#505081] group-hover:border-white/40"
+                                checked ? "bg-[#4fa8ff] border-[#4fa8ff]" : "border-[#8686AC]/50 group-hover:border-white/40"
                               }`}>
-                              {checked && <Check size={11} className="text-[#080735]" strokeWidth={3} />}
+                              {checked && <Check size={11} className="text-[#0F0E47]" strokeWidth={3} />}
                             </button>
                             <span className="text-sm text-slate-300">
                               Add to <span className="text-slate-100 font-medium">{name}</span> playlist
@@ -649,7 +649,7 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                       onKeyDown={(e) => e.key === "Enter" && addCustomMoodEntry()}
                       onBlur={addCustomMoodEntry}
                       placeholder="Custom mood list…"
-                      className="flex-1 bg-transparent text-sm text-slate-300 placeholder-[#8686AC]/50 outline-none border-b border-[#505081]/60 pb-0.5 focus:border-[#4fa8ff]/50 transition-colors" />
+                      className="flex-1 bg-transparent text-sm text-slate-300 placeholder-[#8686AC]/50 outline-none border-b border-[#8686AC]/30 pb-0.5 focus:border-[#4fa8ff]/50 transition-colors" />
                   </div>
                 </div>
               )}
@@ -665,7 +665,7 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                         className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                           manualGenres.includes(g)
                             ? "bg-slate-100 border-slate-100 text-slate-900"
-                            : "bg-[#505081]/20 border-[#505081]/60 text-[#8686AC] hover:border-[#505081]/80"
+                            : "bg-[#505081]/20 border-[#8686AC]/30 text-[#8686AC] hover:border-[#8686AC]/40"
                         }`}>{g}</button>
                     ))}
                   </div>
@@ -679,7 +679,7 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                 </label>
                 <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
                   placeholder="What stood out?" rows={3}
-                  className="w-full px-3 py-2.5 rounded-xl border border-[#505081]/60 text-sm bg-[#505081]/20 text-slate-100 resize-none focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50 placeholder-[#8686AC]/50" />
+                  className="w-full px-3 py-2.5 rounded-xl border border-[#8686AC]/30 text-sm bg-[#505081]/20 text-slate-100 resize-none focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50 placeholder-[#8686AC]/50" />
               </div>
             </div>
           )}
@@ -698,7 +698,7 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                 </div>
               )}
 
-              <div className="score-reveal relative w-40 h-40 rounded-full flex items-center justify-center shadow-2xl shadow-[#080735]/60 bg-gradient-to-br from-[#4fa8ff] to-[#0a70d0] mb-8">
+              <div className="score-reveal relative w-40 h-40 rounded-full flex items-center justify-center shadow-2xl shadow-[#0F0E47]/60 bg-gradient-to-br from-[#4fa8ff] to-[#0a70d0] mb-8">
                 <span className="text-5xl font-black text-white">{displayScore.toFixed(1)}</span>
               </div>
 
@@ -710,13 +710,13 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                   </div>
                 ))}
                 {form.vibe && (
-                  <div className="flex justify-between text-sm border-t border-[#505081]/60 pt-2 mt-2">
+                  <div className="flex justify-between text-sm border-t border-[#8686AC]/30 pt-2 mt-2">
                     <span className="text-[#8686AC]">Vibe</span>
                     <span className="font-semibold text-slate-200 capitalize">{form.vibe.replace("_", " ")}</span>
                   </div>
                 )}
                 {compResults.length > 0 && (
-                  <div className="flex justify-between text-sm border-t border-[#505081]/60 pt-2 mt-2">
+                  <div className="flex justify-between text-sm border-t border-[#8686AC]/30 pt-2 mt-2">
                     <span className="text-[#8686AC]">Head to head</span>
                     <span className="font-semibold text-[#8686AC]">
                       {compResults.filter(r => r === "won").length}W — {compResults.filter(r => r === "lost").length}L
@@ -729,17 +729,17 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         </div>
 
         {/* Footer */}
-        <div className="px-5 pb-6 pt-3 border-t border-[#505081]/40 flex gap-3">
+        <div className="px-5 pb-6 pt-3 border-t border-[#8686AC]/20 flex gap-3">
           {step > 1 && step !== STEP_COMPARE && (
             <button onClick={() => setStep(step - 1)} disabled={saving}
-              className="w-10 h-12 rounded-2xl border border-[#505081]/60 flex items-center justify-center hover:bg-[#505081]/20 transition-colors disabled:opacity-40">
+              className="w-10 h-12 rounded-2xl border border-[#8686AC]/30 flex items-center justify-center hover:bg-[#505081]/20 transition-colors disabled:opacity-40">
               <ChevronLeft size={18} className="text-[#8686AC]" />
             </button>
           )}
           <button onClick={advance} disabled={!canAdvance()}
             className={`flex-1 h-12 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
               canAdvance()
-                ? "bg-[#4fa8ff]/80 text-white hover:bg-[#4fa8ff] shadow-lg shadow-[#080735]/50"
+                ? "bg-[#4fa8ff]/80 text-white hover:bg-[#4fa8ff] shadow-lg shadow-[#0F0E47]/50"
                 : "bg-[#505081]/20 text-[#8686AC]/75 cursor-not-allowed"
             }`}
           >

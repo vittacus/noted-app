@@ -35,7 +35,7 @@ export default function LoginPage() {
           <p className="text-[#8686AC] text-sm mt-2">Rate the music you love</p>
         </div>
 
-        <form onSubmit={handleLogin} className="bg-[#272757] rounded-3xl border border-[#505081]/40 p-6 space-y-4">
+        <form onSubmit={handleLogin} className="bg-[#2D2D6B] rounded-3xl border border-[#8686AC]/20 p-6 space-y-4">
           <h1 className="text-lg font-bold text-slate-100">Sign in</h1>
 
           {error && (
@@ -50,7 +50,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="w-full px-3.5 py-3 rounded-xl border border-[#505081]/60 bg-[#505081]/20 text-sm text-slate-100 placeholder-[#8686AC]/60 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
+              className="w-full px-3.5 py-3 rounded-xl border border-[#8686AC]/30 bg-[#505081]/20 text-sm text-slate-100 placeholder-[#8686AC]/60 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
             />
           </div>
 
@@ -62,7 +62,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              className="w-full px-3.5 py-3 rounded-xl border border-[#505081]/60 bg-[#505081]/20 text-sm text-slate-100 placeholder-[#8686AC]/60 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
+              className="w-full px-3.5 py-3 rounded-xl border border-[#8686AC]/30 bg-[#505081]/20 text-sm text-slate-100 placeholder-[#8686AC]/60 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
             />
           </div>
 

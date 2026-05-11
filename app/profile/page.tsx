@@ -166,15 +166,15 @@ export default async function ProfilePage() {
 
       {/* ── HEADER ROW ── */}
       <div className="flex items-center justify-between mb-6">
-        <button className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#505081]/60 flex items-center justify-center">
+        <button className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#8686AC]/30 flex items-center justify-center">
           <Menu size={17} className="text-[#8686AC]" />
         </button>
         <p className="font-bold text-base text-slate-100 tracking-tight">{profile?.username}</p>
         <div className="flex gap-2">
-          <button className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#505081]/60 flex items-center justify-center hover:bg-[#505081]/30 transition-colors">
+          <button className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#8686AC]/30 flex items-center justify-center hover:bg-[#505081]/30 transition-colors">
             <Share2 size={15} className="text-[#8686AC]" />
           </button>
-          <button className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#505081]/60 flex items-center justify-center hover:bg-[#505081]/30 transition-colors">
+          <button className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#8686AC]/30 flex items-center justify-center hover:bg-[#505081]/30 transition-colors">
             <Settings size={15} className="text-[#8686AC]" />
           </button>
         </div>
@@ -182,7 +182,7 @@ export default async function ProfilePage() {
 
       {/* ── AVATAR + NAME ── */}
       <div className="flex flex-col items-center mb-6">
-        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#4fa8ff] to-[#272757] flex items-center justify-center text-white text-3xl font-black mb-3 overflow-hidden shadow-xl shadow-[#4fa8ff]/20">
+        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#4fa8ff] to-[#2D2D6B] flex items-center justify-center text-white text-3xl font-black mb-3 overflow-hidden shadow-xl shadow-[#4fa8ff]/20">
           {profile?.avatar_url
             ? <Image src={profile.avatar_url} alt={profile.username} width={80} height={80} className="object-cover" />
             : (profile?.username?.[0] ?? "?").toUpperCase()}
@@ -198,7 +198,7 @@ export default async function ProfilePage() {
           { label: "Following", value: formatCount(0) },
           { label: "Avg Rating", value: avgScore ?? "—" },
         ].map((s) => (
-          <div key={s.label} className="flex-1 bg-[#272757] rounded-2xl py-3 text-center border border-[#505081]/40">
+          <div key={s.label} className="flex-1 bg-[#2D2D6B] rounded-2xl py-3 text-center border border-[#8686AC]/20">
             <p className="text-lg font-black text-slate-100 tabular-nums">{s.value}</p>
             <p className="text-xs text-[#8686AC] mt-0.5">{s.label}</p>
           </div>
@@ -215,12 +215,12 @@ export default async function ProfilePage() {
           <div className="space-y-2">
             {top5Songs.map((r: any, i: number) => (
               <Link key={r.id} href={`/song/${r.id}`}
-                className="flex items-center gap-3 bg-[#272757] rounded-2xl p-3 border border-[#505081]/40 hover:border-[#505081]/60 transition-colors block">
+                className="flex items-center gap-3 bg-[#2D2D6B] rounded-2xl p-3 border border-[#8686AC]/20 hover:border-[#8686AC]/30 transition-colors block">
                 <span className="text-sm font-black text-[#8686AC]/75 w-5 text-right shrink-0">{i + 1}</span>
                 <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
                   {r.song?.album_art_url
                     ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="40px" />
-                    : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
+                    : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
@@ -249,7 +249,7 @@ export default async function ProfilePage() {
                   <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
                     {album.art
                       ? <Image src={album.art} alt={album.name} fill className="object-cover" sizes="40px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
+                      : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm text-slate-100 truncate">{album.name}</p>
@@ -260,11 +260,11 @@ export default async function ProfilePage() {
               );
               return album.spotifyId ? (
                 <Link key={i} href={`/album/${album.spotifyId}`}
-                  className="block bg-[#272757] rounded-2xl border border-[#505081]/40 hover:border-[#505081]/60 transition-colors">
+                  className="block bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 hover:border-[#8686AC]/30 transition-colors">
                   {row}
                 </Link>
               ) : (
-                <div key={i} className="bg-[#272757] rounded-2xl border border-[#505081]/40">{row}</div>
+                <div key={i} className="bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20">{row}</div>
               );
             })}
           </div>
@@ -273,13 +273,13 @@ export default async function ProfilePage() {
 
       {/* ── TASTE CARD ── */}
       {totalRated >= 3 && (
-        <div className="bg-[#272757] rounded-3xl p-5 border border-[#505081]/40 mb-4">
+        <div className="bg-[#2D2D6B] rounded-3xl p-5 border border-[#8686AC]/20 mb-4">
           <h2 className="font-bold text-base text-slate-100 mb-4">Your taste</h2>
 
           {/* Stats bar inside taste card */}
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 mb-6">
             {STATS.map((s) => (
-              <div key={s.label} className="shrink-0 rounded-2xl border border-[#505081]/40 px-4 py-3 text-center min-w-[74px]"
+              <div key={s.label} className="shrink-0 rounded-2xl border border-[#8686AC]/20 px-4 py-3 text-center min-w-[74px]"
                 style={{ background: s.bg, borderLeft: `3px solid ${s.accent}` }}>
                 <p className="text-lg leading-none mb-1.5">{s.icon}</p>
                 <p className="text-xl font-black leading-none tabular-nums" style={{ color: s.accent }}>{s.value}</p>
@@ -336,7 +336,7 @@ export default async function ProfilePage() {
       {/* Sign out */}
       <form action={handleSignOut}>
         <button type="submit"
-          className="w-full py-3 rounded-2xl border border-[#505081]/60 text-[#8686AC] text-sm font-semibold hover:bg-[#505081]/20 transition-colors">
+          className="w-full py-3 rounded-2xl border border-[#8686AC]/30 text-[#8686AC] text-sm font-semibold hover:bg-[#505081]/20 transition-colors">
           Sign out
         </button>
       </form>

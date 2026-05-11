@@ -136,7 +136,7 @@ export default function RatingComments({ ratingId }: { ratingId: string }) {
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Add a comment…"
                 maxLength={500}
-                className="flex-1 text-xs bg-[#505081]/20 border border-[#505081]/60 rounded-xl px-3 py-2 text-slate-200 placeholder-[#8686AC]/50 focus:outline-none focus:ring-1 focus:ring-[#4fa8ff]/50"
+                className="flex-1 text-xs bg-[#505081]/20 border border-[#8686AC]/30 rounded-xl px-3 py-2 text-slate-200 placeholder-[#8686AC]/50 focus:outline-none focus:ring-1 focus:ring-[#4fa8ff]/50"
               />
               <button type="submit" disabled={!text.trim() || submitting}
                 className="w-8 h-8 rounded-xl bg-[#4fa8ff]/10 border border-[#4fa8ff]/20 flex items-center justify-center hover:bg-[#4fa8ff]/20 transition-colors disabled:opacity-40">

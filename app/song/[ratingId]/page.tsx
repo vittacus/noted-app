@@ -109,10 +109,10 @@ export default function SongDetailPage() {
         {artUrl ? (
           <>
             <Image src={artUrl} alt={song.album_name} fill className="object-cover scale-110" sizes="100vw" />
-            <div className="absolute inset-0 bg-[#0F0E47]/70 backdrop-blur-xl" />
+            <div className="absolute inset-0 bg-[#1A1A4E]/70 backdrop-blur-xl" />
           </>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[#080735] to-[#0F0E47]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />
         )}
 
         {/* Back button */}
@@ -136,7 +136,7 @@ export default function SongDetailPage() {
             <button
               onClick={() => goToAlbum(song)}
               disabled={albumSearching}
-              className="mt-2.5 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#505081] bg-[#505081]/30 hover:bg-[#505081]/50 active:scale-95 text-sm font-medium text-white transition-all disabled:opacity-50"
+              className="mt-2.5 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#8686AC]/50 bg-[#505081]/30 hover:bg-[#505081]/50 active:scale-95 text-sm font-medium text-white transition-all disabled:opacity-50"
             >
               <Disc3 size={13} className="shrink-0" />
               <span className="truncate max-w-[160px]">
@@ -154,7 +154,7 @@ export default function SongDetailPage() {
       {/* Content */}
       <div className="px-4 pt-5 space-y-4">
         {/* Dimension breakdown */}
-        <div className="bg-[#272757] rounded-2xl border border-[#505081]/40 p-4">
+        <div className="bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 p-4">
           <p className="text-xs font-semibold text-[#8686AC]/75 uppercase tracking-wide mb-3">Breakdown</p>
           <div className="space-y-4">
             {dims.map(({ label, value, color }) => (
@@ -175,7 +175,7 @@ export default function SongDetailPage() {
         </div>
 
         {/* Vibe + date */}
-        <div className="bg-[#272757] rounded-2xl border border-[#505081]/40 p-4 flex gap-4">
+        <div className="bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 p-4 flex gap-4">
           <div className="flex-1">
             <p className="text-xs font-semibold text-[#8686AC]/75 uppercase tracking-wide mb-1">Vibe</p>
             <p className="text-sm font-semibold text-slate-200">
@@ -192,7 +192,7 @@ export default function SongDetailPage() {
 
         {/* Tags */}
         {((rating.best_for_tags ?? []).length > 0 || (rating.genre_tags ?? []).length > 0) && (
-          <div className="bg-[#272757] rounded-2xl border border-[#505081]/40 p-4">
+          <div className="bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 p-4">
             {(rating.best_for_tags ?? []).length > 0 && (
               <div className="mb-3">
                 <p className="text-xs font-semibold text-[#8686AC]/75 uppercase tracking-wide mb-2">Best for</p>
@@ -208,7 +208,7 @@ export default function SongDetailPage() {
                 <p className="text-xs font-semibold text-[#8686AC]/75 uppercase tracking-wide mb-2">Genre</p>
                 <div className="flex flex-wrap gap-2">
                   {rating.genre_tags.map((t: string) => (
-                    <span key={t} className="px-3 py-1 bg-[#505081]/20 border border-[#505081]/60 text-[#8686AC] text-xs rounded-full font-medium">{t}</span>
+                    <span key={t} className="px-3 py-1 bg-[#505081]/20 border border-[#8686AC]/30 text-[#8686AC] text-xs rounded-full font-medium">{t}</span>
                   ))}
                 </div>
               </div>
@@ -218,7 +218,7 @@ export default function SongDetailPage() {
 
         {/* Notes */}
         {rating.notes && (
-          <div className="bg-[#272757] rounded-2xl border border-[#505081]/40 p-4">
+          <div className="bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 p-4">
             <p className="text-xs font-semibold text-[#8686AC]/75 uppercase tracking-wide mb-2">Notes</p>
             <p className="text-sm text-slate-300 italic leading-relaxed">&ldquo;{rating.notes}&rdquo;</p>
           </div>
@@ -236,7 +236,7 @@ export default function SongDetailPage() {
           <>
             <button
               onClick={() => setReRating(true)}
-              className="w-full h-12 rounded-2xl bg-[#4fa8ff]/50 text-white font-semibold text-sm hover:bg-[#3a90f0] transition-colors shadow-lg shadow-[#080735]/50"
+              className="w-full h-12 rounded-2xl bg-[#4fa8ff]/50 text-white font-semibold text-sm hover:bg-[#3a90f0] transition-colors shadow-lg shadow-[#0F0E47]/50"
             >
               Re-rate this song
             </button>

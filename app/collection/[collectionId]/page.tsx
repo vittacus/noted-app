@@ -98,7 +98,7 @@ export default function CollectionPage() {
     <div className="page-enter">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.back()} className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#505081]/60 flex items-center justify-center hover:bg-[#505081]/30 transition-colors shrink-0">
+        <button onClick={() => router.back()} className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#8686AC]/30 flex items-center justify-center hover:bg-[#505081]/30 transition-colors shrink-0">
           <ArrowLeft size={16} className="text-[#8686AC]" />
         </button>
         <div>
@@ -119,12 +119,12 @@ export default function CollectionPage() {
 
       <div className="space-y-2 mb-6">
         {songs.map((entry, i) => (
-          <div key={entry.id} className="flex items-center gap-3 bg-[#272757] rounded-2xl p-3 border border-[#505081]/40">
+          <div key={entry.id} className="flex items-center gap-3 bg-[#2D2D6B] rounded-2xl p-3 border border-[#8686AC]/20">
             <span className="text-sm font-black text-[#8686AC]/55 w-5 text-right shrink-0">{i + 1}</span>
             <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
               {entry.song.album_art_url
                 ? <Image src={entry.song.album_art_url} alt={entry.song.album_name} fill className="object-cover" sizes="44px" />
-                : <div className="w-full h-full bg-gradient-to-br from-[#080735] to-[#1A1A55]" />}
+                : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm text-slate-100 truncate">
@@ -152,12 +152,12 @@ export default function CollectionPage() {
           disabled
           onMouseEnter={() => setTooltipVisible(true)}
           onMouseLeave={() => setTooltipVisible(false)}
-          className="w-full py-3 rounded-2xl border border-[#505081]/60 text-[#8686AC]/75 text-sm font-semibold cursor-not-allowed flex items-center justify-center gap-2 opacity-50"
+          className="w-full py-3 rounded-2xl border border-[#8686AC]/30 text-[#8686AC]/75 text-sm font-semibold cursor-not-allowed flex items-center justify-center gap-2 opacity-50"
         >
           <span>🎵</span> Export to Spotify playlist
         </button>
         {tooltipVisible && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#272757] border border-[#505081]/60 rounded-xl text-xs text-[#8686AC] whitespace-nowrap shadow-lg">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#2D2D6B] border border-[#8686AC]/30 rounded-xl text-xs text-[#8686AC] whitespace-nowrap shadow-lg">
             Coming soon — connect your Spotify account to enable this
           </div>
         )}

@@ -2,9 +2,10 @@
 
 /* ── Blue Eclipse Palette ── */
 :root {
-  --bg-primary:   #0F0E47;   /* darkest navy — main background */
-  --bg-card:      #272757;   /* dark blue-purple — card surfaces */
-  --bg-surface:   #505081;   /* medium purple-gray — borders, secondary surfaces */
+  --bg-nav:       #0F0E47;   /* darkest navy — reserved for navbar/chrome frame */
+  --bg-primary:   #1A1A4E;   /* primary background — slightly lighter than nav */
+  --bg-card:      #2D2D6B;   /* card/surface backgrounds — pops off the background */
+  --bg-surface:   #505081;   /* medium purple-gray — secondary surfaces */
   --text-muted:   #8686AC;   /* light lavender — subtitles, placeholders */
   --accent:       #4fa8ff;   /* cyan blue — kept unchanged */
 
@@ -66,7 +67,7 @@ body {
 .music-note {
   position: fixed;
   color: #4fa8ff;
-  opacity: 0.06;
+  opacity: 0.07;
   pointer-events: none;
   user-select: none;
   font-size: 0.9rem;

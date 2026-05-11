@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} min-h-full bg-[#0F0E47] text-slate-100`}>
+      <body className={`${inter.className} min-h-full bg-[#1A1A4E] text-slate-100`}>
         <MusicNotes />
         <div className="relative z-10">
           <Navigation />
