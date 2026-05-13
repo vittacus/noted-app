@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
-import { ArrowUpDown, Music2, LayoutGrid, Swords } from "lucide-react";
+import { Music2, LayoutGrid, Swords } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Rating, Song } from "@/types";
@@ -59,6 +59,7 @@ export default function LibraryPage() {
   const [ratings, setRatings] = useState<RatingWithSong[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortKey>("score");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc"); // per-key default: score↓, artist↑, date↓
   const [genre, setGenre] = useState<string>("all");
   const [view, setView] = useState<ViewMode>("list");
   const [libraryMode, setLibraryMode] = useState<LibraryMode>("songs");
@@ -160,9 +161,10 @@ export default function LibraryPage() {
   const filtered = ratings
     .filter((r) => genre === "all" || (r.genre_tags ?? []).includes(genre))
     .sort((a, b) => {
-      if (sort === "score") return b.overall_score - a.overall_score;
-      if (sort === "artist") return a.song.artist.localeCompare(b.song.artist);
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      const dir = sortDir === "desc" ? 1 : -1;
+      if (sort === "score")  return dir * (b.overall_score - a.overall_score);
+      if (sort === "artist") return dir * a.song.artist.localeCompare(b.song.artist);
+      return dir * (new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     });
 
   function openReRate(r: RatingWithSong) {
@@ -293,28 +295,56 @@ export default function LibraryPage() {
       {/* ── SONGS VIEW ── */}
       {libraryMode === "songs" && (
         <>
-          {/* Sort + genre filter */}
-          <div className="flex gap-2 mb-4 overflow-x-auto pb-1 -mx-4 px-4">
-            {(["score", "artist", "date"] as SortKey[]).map((s) => (
-              <button key={s} onClick={() => setSort(s)}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
-                  sort === s ? "bg-[#4fa8ff]/50 text-white border-[#4fa8ff]" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
-                }`}>
-                <ArrowUpDown size={11} />
-                {s.charAt(0).toUpperCase() + s.slice(1)}
-              </button>
-            ))}
-            <div className="w-px bg-[#505081]/30 mx-1 self-stretch" />
-            <button onClick={() => setGenre("all")}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
-                genre === "all" ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
-              }`}>All</button>
-            {genres.map((g) => (
-              <button key={g} onClick={() => setGenre(g)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
-                  genre === g ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
-                }`}>{g}</button>
-            ))}
+          {/* ── Row 1: Sort — fixed width, no scroll ── */}
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[10px] font-semibold text-[#8686AC]/60 uppercase tracking-wide w-9 shrink-0">Sort</span>
+            <div className="flex gap-2">
+              {(["score", "artist", "date"] as SortKey[]).map((s) => {
+                const isActive = sort === s;
+                // Default direction per key: score↓, artist↑ A-Z, date↓ newest
+                const defaultDir: "asc" | "desc" = s === "artist" ? "asc" : "desc";
+                const currentDir = isActive ? sortDir : defaultDir;
+                const arrow = currentDir === "desc" ? "↓" : "↑";
+                const label = s.charAt(0).toUpperCase() + s.slice(1);
+
+                function handleClick() {
+                  if (isActive) {
+                    setSortDir((d) => d === "desc" ? "asc" : "desc");
+                  } else {
+                    setSort(s);
+                    setSortDir(defaultDir);
+                  }
+                }
+
+                return (
+                  <button key={s} onClick={handleClick}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
+                      isActive
+                        ? "bg-[#4fa8ff]/50 text-white border-[#4fa8ff]"
+                        : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
+                    }`}>
+                    {arrow} {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ── Row 2: Genre — horizontally scrollable ── */}
+          <div className="flex items-center gap-2 mb-5">
+            <span className="text-[10px] font-semibold text-[#8686AC]/60 uppercase tracking-wide w-9 shrink-0">Genre</span>
+            <div className="flex gap-2 overflow-x-auto pb-0.5 -mr-4 pr-4">
+              <button onClick={() => setGenre("all")}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap shrink-0 ${
+                  genre === "all" ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
+                }`}>All</button>
+              {genres.map((g) => (
+                <button key={g} onClick={() => setGenre(g)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap shrink-0 ${
+                    genre === g ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
+                  }`}>{g}</button>
+              ))}
+            </div>
           </div>
 
           {loading && <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-[#4fa8ff] border-t-transparent rounded-full animate-spin" /></div>}
