@@ -14,7 +14,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} min-h-full bg-[#0D0D0D] text-slate-100`}>
+      {/* style forces background even if Tailwind CSS variable cascade is overridden */}
+      <body className={`${inter.className} min-h-full text-white`} style={{ backgroundColor: "#0D0D0D" }}>
         <MusicNotes />
         <div className="relative z-10">
           <Navigation />
