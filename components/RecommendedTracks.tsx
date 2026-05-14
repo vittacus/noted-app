@@ -128,13 +128,15 @@ export default function RecommendedTracks({
           <button
             key={track.id}
             onClick={() => handleRate(track)}
-            className="shrink-0 w-[120px] bg-[#1A1A1A] rounded-2xl border border-white/8 overflow-hidden flex flex-col text-left hover:border-white/10 hover:bg-[#242424] active:scale-95 transition-all"
+            className="shrink-0 w-[120px] rounded-2xl border border-white/8 overflow-hidden flex flex-col text-left hover:border-white/15 active:scale-95 transition-all"
+            style={{ backgroundColor: "#1A1A1A" }}
           >
-            <div className="relative w-full aspect-square bg-white/5">
+            {/* Image container — explicit dark bg so no bleed from album art */}
+            <div className="relative w-full aspect-square overflow-hidden" style={{ backgroundColor: "#1A1A1A" }}>
               {track.album?.images?.[0] ? (
                 <Image src={track.album.images[0].url} alt={track.album?.name ?? ""} fill className="object-cover" sizes="120px" />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-[#0D0D0D] to-[#0D0D0D]" />
+                <div className="w-full h-full" style={{ backgroundColor: "#242424" }} />
               )}
             </div>
             <div className="p-2 flex flex-col flex-1 gap-1">
