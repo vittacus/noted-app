@@ -78,6 +78,13 @@ export default function LibraryPage() {
   // Correct artist names from Spotify (fixes "Tyler" → "Tyler, The Creator")
   const [albumArtists, setAlbumArtists] = useState<Map<string, string>>(new Map());
 
+  // Album tab sort / filter state
+  type AlbumSortKey = "score" | "artist" | "date";
+  const [albumSort, setAlbumSort] = useState<AlbumSortKey>("score");
+  const [albumSortDir, setAlbumSortDir] = useState<"asc" | "desc">("desc");
+  const [albumGenre, setAlbumGenre] = useState<string>("all");
+  const [albumStatus, setAlbumStatus] = useState<"all" | "complete">("all");
+
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
@@ -218,7 +225,37 @@ export default function LibraryPage() {
       </div>
 
       {/* ── ALBUMS VIEW ── */}
-      {libraryMode === "albums" && (
+      {libraryMode === "albums" && (() => {
+        // All genre tags across all album songs (for the genre filter pills)
+        const albumAllGenres = [...new Set(
+          albumGroups.flatMap((a) => a.songs.flatMap((s: any) => s.genre_tags ?? []))
+        )].sort();
+
+        // Apply sort + filters
+        const sortedAlbums = albumGroups.slice().sort((a, b) => {
+          const dir = albumSortDir === "desc" ? 1 : -1;
+          if (albumSort === "score")  return dir * (b.avgScore - a.avgScore);
+          if (albumSort === "artist") {
+            const na = (a.spotifyAlbumId && albumArtists.get(a.spotifyAlbumId)) ?? a.artist;
+            const nb = (b.spotifyAlbumId && albumArtists.get(b.spotifyAlbumId)) ?? b.artist;
+            return dir * na.localeCompare(nb);
+          }
+          // date: newest rated track per album
+          const latestA = Math.max(...a.songs.map((s: any) => new Date(s.created_at ?? 0).getTime()));
+          const latestB = Math.max(...b.songs.map((s: any) => new Date(s.created_at ?? 0).getTime()));
+          return dir * (latestB - latestA);
+        });
+
+        const filteredAlbums = sortedAlbums.filter((a) => {
+          if (albumGenre !== "all" && !a.songs.some((s: any) => (s.genre_tags ?? []).includes(albumGenre))) return false;
+          if (albumStatus === "complete") {
+            const total = a.spotifyAlbumId ? albumTotals.get(a.spotifyAlbumId) ?? null : null;
+            if (total === null || a.songs.length < total) return false;
+          }
+          return true;
+        });
+
+        return (
         <>
           {loading && <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-[#4fa8ff] border-t-transparent rounded-full animate-spin" /></div>}
           {!loading && albumGroups.length === 0 && (
@@ -228,8 +265,83 @@ export default function LibraryPage() {
               <Link href="/search" className="text-[#4fa8ff] text-sm font-semibold hover:underline mt-1 block">Rate songs →</Link>
             </div>
           )}
+
+          {albumGroups.length > 0 && (
+            <>
+              {/* ── Row 1: Sort ── */}
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[10px] font-semibold text-[#8686AC]/60 uppercase tracking-wide w-9 shrink-0">Sort</span>
+                <div className="flex gap-2">
+                  {(["score", "artist", "date"] as AlbumSortKey[]).map((s) => {
+                    const isActive = albumSort === s;
+                    const defaultDir: "asc" | "desc" = s === "artist" ? "asc" : "desc";
+                    const currentDir = isActive ? albumSortDir : defaultDir;
+                    const arrow = currentDir === "desc" ? "↓" : "↑";
+                    const label = s.charAt(0).toUpperCase() + s.slice(1);
+                    return (
+                      <button key={s}
+                        onClick={() => {
+                          if (isActive) setAlbumSortDir((d) => d === "desc" ? "asc" : "desc");
+                          else { setAlbumSort(s); setAlbumSortDir(defaultDir); }
+                        }}
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
+                          isActive
+                            ? "bg-[#4fa8ff]/50 text-white border-[#4fa8ff]"
+                            : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
+                        }`}>
+                        {arrow} {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* ── Row 2: Genre ── */}
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[10px] font-semibold text-[#8686AC]/60 uppercase tracking-wide w-9 shrink-0">Genre</span>
+                <div className="flex gap-2 overflow-x-auto pb-0.5 -mr-4 pr-4">
+                  {["all", ...albumAllGenres].map((g) => (
+                    <button key={g} onClick={() => setAlbumGenre(g)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap shrink-0 ${
+                        albumGenre === g ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
+                      }`}>
+                      {g === "all" ? "All" : g}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── Row 3: Status ── */}
+              <div className="flex items-center gap-2 mb-5">
+                <span className="text-[10px] font-semibold text-[#8686AC]/60 uppercase tracking-wide w-9 shrink-0">Status</span>
+                <div className="flex gap-2">
+                  {(["all", "complete"] as const).map((s) => (
+                    <button key={s} onClick={() => setAlbumStatus(s)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
+                        albumStatus === s ? "bg-[#4fa8ff]/50 text-white border-[#4fa8ff]" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
+                      }`}>
+                      {s === "all" ? "All" : "Complete only"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {filteredAlbums.length === 0 && albumGroups.length > 0 && (
+            <div className="text-center py-12">
+              <p className="font-medium text-[#8686AC]">
+                {albumStatus === "complete" ? "No fully rated albums yet" : `No albums in this genre yet`}
+              </p>
+              <button onClick={() => { setAlbumGenre("all"); setAlbumStatus("all"); }}
+                className="text-[#4fa8ff] text-xs font-semibold mt-2 hover:underline">
+                Clear filters →
+              </button>
+            </div>
+          )}
+
           <div className="space-y-2">
-            {albumGroups.map((a) => {
+            {filteredAlbums.map((a) => {
               const total = a.spotifyAlbumId ? albumTotals.get(a.spotifyAlbumId) ?? null : null;
               const rated = a.songs.length;
               const pct = total ? Math.round((rated / total) * 100) : null;
@@ -290,7 +402,8 @@ export default function LibraryPage() {
             })}
           </div>
         </>
-      )}
+        );
+      })()}
 
       {/* ── SONGS VIEW ── */}
       {libraryMode === "songs" && (
