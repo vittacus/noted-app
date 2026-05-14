@@ -32,10 +32,10 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <span className="text-4xl font-black text-[#4fa8ff] tracking-tight">noted</span>
-          <p className="text-[#8686AC] text-sm mt-2">Rate the music you love</p>
+          <p className="text-white/50 text-sm mt-2">Rate the music you love</p>
         </div>
 
-        <form onSubmit={handleLogin} className="bg-[#2D2D6B] rounded-3xl border border-[#8686AC]/20 p-6 space-y-4">
+        <form onSubmit={handleLogin} className="bg-[#1A1A1A] rounded-3xl border border-white/8 p-6 space-y-4">
           <h1 className="text-lg font-bold text-slate-100">Sign in</h1>
 
           {error && (
@@ -43,26 +43,26 @@ export default function LoginPage() {
           )}
 
           <div>
-            <label className="text-xs font-semibold text-[#8686AC] uppercase tracking-wide block mb-1.5">Email</label>
+            <label className="text-xs font-semibold text-white/50 uppercase tracking-wide block mb-1.5">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="w-full px-3.5 py-3 rounded-xl border border-[#8686AC]/30 bg-[#505081]/20 text-sm text-slate-100 placeholder-[#8686AC]/60 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
+              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-[#8686AC] uppercase tracking-wide block mb-1.5">Password</label>
+            <label className="text-xs font-semibold text-white/50 uppercase tracking-wide block mb-1.5">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              className="w-full px-3.5 py-3 rounded-xl border border-[#8686AC]/30 bg-[#505081]/20 text-sm text-slate-100 placeholder-[#8686AC]/60 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
+              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
             />
           </div>
 
@@ -75,7 +75,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="text-center text-sm text-[#8686AC] mt-5">
+        <p className="text-center text-sm text-white/50 mt-5">
           Don&apos;t have an account?{" "}
           <Link href="/auth/signup" className="text-[#4fa8ff] font-semibold hover:underline">
             Sign up

@@ -108,7 +108,7 @@ export default function RatingComments({ ratingId }: { ratingId: string }) {
   return (
     <div className="px-4 pb-3">
       <button onClick={loadComments}
-        className="flex items-center gap-1.5 text-xs text-[#8686AC]/75 hover:text-[#8686AC] transition-colors">
+        className="flex items-center gap-1.5 text-xs text-white/38 hover:text-white/50 transition-colors">
         <MessageCircle size={12} />
         {loading ? "Loading…" : label}
       </button>
@@ -116,14 +116,14 @@ export default function RatingComments({ ratingId }: { ratingId: string }) {
       {expanded && (
         <div className="mt-2 space-y-2">
           {comments.length === 0 && !submitting && (
-            <p className="text-xs text-[#8686AC]/55 italic">No comments yet.</p>
+            <p className="text-xs text-white/28 italic">No comments yet.</p>
           )}
           {comments.map((c) => (
             <div key={c.id} className="flex gap-2">
               <span className="text-xs font-semibold text-[#4fa8ff] shrink-0 mt-0.5">
                 {c.user?.username ?? "?"}
               </span>
-              <p className="text-xs text-[#8686AC] leading-relaxed">{c.content}</p>
+              <p className="text-xs text-white/50 leading-relaxed">{c.content}</p>
             </div>
           ))}
 
@@ -136,7 +136,7 @@ export default function RatingComments({ ratingId }: { ratingId: string }) {
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Add a comment…"
                 maxLength={500}
-                className="flex-1 text-xs bg-[#505081]/20 border border-[#8686AC]/30 rounded-xl px-3 py-2 text-slate-200 placeholder-[#8686AC]/50 focus:outline-none focus:ring-1 focus:ring-[#4fa8ff]/50"
+                className="flex-1 text-xs bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-slate-200 placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-[#4fa8ff]/50"
               />
               <button type="submit" disabled={!text.trim() || submitting}
                 className="w-8 h-8 rounded-xl bg-[#4fa8ff]/10 border border-[#4fa8ff]/20 flex items-center justify-center hover:bg-[#4fa8ff]/20 transition-colors disabled:opacity-40">
@@ -144,7 +144,7 @@ export default function RatingComments({ ratingId }: { ratingId: string }) {
               </button>
             </form>
           ) : (
-            <p className="text-xs text-[#8686AC]/55 mt-1">
+            <p className="text-xs text-white/28 mt-1">
               <a href="/auth/login" className="text-[#4fa8ff] hover:underline">Sign in</a> to comment
             </p>
           )}

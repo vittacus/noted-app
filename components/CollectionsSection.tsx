@@ -75,7 +75,7 @@ export default function CollectionsSection({ userId }: { userId: string }) {
             onChange={(e) => setNewName(e.target.value.slice(0, 50))}
             onKeyDown={(e) => e.key === "Enter" && create()}
             placeholder="Collection name…"
-            className="flex-1 px-3 py-2.5 rounded-xl border border-[#8686AC]/30 bg-[#505081]/20 text-sm text-slate-100 placeholder-[#8686AC]/50 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
+            className="flex-1 px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-[#4fa8ff]/50"
           />
           <button
             onClick={create}
@@ -88,7 +88,7 @@ export default function CollectionsSection({ userId }: { userId: string }) {
       )}
 
       {collections.length === 0 && !showInput && (
-        <p className="text-xs text-[#8686AC]/75 py-2">No collections yet. Tap + New to create one.</p>
+        <p className="text-xs text-white/38 py-2">No collections yet. Tap + New to create one.</p>
       )}
 
       <div className="space-y-2">
@@ -96,16 +96,16 @@ export default function CollectionsSection({ userId }: { userId: string }) {
           <Link
             key={col.id}
             href={`/collection/${col.id}`}
-            className="flex items-center gap-3 bg-[#2D2D6B] rounded-2xl p-3 border border-[#8686AC]/20 hover:border-[#8686AC]/30 transition-colors block"
+            className="flex items-center gap-3 bg-[#1A1A1A] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block"
           >
             <div className="w-10 h-10 rounded-xl bg-[#4fa8ff]/10 border border-[#4fa8ff]/20 flex items-center justify-center shrink-0">
               <FolderOpen size={18} className="text-[#4fa8ff]" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm text-slate-100 truncate">{col.name}</p>
-              <p className="text-xs text-[#8686AC] mt-0.5">{col.song_count} song{col.song_count !== 1 ? "s" : ""}</p>
+              <p className="text-xs text-white/50 mt-0.5">{col.song_count} song{col.song_count !== 1 ? "s" : ""}</p>
             </div>
-            <span className="text-xs text-[#8686AC]/75">→</span>
+            <span className="text-xs text-white/38">→</span>
           </Link>
         ))}
       </div>

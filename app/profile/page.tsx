@@ -166,29 +166,29 @@ export default async function ProfilePage() {
 
       {/* ── HEADER ROW ── */}
       <div className="flex items-center justify-between mb-6">
-        <button className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#8686AC]/30 flex items-center justify-center">
-          <Menu size={17} className="text-[#8686AC]" />
+        <button className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+          <Menu size={17} className="text-white/50" />
         </button>
         <p className="font-bold text-base text-slate-100 tracking-tight">{profile?.username}</p>
         <div className="flex gap-2">
-          <button className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#8686AC]/30 flex items-center justify-center hover:bg-[#505081]/30 transition-colors">
-            <Share2 size={15} className="text-[#8686AC]" />
+          <button className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/8 transition-colors">
+            <Share2 size={15} className="text-white/50" />
           </button>
-          <button className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#8686AC]/30 flex items-center justify-center hover:bg-[#505081]/30 transition-colors">
-            <Settings size={15} className="text-[#8686AC]" />
+          <button className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/8 transition-colors">
+            <Settings size={15} className="text-white/50" />
           </button>
         </div>
       </div>
 
       {/* ── AVATAR + NAME ── */}
       <div className="flex flex-col items-center mb-6">
-        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#4fa8ff] to-[#2D2D6B] flex items-center justify-center text-white text-3xl font-black mb-3 overflow-hidden shadow-xl shadow-[#4fa8ff]/20">
+        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#4fa8ff] to-[#1A1A1A] flex items-center justify-center text-white text-3xl font-black mb-3 overflow-hidden shadow-xl shadow-[#4fa8ff]/20">
           {profile?.avatar_url
             ? <Image src={profile.avatar_url} alt={profile.username} width={80} height={80} className="object-cover" />
             : (profile?.username?.[0] ?? "?").toUpperCase()}
         </div>
         <h1 className="text-2xl font-black text-slate-100 tracking-tight">{profile?.username}</h1>
-        <p className="text-xs text-[#8686AC] mt-1">Member since {memberSince}</p>
+        <p className="text-xs text-white/50 mt-1">Member since {memberSince}</p>
       </div>
 
       {/* ── STATS PILLS ── */}
@@ -198,9 +198,9 @@ export default async function ProfilePage() {
           { label: "Following", value: formatCount(0) },
           { label: "Avg Rating", value: avgScore ?? "—" },
         ].map((s) => (
-          <div key={s.label} className="flex-1 bg-[#2D2D6B] rounded-2xl py-3 text-center border border-[#8686AC]/20">
+          <div key={s.label} className="flex-1 bg-[#1A1A1A] rounded-2xl py-3 text-center border border-white/8">
             <p className="text-lg font-black text-slate-100 tabular-nums">{s.value}</p>
-            <p className="text-xs text-[#8686AC] mt-0.5">{s.label}</p>
+            <p className="text-xs text-white/50 mt-0.5">{s.label}</p>
           </div>
         ))}
       </div>
@@ -215,16 +215,16 @@ export default async function ProfilePage() {
           <div className="space-y-2">
             {top5Songs.map((r: any, i: number) => (
               <Link key={r.id} href={`/song/${r.id}`}
-                className="flex items-center gap-3 bg-[#2D2D6B] rounded-2xl p-3 border border-[#8686AC]/20 hover:border-[#8686AC]/30 transition-colors block">
-                <span className="text-sm font-black text-[#8686AC]/75 w-5 text-right shrink-0">{i + 1}</span>
-                <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
+                className="flex items-center gap-3 bg-[#1A1A1A] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block">
+                <span className="text-sm font-black text-white/38 w-5 text-right shrink-0">{i + 1}</span>
+                <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
                   {r.song?.album_art_url
                     ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="40px" />
-                    : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
+                    : <div className="w-full h-full bg-gradient-to-br from-[#0D0D0D] to-[#0D0D0D]" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
-                  <p className="text-xs text-[#8686AC] truncate">{r.song?.artist}</p>
+                  <p className="text-xs text-white/50 truncate">{r.song?.artist}</p>
                 </div>
                 <ScoreCircle score={r.overall_score} size={40} />
               </Link>
@@ -245,26 +245,26 @@ export default async function ProfilePage() {
             {topAlbums.map((album, i) => {
               const row = (
                 <div className="flex items-center gap-3 p-3">
-                  <span className="text-sm font-black text-[#8686AC]/75 w-5 text-right shrink-0">{i + 1}</span>
-                  <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
+                  <span className="text-sm font-black text-white/38 w-5 text-right shrink-0">{i + 1}</span>
+                  <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
                     {album.art
                       ? <Image src={album.art} alt={album.name} fill className="object-cover" sizes="40px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
+                      : <div className="w-full h-full bg-gradient-to-br from-[#0D0D0D] to-[#0D0D0D]" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm text-slate-100 truncate">{album.name}</p>
-                    <p className="text-xs text-[#8686AC]/75 mt-0.5">{album.count} track{album.count !== 1 ? "s" : ""} rated</p>
+                    <p className="text-xs text-white/38 mt-0.5">{album.count} track{album.count !== 1 ? "s" : ""} rated</p>
                   </div>
                   <ScoreCircle score={album.avgScore} size={40} />
                 </div>
               );
               return album.spotifyId ? (
                 <Link key={i} href={`/album/${album.spotifyId}`}
-                  className="block bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 hover:border-[#8686AC]/30 transition-colors">
+                  className="block bg-[#1A1A1A] rounded-2xl border border-white/8 hover:border-white/10 transition-colors">
                   {row}
                 </Link>
               ) : (
-                <div key={i} className="bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20">{row}</div>
+                <div key={i} className="bg-[#1A1A1A] rounded-2xl border border-white/8">{row}</div>
               );
             })}
           </div>
@@ -273,24 +273,24 @@ export default async function ProfilePage() {
 
       {/* ── TASTE CARD ── */}
       {totalRated >= 3 && (
-        <div className="bg-[#2D2D6B] rounded-3xl p-5 border border-[#8686AC]/20 mb-4">
+        <div className="bg-[#1A1A1A] rounded-3xl p-5 border border-white/8 mb-4">
           <h2 className="font-bold text-base text-slate-100 mb-4">Your taste</h2>
 
           {/* Stats bar inside taste card */}
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 mb-6">
             {STATS.map((s) => (
-              <div key={s.label} className="shrink-0 rounded-2xl border border-[#8686AC]/20 px-4 py-3 text-center min-w-[74px]"
+              <div key={s.label} className="shrink-0 rounded-2xl border border-white/8 px-4 py-3 text-center min-w-[74px]"
                 style={{ background: s.bg, borderLeft: `3px solid ${s.accent}` }}>
                 <p className="text-lg leading-none mb-1.5">{s.icon}</p>
                 <p className="text-xl font-black leading-none tabular-nums" style={{ color: s.accent }}>{s.value}</p>
-                <p className="text-[10px] text-[#8686AC] mt-1.5 leading-tight">{s.label}</p>
+                <p className="text-[10px] text-white/50 mt-1.5 leading-tight">{s.label}</p>
               </div>
             ))}
           </div>
 
           {/* Dimension circles */}
           <div className="mb-6">
-            <p className="text-xs text-[#8686AC]/75 uppercase tracking-wide font-semibold mb-4">Dimension scores</p>
+            <p className="text-xs text-white/38 uppercase tracking-wide font-semibold mb-4">Dimension scores</p>
             <div className="flex justify-around items-end">
               {([
                 { key: "Replay Value", label: "Replay",     color: "#4fa8ff" },
@@ -312,7 +312,7 @@ export default async function ProfilePage() {
                         </p>
                       </div>
                     </div>
-                    <p className="text-xs font-semibold text-[#8686AC]">{label}</p>
+                    <p className="text-xs font-semibold text-white/50">{label}</p>
                   </div>
                 );
               })}
@@ -321,10 +321,10 @@ export default async function ProfilePage() {
 
           {topArtist && (
             <div className="mb-5">
-              <p className="text-xs text-[#8686AC]/75 uppercase tracking-wide font-semibold mb-1">Top artist</p>
+              <p className="text-xs text-white/38 uppercase tracking-wide font-semibold mb-1">Top artist</p>
               <p className="text-sm font-semibold text-slate-200">
                 {topArtist[0]}{" "}
-                <span className="text-[#8686AC] font-normal">— {topArtist[1]} song{topArtist[1] !== 1 ? "s" : ""} rated</span>
+                <span className="text-white/50 font-normal">— {topArtist[1]} song{topArtist[1] !== 1 ? "s" : ""} rated</span>
               </p>
             </div>
           )}
@@ -336,7 +336,7 @@ export default async function ProfilePage() {
       {/* Sign out */}
       <form action={handleSignOut}>
         <button type="submit"
-          className="w-full py-3 rounded-2xl border border-[#8686AC]/30 text-[#8686AC] text-sm font-semibold hover:bg-[#505081]/20 transition-colors">
+          className="w-full py-3 rounded-2xl border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/5 transition-colors">
           Sign out
         </button>
       </form>

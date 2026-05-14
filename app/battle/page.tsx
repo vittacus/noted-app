@@ -141,9 +141,9 @@ export default function BattlePage() {
   if (allRatings.length < 2) {
     return (
       <div className="page-enter text-center py-20">
-        <Swords size={40} className="text-[#8686AC]/75 mx-auto mb-4" />
+        <Swords size={40} className="text-white/38 mx-auto mb-4" />
         <p className="font-bold text-slate-100 text-lg mb-2">Not enough rated songs</p>
-        <p className="text-[#8686AC] text-sm mb-6">Rate at least 2 songs to start battling</p>
+        <p className="text-white/50 text-sm mb-6">Rate at least 2 songs to start battling</p>
         <Link href="/search" className="inline-block px-6 py-3 bg-[#4fa8ff]/80 text-white font-semibold rounded-2xl hover:bg-[#4fa8ff] transition-colors">
           Rate songs →
         </Link>
@@ -163,7 +163,7 @@ export default function BattlePage() {
             ? `You've completed ${MAX_BATTLES} battles this session.`
             : "You've compared all similar songs in your library."}
         </p>
-        <p className="text-sm text-[#8686AC] mb-10">Scores updated based on your picks.</p>
+        <p className="text-sm text-white/50 mb-10">Scores updated based on your picks.</p>
         <div className="flex flex-col gap-3 items-center">
           <button
             onClick={() => { setUsedPairs(new Set()); setBattleCount(0); setAllDone(false); pickPair(allRatings, new Set(), 0); }}
@@ -172,7 +172,7 @@ export default function BattlePage() {
           </button>
           <button
             onClick={() => router.push("/library")}
-            className="px-8 py-3.5 border-2 border-[#8686AC]/40 text-white/80 font-semibold rounded-2xl hover:bg-[#505081]/30 hover:border-[#8686AC]/50 transition-colors text-base">
+            className="px-8 py-3.5 border-2 border-white/12 text-white/80 font-semibold rounded-2xl hover:bg-white/8 hover:border-white/15 transition-colors text-base">
             Back to library
           </button>
         </div>
@@ -185,14 +185,14 @@ export default function BattlePage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.back()} className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#8686AC]/30 flex items-center justify-center hover:bg-[#505081]/30 transition-colors">
-            <ArrowLeft size={16} className="text-[#8686AC]" />
+          <button onClick={() => router.back()} className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/8 transition-colors">
+            <ArrowLeft size={16} className="text-white/50" />
           </button>
           <div>
             <h1 className="font-black text-xl text-slate-100 flex items-center gap-2">
               <Swords size={20} className="text-[#4fa8ff]" /> Battle mode
             </h1>
-            <p className="text-xs text-[#8686AC]">Pick your preference — scores adjust live</p>
+            <p className="text-xs text-white/50">Pick your preference — scores adjust live</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -217,36 +217,36 @@ export default function BattlePage() {
         <div className="flex gap-3 mb-5">
           {pair.map((song, idx) => (
             <button key={song.ratingId} onClick={() => handlePick(song, pair[1 - idx]!)} disabled={selecting}
-              className="flex-1 flex flex-col rounded-3xl border-2 border-[#8686AC]/30 bg-[#2D2D6B] overflow-hidden hover:border-[#4fa8ff]/50 hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 disabled:opacity-60">
-              <div className="relative w-full aspect-square bg-[#505081]/20">
+              className="flex-1 flex flex-col rounded-3xl border-2 border-white/10 bg-[#1A1A1A] overflow-hidden hover:border-[#4fa8ff]/50 hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 disabled:opacity-60">
+              <div className="relative w-full aspect-square bg-white/5">
                 {song.albumArt
                   ? <Image src={song.albumArt} alt={song.albumName} fill className="object-cover" sizes="50vw" />
-                  : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
+                  : <div className="w-full h-full bg-gradient-to-br from-[#0D0D0D] to-[#0D0D0D]" />}
                 <div className="absolute bottom-2 right-2">
                   <ScoreCircle score={song.score} size={32} />
                 </div>
               </div>
               <div className="p-3 text-left">
                 <p className="font-bold text-sm text-slate-100 line-clamp-2 leading-tight">{song.title}</p>
-                <p className="text-xs text-[#8686AC] truncate mt-0.5">{song.artist}</p>
+                <p className="text-xs text-white/50 truncate mt-0.5">{song.artist}</p>
               </div>
             </button>
           ))}
         </div>
       )}
 
-      <p className="text-center text-xs text-[#8686AC]/75 mb-5">Tap the song you prefer</p>
+      <p className="text-center text-xs text-white/38 mb-5">Tap the song you prefer</p>
 
       {/* Skip */}
       <button onClick={() => pickPair(allRatings, usedPairs, battleCount)} disabled={selecting}
-        className="w-full py-3 rounded-2xl border border-[#8686AC]/30 text-xs font-semibold text-[#8686AC] hover:bg-[#505081]/20 transition-colors mb-3">
+        className="w-full py-3 rounded-2xl border border-white/10 text-xs font-semibold text-white/50 hover:bg-white/5 transition-colors mb-3">
         Skip this matchup
       </button>
-      <p className="text-center text-xs text-[#8686AC]/55 mb-3">{battleCount} of {MAX_BATTLES} battles</p>
+      <p className="text-center text-xs text-white/28 mb-3">{battleCount} of {MAX_BATTLES} battles</p>
 
       {/* Rerate a song */}
       <Link href="/search"
-        className="w-full py-3 rounded-2xl border border-[#8686AC]/20 text-xs font-semibold text-[#8686AC]/75 hover:text-[#8686AC] transition-colors flex items-center justify-center gap-1.5">
+        className="w-full py-3 rounded-2xl border border-white/8 text-xs font-semibold text-white/38 hover:text-white/50 transition-colors flex items-center justify-center gap-1.5">
         <RefreshCw size={12} /> Re-rate a song
       </Link>
     </div>

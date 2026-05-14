@@ -34,12 +34,12 @@ export default function SongCard({
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <p className="font-semibold text-sm text-slate-900 truncate leading-tight">{song.title}</p>
-          <span className="text-xs text-[#8686AC] shrink-0 mt-0.5">
+          <p className="font-semibold text-sm text-gray-900 truncate leading-tight">{song.title}</p>
+          <span className="text-xs text-white/50 shrink-0 mt-0.5">
             {formatDuration(song.duration_seconds)}
           </span>
         </div>
-        <p className="text-xs text-[#8686AC] truncate mt-0.5">{song.artist}</p>
+        <p className="text-xs text-white/50 truncate mt-0.5">{song.artist}</p>
         {rating && (
           <div className="mt-1.5">
             <span className={`text-sm font-bold ${scoreColor(rating.overall_score)}`}>
@@ -62,7 +62,7 @@ export default function SongCard({
             onClick={() => onBookmark?.(song)}
             className="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center transition-colors"
           >
-            <Bookmark size={15} className="text-[#8686AC]" />
+            <Bookmark size={15} className="text-white/50" />
           </button>
         </div>
       )}
