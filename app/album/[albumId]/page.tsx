@@ -87,7 +87,7 @@ export default function AlbumPage() {
     );
   }
 
-  if (!album) return <p className="text-center py-10 text-[#8686AC]">Album not found.</p>;
+  if (!album) return <p className="text-center py-10 text-white/50">Album not found.</p>;
 
   const artUrl = album.images[0]?.url;
   const artist = album.artists.map((a) => a.name).join(", ");
@@ -105,22 +105,22 @@ export default function AlbumPage() {
         )}
         <div className="flex-1 min-w-0 pt-1">
           <h1 className="font-black text-lg text-slate-100 leading-tight">{album.name}</h1>
-          <p className="text-sm text-[#8686AC] mt-0.5">{artist}</p>
-          <p className="text-xs text-[#8686AC]/75">{year} · {album.total_tracks} tracks</p>
+          <p className="text-sm text-white/50 mt-0.5">{artist}</p>
+          <p className="text-xs text-white/38">{year} · {album.total_tracks} tracks</p>
 
           {dbAlbumScore?.calculated !== null && dbAlbumScore && (
             <div className="mt-2">
               <p className={`text-lg font-black ${scoreColor(dbAlbumScore.calculated!)}`}>
                 {dbAlbumScore.calculated!.toFixed(1)}
               </p>
-              <p className="text-xs text-[#8686AC]/75">avg of {ratedCount} rated</p>
+              <p className="text-xs text-white/38">avg of {ratedCount} rated</p>
             </div>
           )}
         </div>
       </div>
 
       {ratedCount > 0 && (
-        <p className="text-xs text-[#8686AC]/75 mb-3">{ratedCount} of {album.total_tracks} tracks rated</p>
+        <p className="text-xs text-white/38 mb-3">{ratedCount} of {album.total_tracks} tracks rated</p>
       )}
 
       <div className="space-y-1.5">
@@ -132,16 +132,16 @@ export default function AlbumPage() {
               key={track.id}
               className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 border transition-all ${
                 rated
-                  ? "bg-[#2D2D6B] border-[#8686AC]/20"
-                  : "bg-[#505081]/10 border-white/[0.03] opacity-60"
+                  ? "bg-[#1A1A1A] border-white/8"
+                  : "bg-white/3 border-white/[0.03] opacity-60"
               }`}
             >
-              <span className="text-xs text-[#8686AC]/75 w-5 text-right shrink-0">{i + 1}</span>
+              <span className="text-xs text-white/38 w-5 text-right shrink-0">{i + 1}</span>
               <div className="flex-1 min-w-0">
-                <p className={`font-medium text-sm truncate ${rated ? "text-slate-100" : "text-[#8686AC]"}`}>
+                <p className={`font-medium text-sm truncate ${rated ? "text-slate-100" : "text-white/50"}`}>
                   {track.name}
                 </p>
-                <p className="text-xs text-[#8686AC]/75 truncate">
+                <p className="text-xs text-white/38 truncate">
                   {track.artists.map((a) => a.name).join(", ")} · {formatDuration(Math.round(track.duration_ms / 1000))}
                 </p>
               </div>

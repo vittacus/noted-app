@@ -97,15 +97,15 @@ export default function RecommendedTracks({
       <div className="mb-8">
         <div className="mb-3">
           <h2 className="font-bold text-base text-slate-100">{title}</h2>
-          <p className="text-xs text-[#8686AC]/75 mt-0.5">Based on your top rated songs</p>
+          <p className="text-xs text-white/38 mt-0.5">Based on your top rated songs</p>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="shrink-0 w-[120px] bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 overflow-hidden animate-pulse">
-              <div className="w-full aspect-square bg-[#505081]/20" />
+            <div key={i} className="shrink-0 w-[120px] bg-[#1A1A1A] rounded-2xl border border-white/8 overflow-hidden animate-pulse">
+              <div className="w-full aspect-square bg-white/5" />
               <div className="p-2 space-y-1.5">
-                <div className="h-2 bg-[#505081]/20 rounded-full w-3/4" />
-                <div className="h-2 bg-[#505081]/20 rounded-full w-1/2" />
+                <div className="h-2 bg-white/5 rounded-full w-3/4" />
+                <div className="h-2 bg-white/5 rounded-full w-1/2" />
               </div>
             </div>
           ))}
@@ -120,7 +120,7 @@ export default function RecommendedTracks({
     <div className="mb-8">
       <div className="mb-3">
         <h2 className="font-bold text-base text-slate-100">{title}</h2>
-        <p className="text-xs text-[#8686AC]/75 mt-0.5">Based on your top rated songs</p>
+        <p className="text-xs text-white/38 mt-0.5">Based on your top rated songs</p>
       </div>
 
       <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
@@ -128,18 +128,18 @@ export default function RecommendedTracks({
           <button
             key={track.id}
             onClick={() => handleRate(track)}
-            className="shrink-0 w-[120px] bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 overflow-hidden flex flex-col text-left hover:border-[#8686AC]/35 hover:bg-[#3A3A80] active:scale-95 transition-all"
+            className="shrink-0 w-[120px] bg-[#1A1A1A] rounded-2xl border border-white/8 overflow-hidden flex flex-col text-left hover:border-white/10 hover:bg-[#242424] active:scale-95 transition-all"
           >
-            <div className="relative w-full aspect-square bg-[#505081]/20">
+            <div className="relative w-full aspect-square bg-white/5">
               {track.album?.images?.[0] ? (
                 <Image src={track.album.images[0].url} alt={track.album?.name ?? ""} fill className="object-cover" sizes="120px" />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />
+                <div className="w-full h-full bg-gradient-to-br from-[#0D0D0D] to-[#0D0D0D]" />
               )}
             </div>
             <div className="p-2 flex flex-col flex-1 gap-1">
               <p className="text-xs font-semibold text-slate-200 line-clamp-2 leading-tight">{track.name}</p>
-              <p className="text-xs text-[#8686AC] truncate">{track.artists.map((a) => a.name).join(", ")}</p>
+              <p className="text-xs text-white/50 truncate">{track.artists.map((a) => a.name).join(", ")}</p>
               <p className="mt-auto pt-1.5 text-xs font-semibold text-[#4fa8ff]">+ Rate</p>
             </div>
           </button>

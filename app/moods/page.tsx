@@ -88,7 +88,7 @@ export default function MoodsPage() {
     return (
       <div className="page-enter text-center py-16">
         <p className="text-4xl mb-3">🎭</p>
-        <p className="font-medium text-[#8686AC]">No moods tagged yet</p>
+        <p className="font-medium text-white/50">No moods tagged yet</p>
         <Link href="/search" className="text-[#4fa8ff] text-sm font-semibold hover:underline mt-2 block">Rate a song →</Link>
       </div>
     );
@@ -97,7 +97,7 @@ export default function MoodsPage() {
   return (
     <div className="page-enter">
       <h1 className="font-black text-2xl text-slate-100 mb-1">Moods</h1>
-      <p className="text-sm text-[#8686AC] mb-5">Your songs by vibe</p>
+      <p className="text-sm text-white/50 mb-5">Your songs by vibe</p>
 
       <div className="grid grid-cols-2 gap-3">
         {moodCards.map((card) => {
@@ -109,7 +109,7 @@ export default function MoodsPage() {
               className={`relative rounded-3xl overflow-hidden border hover:brightness-110 transition-all min-h-[140px] flex flex-col ${
                 preset
                   ? `bg-gradient-to-br ${preset.gradient} ${preset.border}`
-                  : "bg-[#2D2D6B] border-[#8686AC]/30"
+                  : "bg-[#1A1A1A] border-white/10"
               }`}
             >
               {card.previews.length > 0 && (
@@ -127,7 +127,7 @@ export default function MoodsPage() {
                 <span className="text-2xl mb-auto">{preset?.emoji ?? "🎵"}</span>
                 <div className="mt-3">
                   <p className="font-bold text-slate-100 text-sm leading-tight">{card.tag}</p>
-                  <p className="text-xs text-[#8686AC] mt-0.5">{card.count} song{card.count !== 1 ? "s" : ""}</p>
+                  <p className="text-xs text-white/50 mt-0.5">{card.count} song{card.count !== 1 ? "s" : ""}</p>
                 </div>
               </div>
             </Link>

@@ -197,27 +197,29 @@ export default function LibraryPage() {
         <div className="flex gap-2 items-center">
           {/* Battle mode icon button */}
           <Link href="/battle"
-            className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#8686AC]/30 flex items-center justify-center hover:bg-[#505081]/30 transition-colors"
+            className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/8 transition-colors"
             title="Battle mode">
-            <Swords size={15} className="text-[#8686AC]" />
+            <Swords size={15} className="text-white/50" />
           </Link>
           {/* List/grid toggle — songs mode only */}
           {libraryMode === "songs" && (
             <button onClick={() => setView(view === "list" ? "grid" : "list")}
-              className="w-9 h-9 rounded-full bg-[#505081]/20 border border-[#8686AC]/30 flex items-center justify-center hover:bg-[#505081]/30 transition-colors"
+              className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/8 transition-colors"
               title={view === "list" ? "Grid view" : "List view"}>
-              {view === "list" ? <LayoutGrid size={16} className="text-[#8686AC]" /> : <Music2 size={16} className="text-[#8686AC]" />}
+              {view === "list" ? <LayoutGrid size={16} className="text-white/50" /> : <Music2 size={16} className="text-white/50" />}
             </button>
           )}
         </div>
       </div>
 
       {/* Songs / Albums toggle */}
-      <div className="flex gap-1 bg-[#505081]/20 rounded-2xl p-1 mb-5">
+      <div className="flex gap-1 bg-white/5 rounded-2xl p-1 mb-5">
         {(["songs", "albums"] as LibraryMode[]).map((m) => (
           <button key={m} onClick={() => setLibraryMode(m)}
             className={`flex-1 py-2 text-sm font-semibold rounded-xl transition-all capitalize ${
-              libraryMode === m ? "bg-[#2D2D6B] text-[#4fa8ff] shadow-sm" : "text-[#8686AC] hover:text-slate-300"
+              libraryMode === m
+                ? "text-white bg-gradient-accent shadow-sm"
+                : "text-white/50 hover:text-white/80"
             }`}>
             {m} {m === "songs" ? `(${ratings.length})` : `(${albumGroups.length})`}
           </button>
@@ -261,7 +263,7 @@ export default function LibraryPage() {
           {!loading && albumGroups.length === 0 && (
             <div className="text-center py-16">
               <p className="text-4xl mb-3">💿</p>
-              <p className="font-medium text-[#8686AC]">No albums yet</p>
+              <p className="font-medium text-white/50">No albums yet</p>
               <Link href="/search" className="text-[#4fa8ff] text-sm font-semibold hover:underline mt-1 block">Rate songs →</Link>
             </div>
           )}
@@ -270,7 +272,7 @@ export default function LibraryPage() {
             <>
               {/* ── Row 1: Sort ── */}
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-[10px] font-semibold text-[#8686AC]/60 uppercase tracking-wide w-9 shrink-0">Sort</span>
+                <span className="text-[10px] font-semibold text-white/30 uppercase tracking-wide w-9 shrink-0">Sort</span>
                 <div className="flex gap-2">
                   {(["score", "artist", "date"] as AlbumSortKey[]).map((s) => {
                     const isActive = albumSort === s;
@@ -286,8 +288,8 @@ export default function LibraryPage() {
                         }}
                         className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
                           isActive
-                            ? "bg-[#4fa8ff]/50 text-white border-[#4fa8ff]"
-                            : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
+                            ? "text-white border-transparent bg-gradient-accent"
+                            : "bg-white/5 text-white/50 border-white/10 hover:border-white/12"
                         }`}>
                         {arrow} {label}
                       </button>
@@ -298,12 +300,12 @@ export default function LibraryPage() {
 
               {/* ── Row 2: Genre ── */}
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-[10px] font-semibold text-[#8686AC]/60 uppercase tracking-wide w-9 shrink-0">Genre</span>
+                <span className="text-[10px] font-semibold text-white/30 uppercase tracking-wide w-9 shrink-0">Genre</span>
                 <div className="flex gap-2 overflow-x-auto pb-0.5 -mr-4 pr-4">
                   {["all", ...albumAllGenres].map((g) => (
                     <button key={g} onClick={() => setAlbumGenre(g)}
                       className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap shrink-0 ${
-                        albumGenre === g ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
+                        albumGenre === g ? "bg-slate-100 text-gray-900 border-slate-100" : "bg-white/5 text-white/50 border-white/10 hover:border-white/12"
                       }`}>
                       {g === "all" ? "All" : g}
                     </button>
@@ -313,12 +315,12 @@ export default function LibraryPage() {
 
               {/* ── Row 3: Status ── */}
               <div className="flex items-center gap-2 mb-5">
-                <span className="text-[10px] font-semibold text-[#8686AC]/60 uppercase tracking-wide w-9 shrink-0">Status</span>
+                <span className="text-[10px] font-semibold text-white/30 uppercase tracking-wide w-9 shrink-0">Status</span>
                 <div className="flex gap-2">
                   {(["all", "complete"] as const).map((s) => (
                     <button key={s} onClick={() => setAlbumStatus(s)}
                       className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
-                        albumStatus === s ? "bg-[#4fa8ff]/50 text-white border-[#4fa8ff]" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
+                        albumStatus === s ? "text-white border-transparent bg-gradient-accent" : "bg-white/5 text-white/50 border-white/10 hover:border-white/12"
                       }`}>
                       {s === "all" ? "All" : "Complete only"}
                     </button>
@@ -330,7 +332,7 @@ export default function LibraryPage() {
 
           {filteredAlbums.length === 0 && albumGroups.length > 0 && (
             <div className="text-center py-12">
-              <p className="font-medium text-[#8686AC]">
+              <p className="font-medium text-white/50">
                 {albumStatus === "complete" ? "No fully rated albums yet" : `No albums in this genre yet`}
               </p>
               <button onClick={() => { setAlbumGenre("all"); setAlbumStatus("all"); }}
@@ -352,14 +354,14 @@ export default function LibraryPage() {
 
               const inner = (
                 <div className="flex items-center gap-3 p-3">
-                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0">
                     {a.albumArt
                       ? <Image src={a.albumArt} alt={a.albumName} fill className="object-cover" sizes="64px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
+                      : <div className="w-full h-full bg-gradient-to-br from-[#0D0D0D] to-[#0D0D0D]" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-slate-100 truncate">{a.albumName}</p>
-                    <p className="text-xs text-[#8686AC] truncate mt-0.5">{displayArtist}</p>
+                    <p className="text-xs text-white/50 truncate mt-0.5">{displayArtist}</p>
 
                     {/* Completion badge */}
                     {total !== null ? (
@@ -375,11 +377,11 @@ export default function LibraryPage() {
                         </span>
                       </div>
                     ) : (
-                      <p className="text-xs text-[#8686AC]/75 mt-1.5">{rated} track{rated !== 1 ? "s" : ""} rated</p>
+                      <p className="text-xs text-white/38 mt-1.5">{rated} track{rated !== 1 ? "s" : ""} rated</p>
                     )}
 
                     {pct !== null && !isComplete && (
-                      <div className="mt-1.5 h-1 bg-[#505081]/20 rounded-full overflow-hidden w-full">
+                      <div className="mt-1.5 h-1 bg-white/5 rounded-full overflow-hidden w-full">
                         <div className="h-full rounded-full transition-all bg-amber-500/50"
                           style={{ width: `${Math.min(100, pct)}%` }} />
                       </div>
@@ -394,7 +396,7 @@ export default function LibraryPage() {
                 <div
                   key={a.key}
                   onClick={() => handleAlbumTap(a)}
-                  className="bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 hover:border-[#8686AC]/30 hover:bg-[#3A3A80] active:scale-[0.99] transition-all overflow-hidden cursor-pointer"
+                  className="bg-[#1A1A1A] rounded-2xl border border-white/8 hover:border-white/10 hover:bg-[#242424] active:scale-[0.99] transition-all overflow-hidden cursor-pointer"
                 >
                   {inner}
                 </div>
@@ -410,7 +412,7 @@ export default function LibraryPage() {
         <>
           {/* ── Row 1: Sort — fixed width, no scroll ── */}
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-[10px] font-semibold text-[#8686AC]/60 uppercase tracking-wide w-9 shrink-0">Sort</span>
+            <span className="text-[10px] font-semibold text-white/30 uppercase tracking-wide w-9 shrink-0">Sort</span>
             <div className="flex gap-2">
               {(["score", "artist", "date"] as SortKey[]).map((s) => {
                 const isActive = sort === s;
@@ -433,8 +435,8 @@ export default function LibraryPage() {
                   <button key={s} onClick={handleClick}
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
                       isActive
-                        ? "bg-[#4fa8ff]/50 text-white border-[#4fa8ff]"
-                        : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
+                        ? "text-white border-transparent bg-gradient-accent"
+                        : "bg-white/5 text-white/50 border-white/10 hover:border-white/12"
                     }`}>
                     {arrow} {label}
                   </button>
@@ -445,16 +447,16 @@ export default function LibraryPage() {
 
           {/* ── Row 2: Genre — horizontally scrollable ── */}
           <div className="flex items-center gap-2 mb-5">
-            <span className="text-[10px] font-semibold text-[#8686AC]/60 uppercase tracking-wide w-9 shrink-0">Genre</span>
+            <span className="text-[10px] font-semibold text-white/30 uppercase tracking-wide w-9 shrink-0">Genre</span>
             <div className="flex gap-2 overflow-x-auto pb-0.5 -mr-4 pr-4">
               <button onClick={() => setGenre("all")}
                 className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap shrink-0 ${
-                  genre === "all" ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
+                  genre === "all" ? "bg-slate-100 text-gray-900 border-slate-100" : "bg-white/5 text-white/50 border-white/10 hover:border-white/12"
                 }`}>All</button>
               {genres.map((g) => (
                 <button key={g} onClick={() => setGenre(g)}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap shrink-0 ${
-                    genre === g ? "bg-slate-100 text-slate-900 border-slate-100" : "bg-[#505081]/20 text-[#8686AC] border-[#8686AC]/30 hover:border-[#8686AC]/40"
+                    genre === g ? "bg-slate-100 text-gray-900 border-slate-100" : "bg-white/5 text-white/50 border-white/10 hover:border-white/12"
                   }`}>{g}</button>
               ))}
             </div>
@@ -464,7 +466,7 @@ export default function LibraryPage() {
           {!loading && filtered.length === 0 && (
             <div className="text-center py-16">
               <p className="text-4xl mb-3">📚</p>
-              <p className="font-medium text-[#8686AC]">No ratings yet</p>
+              <p className="font-medium text-white/50">No ratings yet</p>
               <Link href="/search" className="text-[#4fa8ff] text-sm font-semibold hover:underline mt-1 block">Rate your first song →</Link>
             </div>
           )}
@@ -475,31 +477,31 @@ export default function LibraryPage() {
                 const accentColor = genreAccentColor(r.genre_tags ?? []);
                 return (
                   <Link key={r.id} href={`/song/${r.id}`} className="block group">
-                    <div className="bg-[#2D2D6B] rounded-2xl border border-[#8686AC]/20 group-hover:border-[#8686AC]/30 transition-colors overflow-hidden">
+                    <div className="bg-[#1A1A1A] rounded-2xl border border-white/8 group-hover:border-white/10 transition-colors overflow-hidden">
                       {/* Pokemon accent */}
                       {accentColor && (
                         <div className="flex justify-center pt-2">
-                          <div className="h-[3px] rounded-full" style={{ width: "60%", backgroundColor: accentColor }} />
+                          <div className="h-[3px] rounded-full" style={{ width: "60%", background: `linear-gradient(to right, ${accentColor}, transparent)` }} />
                         </div>
                       )}
                       <div className={`flex items-center gap-3 px-3 pb-3 ${accentColor ? "pt-2" : "pt-3"}`}>
-                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[#505081]/20 shrink-0">
+                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
                           {r.song.album_art_url
                             ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="48px" />
-                            : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
+                            : <div className="w-full h-full bg-gradient-to-br from-[#0D0D0D] to-[#0D0D0D]" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
                             <p className="font-semibold text-sm text-slate-100 truncate">{r.song.title}</p>
-                            <span className="text-xs text-[#8686AC]/75 shrink-0 mt-0.5">{formatDuration(r.song.duration_seconds)}</span>
+                            <span className="text-xs text-white/38 shrink-0 mt-0.5">{formatDuration(r.song.duration_seconds)}</span>
                           </div>
-                          <p className="text-xs text-[#8686AC] truncate">{r.song.artist}</p>
+                          <p className="text-xs text-white/50 truncate">{r.song.artist}</p>
                           <div className="flex gap-1.5 mt-1 flex-wrap">
                             {displayGenres(r.genre_tags ?? []).map((t: string) => (
-                              <span key={t} className="text-xs bg-[#505081]/20 text-[#8686AC] px-2 py-0.5 rounded-full">{t}</span>
+                              <span key={t} className="text-xs bg-white/5 text-white/50 px-2 py-0.5 rounded-full">{t}</span>
                             ))}
                           </div>
-                          <p className="text-xs text-[#8686AC]/55 mt-0.5">
+                          <p className="text-xs text-white/28 mt-0.5">
                             Rated {new Date(r.created_at).getMonth() + 1}/{new Date(r.created_at).getDate()}
                           </p>
                         </div>
@@ -515,10 +517,10 @@ export default function LibraryPage() {
           ) : (
             <div className="grid grid-cols-3 gap-2.5">
               {filtered.map((r) => (
-                <Link key={r.id} href={`/song/${r.id}`} className="relative rounded-2xl overflow-hidden aspect-square bg-[#505081]/20 group block">
+                <Link key={r.id} href={`/song/${r.id}`} className="relative rounded-2xl overflow-hidden aspect-square bg-white/5 group block">
                   {r.song.album_art_url
                     ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="33vw" />
-                    : <div className="w-full h-full bg-gradient-to-br from-[#0F0E47] to-[#1A1A4E]" />}
+                    : <div className="w-full h-full bg-gradient-to-br from-[#0D0D0D] to-[#0D0D0D]" />}
 
                   {/* Hover darkening */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
