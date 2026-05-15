@@ -94,6 +94,7 @@ export default function AlbumPage() {
   const year = album.release_date?.split("-")[0];
   const tracks = album.tracks?.items ?? [];
   const ratedCount = Object.keys(userRatings).length;
+  const isAlbumComplete = tracks.length > 0 && ratedCount >= tracks.length;
 
   return (
     <div className="page-enter">
@@ -110,17 +111,31 @@ export default function AlbumPage() {
 
           {dbAlbumScore?.calculated !== null && dbAlbumScore && (
             <div className="mt-2">
-              <p className={`text-lg font-black ${scoreColor(dbAlbumScore.calculated!)}`}>
-                {dbAlbumScore.calculated!.toFixed(1)}
-              </p>
-              <p className="text-xs text-white/38">avg of {ratedCount} rated</p>
+              {isAlbumComplete ? (
+                /* Replace score + "avg of X" with a clean badge when complete */
+                <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full font-bold"
+                  style={{
+                    background: "rgba(74,222,128,0.15)",
+                    border: "1px solid rgba(74,222,128,0.4)",
+                    color: "#4ade80",
+                  }}>
+                  Album Complete ✓
+                </span>
+              ) : (
+                <>
+                  <p className={`text-lg font-black ${scoreColor(dbAlbumScore.calculated!)}`}>
+                    {dbAlbumScore.calculated!.toFixed(1)}
+                  </p>
+                  <p className="text-xs text-white/38">avg of {ratedCount} rated</p>
+                </>
+              )}
             </div>
           )}
         </div>
       </div>
 
       {/* Congratulations banner — when every track has been rated */}
-      {ratedCount > 0 && tracks.length > 0 && ratedCount >= tracks.length && (
+      {isAlbumComplete && (
         <div className="mb-5 rounded-2xl overflow-hidden"
           style={{
             border: "1px solid rgba(74,222,128,0.4)",
@@ -132,11 +147,11 @@ export default function AlbumPage() {
             <div className="flex-1">
               <p className="font-bold text-emerald-300 text-sm">You've rated every track on this album</p>
               <p className="text-xs text-white/50 mt-0.5">
-                Average score across all {tracks.length} tracks
+                Average across all {tracks.length} tracks
               </p>
             </div>
             {dbAlbumScore?.calculated !== null && dbAlbumScore && (
-              <p className="text-2xl font-black text-emerald-300">
+              <p className="font-black text-emerald-300" style={{ fontSize: 28 }}>
                 {dbAlbumScore.calculated!.toFixed(1)}
               </p>
             )}
@@ -144,7 +159,7 @@ export default function AlbumPage() {
         </div>
       )}
 
-      {ratedCount > 0 && ratedCount < tracks.length && (
+      {ratedCount > 0 && !isAlbumComplete && (
         <p className="text-xs text-white/38 mb-3">{ratedCount} of {album.total_tracks} tracks rated</p>
       )}
 

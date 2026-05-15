@@ -6,6 +6,7 @@ import { X, ChevronRight, ChevronLeft, Check } from "lucide-react";
 import ScoreCircle from "@/components/ScoreCircle";
 import { SpotifyTrack, VibeOption, RatingFormState } from "@/types";
 import { scoreColor, calculateScore } from "@/lib/utils";
+import AlbumCompletionCelebration, { type CelebrationData } from "@/components/AlbumCompletionCelebration";
 import { createClient } from "@/lib/supabase/client";
 
 // Steps: 1=Vibe  2=Dimensions  3=Tags  4=Compare(optional)  5=Reveal
@@ -109,6 +110,9 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Album completion celebration
+  const [celebration, setCelebration] = useState<CelebrationData | null>(null);
 
   // Head-to-head comparison state
   const [librarySongs, setLibrarySongs] = useState<CompSong[]>([]);
@@ -441,6 +445,51 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
         }
       }
 
+      // ── Check if this rating completed the album ──────────────────────
+      const albumSpotifyId = track.album?.id;
+      if (albumSpotifyId) {
+        try {
+          const [albumRes, { data: albumSongs }] = await Promise.all([
+            fetch(`/api/spotify/album/${albumSpotifyId}`),
+            supabase.from("songs").select("id").eq("spotify_album_id", albumSpotifyId),
+          ]);
+          const albumData = await albumRes.json();
+          const totalTracks: number = albumData.total_tracks ?? 0;
+
+          if (totalTracks > 0 && albumSongs?.length) {
+            const { count } = await supabase
+              .from("ratings")
+              .select("id", { count: "exact", head: true })
+              .eq("user_id", user.id)
+              .in("song_id", albumSongs.map((s: any) => s.id));
+
+            if (count === totalTracks) {
+              // Album complete! Calculate true average across all rated tracks
+              const { data: allRatings } = await supabase
+                .from("ratings")
+                .select("overall_score")
+                .eq("user_id", user.id)
+                .in("song_id", albumSongs.map((s: any) => s.id));
+
+              const avg = allRatings?.length
+                ? allRatings.reduce((s, r) => s + r.overall_score, 0) / allRatings.length
+                : (displayScore ?? 5.0);
+
+              setCelebration({
+                albumName:  track.album?.name ?? albumData.name ?? "",
+                artist:     track.artists.map((a) => a.name).join(", "),
+                albumArt:   track.album?.images?.[0]?.url ?? albumData.images?.[0]?.url ?? null,
+                finalScore: Math.round(avg * 10) / 10,
+              });
+              setSaving(false);
+              return; // Hold — onSaved called when user taps Done
+            }
+          }
+        } catch {
+          // Completion check failed silently — fall through to normal save
+        }
+      }
+
       onSaved();
     } catch (e) {
       setSaveError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
@@ -450,6 +499,16 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
   }
 
   const albumArt = track.album?.images?.[0]?.url;
+
+  // Show full-screen celebration when album is completed
+  if (celebration) {
+    return (
+      <AlbumCompletionCelebration
+        {...celebration}
+        onDone={() => { setCelebration(null); onSaved(); }}
+      />
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
