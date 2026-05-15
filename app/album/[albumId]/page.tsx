@@ -119,7 +119,32 @@ export default function AlbumPage() {
         </div>
       </div>
 
-      {ratedCount > 0 && (
+      {/* Congratulations banner — when every track has been rated */}
+      {ratedCount > 0 && tracks.length > 0 && ratedCount >= tracks.length && (
+        <div className="mb-5 rounded-2xl overflow-hidden"
+          style={{
+            border: "1px solid rgba(74,222,128,0.4)",
+            background: "linear-gradient(135deg, rgba(74,222,128,0.12), rgba(74,222,128,0.06))",
+            boxShadow: "0 0 24px rgba(74,222,128,0.1)",
+          }}>
+          <div className="flex items-center gap-3 p-4">
+            <span className="text-3xl">🎉</span>
+            <div className="flex-1">
+              <p className="font-bold text-emerald-300 text-sm">You've rated every track on this album</p>
+              <p className="text-xs text-white/50 mt-0.5">
+                Average score across all {tracks.length} tracks
+              </p>
+            </div>
+            {dbAlbumScore?.calculated !== null && dbAlbumScore && (
+              <p className="text-2xl font-black text-emerald-300">
+                {dbAlbumScore.calculated!.toFixed(1)}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {ratedCount > 0 && ratedCount < tracks.length && (
         <p className="text-xs text-white/38 mb-3">{ratedCount} of {album.total_tracks} tracks rated</p>
       )}
 

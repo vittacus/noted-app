@@ -75,6 +75,7 @@ export default function LibraryPage() {
   const [ratingTrack, setRatingTrack] = useState<SpotifyTrack | null>(null);
   // Spotify total track counts keyed by spotify_album_id
   const [albumTotals, setAlbumTotals] = useState<Map<string, number>>(new Map());
+  const [albumTotalsLoaded, setAlbumTotalsLoaded] = useState(false);
   // Correct artist names from Spotify (fixes "Tyler" → "Tyler, The Creator")
   const [albumArtists, setAlbumArtists] = useState<Map<string, string>>(new Map());
 
@@ -162,6 +163,7 @@ export default function LibraryPage() {
       }
       setAlbumTotals(totals);
       setAlbumArtists(artists);
+      setAlbumTotalsLoaded(true);
     });
   }, [albumGroups]);
 
@@ -252,6 +254,14 @@ export default function LibraryPage() {
           if (albumGenre !== "all" && !a.songs.some((s: any) => (s.genre_tags ?? []).includes(albumGenre))) return false;
           if (albumStatus === "complete") {
             const total = a.spotifyAlbumId ? albumTotals.get(a.spotifyAlbumId) ?? null : null;
+            console.log(
+              "[album completion]", a.albumName,
+              "| rated:", a.songs.length,
+              "| spotifyAlbumId:", a.spotifyAlbumId,
+              "| total from Spotify:", total,
+              "| totals map size:", albumTotals.size,
+              "| isComplete:", total !== null && a.songs.length >= total
+            );
             if (total === null || a.songs.length < total) return false;
           }
           return true;
@@ -332,13 +342,26 @@ export default function LibraryPage() {
 
           {filteredAlbums.length === 0 && albumGroups.length > 0 && (
             <div className="text-center py-12">
-              <p className="font-medium text-white/50">
-                {albumStatus === "complete" ? "No fully rated albums yet" : `No albums in this genre yet`}
-              </p>
-              <button onClick={() => { setAlbumGenre("all"); setAlbumStatus("all"); }}
-                className="text-[#4fa8ff] text-xs font-semibold mt-2 hover:underline">
-                Clear filters →
-              </button>
+              {albumStatus === "complete" && !albumTotalsLoaded ? (
+                <p className="font-medium text-white/50">Loading album data from Spotify…</p>
+              ) : (
+                <>
+                  <p className="font-medium text-white/50">
+                    {albumStatus === "complete"
+                      ? "No fully rated albums detected yet"
+                      : "No albums in this genre yet"}
+                  </p>
+                  {albumStatus === "complete" && (
+                    <p className="text-xs text-white/30 mt-1 max-w-[240px] mx-auto">
+                      Albums rated before the Spotify ID migration may not be detected. Check the console for details.
+                    </p>
+                  )}
+                  <button onClick={() => { setAlbumGenre("all"); setAlbumStatus("all"); }}
+                    className="text-[#4fa8ff] text-xs font-semibold mt-3 hover:underline">
+                    Clear filters →
+                  </button>
+                </>
+              )}
             </div>
           )}
 
@@ -366,15 +389,15 @@ export default function LibraryPage() {
                     {/* Completion badge */}
                     {total !== null ? (
                       <div className="mt-1.5 flex items-center gap-2">
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                          isComplete
-                            ? "bg-emerald-500/20 text-emerald-400"
-                            : "bg-amber-500/20 text-amber-400"
-                        }`}>
-                          {isComplete
-                            ? "Complete ✓"
-                            : `In progress · ${rated}/${total}`}
-                        </span>
+                        {isComplete ? (
+                          <span className="text-xs px-2.5 py-1 rounded-full font-bold bg-emerald-500/25 text-emerald-300 tracking-wide">
+                            ALBUM COMPLETE ✓
+                          </span>
+                        ) : (
+                          <span className="text-xs px-2 py-0.5 rounded-full font-semibold bg-amber-500/20 text-amber-400">
+                            In progress · {rated}/{total}
+                          </span>
+                        )}
                       </div>
                     ) : (
                       <p className="text-xs text-white/38 mt-1.5">{rated} track{rated !== 1 ? "s" : ""} rated</p>
@@ -391,12 +414,19 @@ export default function LibraryPage() {
                 </div>
               );
 
-              // Every album card is clickable — onClick logs the ID then navigates
               return (
                 <div
                   key={a.key}
                   onClick={() => handleAlbumTap(a)}
-                  className="bg-[#1A1A1A] rounded-2xl border border-white/8 hover:border-white/10 hover:bg-[#242424] active:scale-[0.99] transition-all overflow-hidden cursor-pointer"
+                  className="rounded-2xl overflow-hidden cursor-pointer active:scale-[0.99] transition-all"
+                  style={isComplete ? {
+                    border: "1px solid rgba(74,222,128,0.4)",
+                    background: "#1A1A1A",
+                    boxShadow: "0 0 0 1px rgba(74,222,128,0.15), 0 4px 16px rgba(74,222,128,0.08)",
+                  } : {
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "#1A1A1A",
+                  }}
                 >
                   {inner}
                 </div>

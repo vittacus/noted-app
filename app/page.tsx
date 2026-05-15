@@ -7,6 +7,7 @@ import FeedTabs from "@/components/FeedTabs";
 import RatingComments from "@/components/RatingComments";
 import RecommendedTracks from "@/components/RecommendedTracks";
 import ScoreCircle from "@/components/ScoreCircle";
+import NewRatingHighlight from "@/components/NewRatingHighlight";
 
 export const dynamic = "force-dynamic";
 
@@ -108,11 +109,14 @@ export default async function HomePage({
         />
       )}
 
+      {/* Highlight newly added rating card */}
+      <NewRatingHighlight />
+
       {/* Suggested friends */}
       {user && (
         <div className="mb-8">
           <div className="mb-3">
-            <h2 className="font-bold text-base text-slate-100">Suggested friends</h2>
+            <h2 className="text-xl font-bold text-slate-100">Suggested friends</h2>
             <p className="text-xs text-white/38 mt-0.5">People with similar taste</p>
           </div>
           <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
@@ -170,8 +174,13 @@ export default async function HomePage({
         {ratings?.map((r: any) => {
           const accentColor = genreAccentColor(r.genre_tags ?? []);
           return (
-            <div key={r.id} className="bg-[#1A1A1A] rounded-2xl border border-white/8 overflow-hidden hover:border-white/10 transition-colors">
-              {/* Pokemon accent bar */}
+            <div
+              key={r.id}
+              data-rating-card
+              className="bg-[#1A1A1A] rounded-2xl border border-white/8 overflow-hidden hover:border-white/10 transition-colors"
+              style={accentColor ? { borderLeft: `2px solid ${accentColor}` } : undefined}
+            >
+              {/* Genre accent top bar */}
               {accentColor && (
                 <div className="flex justify-center pt-2">
                   <div className="h-[3px] rounded-full" style={{ width: "60%", background: `linear-gradient(to right, ${accentColor}, transparent)` }} />
