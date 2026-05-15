@@ -16,7 +16,9 @@ export default function AlbumPage() {
 
   const [album, setAlbum] = useState<SpotifyAlbum | null>(null);
   const [userRatings, setUserRatings] = useState<Record<string, number>>({});
+  const [userRatingDetails, setUserRatingDetails] = useState<Record<string, any>>({});
   const [ratingTrack, setRatingTrack] = useState<SpotifyTrack | null>(null);
+  const [ratingPrefill, setRatingPrefill] = useState<any | null>(null);
   const [dbAlbumScore, setDbAlbumScore] = useState<{ calculated: number | null } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -40,15 +42,20 @@ export default function AlbumPage() {
           const songIds = songs.map((s: any) => s.id);
           const { data: ratings } = await supabase
             .from("ratings")
-            .select("song_id, overall_score, songs(spotify_id)")
+            .select("song_id, overall_score, vibe, replay_value, lyrics, production, notes, best_for_tags, songs(spotify_id)")
             .eq("user_id", user.id)
             .in("song_id", songIds);
 
           const map: Record<string, number> = {};
+          const details: Record<string, any> = {};
           ratings?.forEach((r: any) => {
-            if (r.songs?.spotify_id) map[r.songs.spotify_id] = r.overall_score;
+            if (r.songs?.spotify_id) {
+              map[r.songs.spotify_id] = r.overall_score;
+              details[r.songs.spotify_id] = r;
+            }
           });
           setUserRatings(map);
+          setUserRatingDetails(details);
 
           const scores = Object.values(map);
           if (scores.length > 0) {
@@ -62,9 +69,17 @@ export default function AlbumPage() {
     load();
   }, [albumId]);
 
-  async function handleRate(track: SpotifyTrack) {
+  async function handleRate(track: SpotifyTrack, existingRating?: any) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/auth/login"); return; }
+    setRatingPrefill(existingRating ? {
+      vibe: existingRating.vibe,
+      replay_value: existingRating.replay_value,
+      lyrics: existingRating.lyrics,
+      production: existingRating.production,
+      notes: existingRating.notes,
+      best_for_tags: existingRating.best_for_tags,
+    } : null);
     // Spotify's album-tracks endpoint returns SimplifiedTrackObject which has no `album` field.
     // Augment with the parent album so RatingModal can display art and save the album ID.
     const fullTrack: SpotifyTrack = {
@@ -168,12 +183,13 @@ export default function AlbumPage() {
           const myScore = userRatings[track.id];
           const rated = myScore !== undefined;
           return (
-            <div
+            <button
               key={track.id}
-              className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 border transition-all ${
+              onClick={() => handleRate(track, rated ? userRatingDetails[track.id] : undefined)}
+              className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 border transition-all text-left active:scale-[0.99] ${
                 rated
-                  ? "bg-[#1A1A1A] border-white/8"
-                  : "bg-white/3 border-white/[0.03] opacity-60"
+                  ? "bg-[#1A1A1A] border-white/8 hover:border-white/15"
+                  : "bg-white/3 border-white/[0.03] opacity-70 hover:opacity-90"
               }`}
             >
               <span className="text-xs text-white/38 w-5 text-right shrink-0">{i + 1}</span>
@@ -190,14 +206,11 @@ export default function AlbumPage() {
                   {myScore.toFixed(1)}
                 </span>
               ) : (
-                <button
-                  onClick={() => handleRate(track)}
-                  className="shrink-0 px-2.5 py-1 rounded-lg bg-[#4fa8ff]/10 text-[#4fa8ff] text-xs font-semibold hover:bg-[#4fa8ff]/20 transition-colors border border-[#4fa8ff]/20"
-                >
+                <span className="shrink-0 px-2.5 py-1 rounded-lg bg-[#4fa8ff]/10 text-[#4fa8ff] text-xs font-semibold border border-[#4fa8ff]/20">
                   Rate
-                </button>
+                </span>
               )}
-            </div>
+            </button>
           );
         })}
       </div>
@@ -205,9 +218,11 @@ export default function AlbumPage() {
       {ratingTrack && (
         <RatingModal
           track={ratingTrack}
-          onClose={() => setRatingTrack(null)}
+          prefill={ratingPrefill ?? undefined}
+          onClose={() => { setRatingTrack(null); setRatingPrefill(null); }}
           onSaved={() => {
             setRatingTrack(null);
+            setRatingPrefill(null);
             window.location.reload();
           }}
         />
