@@ -148,19 +148,36 @@ export default function LibraryPage() {
           .then((r) => (r.ok ? r.json() : null))
           .catch(() => null)
       )
-    ).then((results) => {
+    ).then(async (results) => {
       const totals = new Map<string, number>();
       const artists = new Map<string, string>();
       for (const result of results) {
         for (const album of (result?.albums ?? [])) {
           if (album?.id) {
             totals.set(album.id, album.total_tracks ?? 0);
-            // Use Spotify's album artist name — fixes "Tyler" → "Tyler, The Creator"
             const artistName = album.artists?.[0]?.name;
             if (artistName) artists.set(album.id, artistName);
           }
         }
       }
+
+      // Secondary: for albums with no spotify_album_id, search Spotify by name
+      // This fixes completion detection for albums rated before the ID migration
+      const nullIdGroups = albumGroups.filter((a) => !a.spotifyAlbumId && !totals.has(a.key));
+      await Promise.all(nullIdGroups.slice(0, 8).map(async (group) => {
+        try {
+          const q = encodeURIComponent(`${group.albumName} ${group.artist}`);
+          const res = await fetch(`/api/spotify/search?q=${q}&type=album`);
+          const data = await res.json();
+          const match = data.albums?.items?.[0];
+          if (match) {
+            console.log("[album lookup by name]", group.albumName, "→ Spotify:", match.name, "total:", match.total_tracks);
+            totals.set(group.key, match.total_tracks ?? 0);
+            if (match.artists?.[0]?.name) artists.set(group.key, match.artists[0].name);
+          }
+        } catch {}
+      }));
+
       setAlbumTotals(totals);
       setAlbumArtists(artists);
       setAlbumTotalsLoaded(true);
@@ -253,7 +270,7 @@ export default function LibraryPage() {
         const filteredAlbums = sortedAlbums.filter((a) => {
           if (albumGenre !== "all" && !a.songs.some((s: any) => (s.genre_tags ?? []).includes(albumGenre))) return false;
           if (albumStatus === "complete") {
-            const total = a.spotifyAlbumId ? albumTotals.get(a.spotifyAlbumId) ?? null : null;
+            const total = albumTotals.get(a.spotifyAlbumId ?? a.key) ?? null;
             console.log(
               "[album completion]", a.albumName,
               "| rated:", a.songs.length,
@@ -367,7 +384,7 @@ export default function LibraryPage() {
 
           <div className="space-y-2">
             {filteredAlbums.map((a) => {
-              const total = a.spotifyAlbumId ? albumTotals.get(a.spotifyAlbumId) ?? null : null;
+              const total = albumTotals.get(a.spotifyAlbumId ?? a.key) ?? null;
               const rated = a.songs.length;
               const pct = total ? Math.round((rated / total) * 100) : null;
               const isComplete = total !== null && rated >= total;

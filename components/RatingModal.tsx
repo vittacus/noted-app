@@ -48,10 +48,20 @@ function mapSpotifyGenre(spotifyGenre: string): string {
   return "Other";
 }
 
+interface RatingPrefill {
+  vibe?: VibeOption;
+  replay_value?: number;
+  lyrics?: number;
+  production?: number;
+  notes?: string;
+  best_for_tags?: string[];
+}
+
 interface RatingModalProps {
   track: SpotifyTrack;
   onClose: () => void;
   onSaved: () => void;
+  prefill?: RatingPrefill;
 }
 
 const vibeOptions: { key: VibeOption; label: string; emoji: string }[] = [
@@ -105,7 +115,7 @@ function RatingCircleRow({ label, description, value, color, onChange }: {
 
 interface CompSong { ratingId: string; title: string; artist: string; albumArt: string | null; score: number; }
 
-export default function RatingModal({ track, onClose, onSaved }: RatingModalProps) {
+export default function RatingModal({ track, onClose, onSaved, prefill }: RatingModalProps) {
   const supabase = createClient();
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
@@ -155,18 +165,18 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
 
   const [form, setForm] = useState<RatingFormState>({
     song: track,
-    vibe: null,
-    replay_value: null,
-    lyrics: null,
-    production: null,
+    vibe: prefill?.vibe ?? null,
+    replay_value: prefill?.replay_value ?? null,
+    lyrics: prefill?.lyrics ?? null,
+    production: prefill?.production ?? null,
     comparisonWon: null,
     comparisonSongId: null,
-    best_for_tags: [],
+    best_for_tags: prefill?.best_for_tags ?? [],
     genre_tags: [],
     custom_vibe_tag: "",
     album_id: null,
     listened_at: new Date().toISOString().split("T")[0],
-    notes: "",
+    notes: prefill?.notes ?? "",
   });
 
   const toggleTag = (tag: string, field: "best_for_tags" | "genre_tags") =>
@@ -475,6 +485,9 @@ export default function RatingModal({ track, onClose, onSaved }: RatingModalProp
                 ? allRatings.reduce((s, r) => s + r.overall_score, 0) / allRatings.length
                 : (displayScore ?? 5.0);
 
+              console.log("ALBUM COMPLETE TRIGGERED", {
+                albumName: track.album?.name, totalTracks, ratedCount: count, avg,
+              });
               setCelebration({
                 albumName:  track.album?.name ?? albumData.name ?? "",
                 artist:     track.artists.map((a) => a.name).join(", "),

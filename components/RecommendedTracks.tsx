@@ -126,30 +126,39 @@ export default function RecommendedTracks({
 
       <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
         {tracks.map((track) => (
-          /* Square card — image fills full area, gradient overlay with text */
-          <button
+          /* Card: square image on top + full-width gradient Rate button below */
+          <div
             key={track.id}
-            onClick={() => handleRate(track)}
-            className="shrink-0 w-[120px] aspect-square rounded-2xl border border-white/8 overflow-hidden relative hover:border-white/20 active:scale-95 transition-all"
+            className="shrink-0 w-[120px] rounded-2xl border border-white/8 overflow-hidden flex flex-col hover:border-white/20 active:scale-95 transition-all cursor-pointer"
             style={{ backgroundColor: "#1A1A1A" }}
+            onClick={() => handleRate(track)}
           >
-            {/* Album art — fills the whole card */}
-            {track.album?.images?.[0] ? (
-              <Image src={track.album.images[0].url} alt={track.album?.name ?? ""} fill className="object-cover" sizes="120px" />
-            ) : (
-              <div className="absolute inset-0" style={{ backgroundColor: "#242424" }} />
-            )}
-
-            {/* Gradient overlay — bottom 35% → text on image */}
-            <div
-              className="absolute inset-x-0 bottom-0 flex flex-col justify-end px-2 pb-2 pt-6"
-              style={{ background: "linear-gradient(to bottom, transparent, rgba(0,0,0,0.82))", height: "65%" }}
-            >
-              <p className="text-white font-bold text-[11px] line-clamp-2 leading-tight">{track.name}</p>
-              <p className="text-white/60 text-[10px] truncate mt-0.5">{track.artists.map((a) => a.name).join(", ")}</p>
-              <p className="text-[#4fa8ff] text-[10px] font-semibold mt-1">+ Rate</p>
+            {/* Square album art with name overlay */}
+            <div className="relative w-full aspect-square">
+              {track.album?.images?.[0] ? (
+                <Image src={track.album.images[0].url} alt={track.album?.name ?? ""} fill className="object-cover" sizes="120px" />
+              ) : (
+                <div className="absolute inset-0" style={{ backgroundColor: "#242424" }} />
+              )}
+              <div
+                className="absolute inset-x-0 bottom-0 px-2 pb-1.5 pt-4"
+                style={{ background: "linear-gradient(to bottom, transparent, rgba(0,0,0,0.85))" }}
+              >
+                <p className="text-white font-bold text-[11px] line-clamp-2 leading-tight">{track.name}</p>
+                <p className="text-white/60 text-[10px] truncate mt-0.5">{track.artists.map((a) => a.name).join(", ")}</p>
+              </div>
             </div>
-          </button>
+
+            {/* Full-width CTA button */}
+            <div className="p-1.5 pt-1">
+              <div
+                className="w-full py-2.5 rounded-xl text-center text-white font-bold text-[13px] select-none"
+                style={{ background: "linear-gradient(135deg, #4fa8ff, #9747FF)" }}
+              >
+                ＋ Rate
+              </div>
+            </div>
+          </div>
         ))}
       </div>
 
