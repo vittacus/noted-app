@@ -25,6 +25,9 @@ export default function MoodDetailPage() {
   const [artistFilter, setArtistFilter] = useState<string>("all");
 
   const SCORE_FILTERS = ["all", "6+", "7+", "8+", "9+"] as const;
+  const SCORE_LABELS: Record<string, string> = {
+    all: "All", "6+": "Decent+", "7+": "Good+", "8+": "Great+", "9+": "Elite",
+  };
   function minScore(f: typeof scoreFilter) { return f === "all" ? 0 : parseFloat(f); }
 
   // ── Swipe-to-delete state ─────────────────────────────────────────────────
@@ -121,14 +124,21 @@ export default function MoodDetailPage() {
     return <div className="flex justify-center py-24"><div className="w-6 h-6 border-2 border-[#4fa8ff] border-t-transparent rounded-full animate-spin" /></div>;
   }
 
-  // ── Derived: unique artists (only show filter if 3+) ──────────────────────
-  const distinctArtists = [...new Set(songs.map((r: any) => r.song?.artist).filter(Boolean))].sort();
+  // ── Derived: unique PRIMARY artists (dedup by name before first comma) ──────
+  // e.g. "Daniel Caesar" and "Daniel Caesar, H.E.R." both resolve to "Daniel Caesar"
+  const distinctArtists = [
+    ...new Set(
+      songs.map((r: any) => r.song?.artist?.split(",")[0]?.trim()).filter(Boolean)
+    ),
+  ].sort();
   const showArtistFilter = distinctArtists.length >= 3;
 
   // ── Build filtered + sorted list ──────────────────────────────────────────
   let processed = songs.slice(); // copy
   if (scoreFilter !== "all") processed = processed.filter((r: any) => r.overall_score >= minScore(scoreFilter));
-  if (artistFilter !== "all") processed = processed.filter((r: any) => r.song?.artist === artistFilter);
+  if (artistFilter !== "all") processed = processed.filter(
+    (r: any) => r.song?.artist?.split(",")[0]?.trim() === artistFilter
+  );
   if (sortMode === "top") {
     processed.sort((a: any, b: any) => b.overall_score - a.overall_score);
   } else {
@@ -167,7 +177,7 @@ export default function MoodDetailPage() {
                     ? "text-white border-transparent bg-gradient-accent shadow-md"
                     : "bg-transparent border-white/12 text-white/50 hover:border-white/20"
                 }`}>
-                {f === "all" ? "All" : f}
+                {SCORE_LABELS[f]}
               </button>
             ))}
           </div>
@@ -200,7 +210,7 @@ export default function MoodDetailPage() {
                       ? "bg-[#4fa8ff]/20 border-[#4fa8ff]/60 text-[#4fa8ff]"
                       : "bg-transparent border-white/10 text-white/50 hover:border-white/18"
                   }`}>
-                  {artist.split(",")[0].trim()}
+                  {artist}
                 </button>
               ))}
             </div>
