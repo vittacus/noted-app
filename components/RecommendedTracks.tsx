@@ -13,6 +13,8 @@ interface Props {
   topArtistNames?: string[];
   title?: string;
   limit?: number;
+  /** If provided, the parent manages the rating modal. Otherwise the component renders its own. */
+  onRate?: (track: SpotifyTrack) => void;
 }
 
 export default function RecommendedTracks({
@@ -21,6 +23,7 @@ export default function RecommendedTracks({
   topArtistNames = [],
   title = "Recommended for you",
   limit = 10,
+  onRate,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
@@ -86,6 +89,7 @@ export default function RecommendedTracks({
   }, [seeds.join(",")]);
 
   async function handleRate(track: SpotifyTrack) {
+    if (onRate) { onRate(track); return; }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/auth/login"); return; }
     setRatingTrack(track);
@@ -162,19 +166,18 @@ export default function RecommendedTracks({
         ))}
       </div>
 
-      {ratingTrack && (
+      {/* Only render own modal when parent hasn't taken over via onRate prop */}
+      {!onRate && ratingTrack && (
         <RatingModal
           track={ratingTrack}
           onClose={() => setRatingTrack(null)}
           onSaved={() => {
             setRatingTrack(null);
             setTracks((prev) => prev.filter((t) => t.id !== ratingTrack.id));
-            // Mark that a new rating was just added so home page can highlight it
             if (typeof window !== "undefined") {
               sessionStorage.setItem("new_rating_ts", Date.now().toString());
             }
             router.refresh();
-            // Scroll to top after page refresh so new rating is visible
             setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 450);
           }}
         />

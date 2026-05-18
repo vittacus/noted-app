@@ -29,6 +29,9 @@ export default function SearchPage() {
   const [seedTrackIds, setSeedTrackIds] = useState<string[]>([]);
   const [ratedSpotifyIds, setRatedSpotifyIds] = useState<string[]>([]);
   const [topArtistNames, setTopArtistNames] = useState<string[]>([]);
+  // Map of spotify_id → rating row for prefill + "✓ Rated" display
+  const [ratedMap, setRatedMap] = useState<Record<string, any>>({});
+  const [ratingPrefill, setRatingPrefill] = useState<any>(null);
 
   useEffect(() => {
     async function loadSeeds() {
@@ -36,7 +39,7 @@ export default function SearchPage() {
       if (!user) return;
       const { data } = await supabase
         .from("ratings")
-        .select("overall_score, song:songs(spotify_id, artist)")
+        .select("overall_score, vibe, replay_value, lyrics, production, notes, best_for_tags, song:songs(spotify_id, artist)")
         .eq("user_id", user.id)
         .order("overall_score", { ascending: false });
       if (!data) return;
@@ -49,6 +52,9 @@ export default function SearchPage() {
           .filter((a: string) => a && !seen.has(a) && seen.add(a))
           .slice(0, 5)
       );
+      const map: Record<string, any> = {};
+      rows.forEach((r: any) => { if (r.song?.spotify_id) map[r.song.spotify_id] = r; });
+      setRatedMap(map);
     }
     loadSeeds();
   }, []);
@@ -73,6 +79,11 @@ export default function SearchPage() {
   async function handleRate(track: SpotifyTrack) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/auth/login"); return; }
+    const existing = ratedMap[track.id];
+    setRatingPrefill(existing
+      ? { vibe: existing.vibe, replay_value: existing.replay_value, lyrics: existing.lyrics, production: existing.production, notes: existing.notes, best_for_tags: existing.best_for_tags }
+      : null
+    );
     setRatingTrack(track);
   }
 
@@ -108,6 +119,7 @@ export default function SearchPage() {
             topArtistNames={topArtistNames}
             title="Suggested for you"
             limit={8}
+            onRate={handleRate}
           />
         </div>
       )}
@@ -150,9 +162,13 @@ export default function SearchPage() {
               </div>
               <button
                 onClick={() => handleRate(track)}
-                className="shrink-0 px-3 py-1.5 rounded-xl bg-[#4fa8ff]/10 text-[#4fa8ff] text-xs font-semibold hover:bg-[#4fa8ff]/20 transition-colors border border-[#4fa8ff]/20"
+                className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors ${
+                  ratedMap[track.id]
+                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                    : "bg-[#4fa8ff]/10 text-[#4fa8ff] hover:bg-[#4fa8ff]/20 border-[#4fa8ff]/20"
+                }`}
               >
-                Rate
+                {ratedMap[track.id] ? "✓ Rated" : "Rate"}
               </button>
             </div>
           ))}
@@ -202,10 +218,13 @@ export default function SearchPage() {
       {ratingTrack && (
         <RatingModal
           track={ratingTrack}
-          onClose={() => setRatingTrack(null)}
+          prefill={ratingPrefill ?? undefined}
+          onClose={() => { setRatingTrack(null); setRatingPrefill(null); }}
           onSaved={() => {
+            // Mark as rated in local map so button updates immediately
+            setRatedMap((prev) => ({ ...prev, [ratingTrack.id]: prev[ratingTrack.id] ?? true }));
             setRatingTrack(null);
-            router.push("/library");
+            setRatingPrefill(null);
           }}
         />
       )}

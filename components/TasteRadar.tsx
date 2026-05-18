@@ -143,9 +143,12 @@ export default function TasteRadar({ genreItems, vibeItems, headline }: Props) {
 
   return (
     <div>
-      {/* Generated headline */}
+      {/* Generated headline — rotates on every page load */}
       {headline && (
-        <p className="text-sm font-semibold text-slate-200 mb-4 leading-relaxed bg-white/5 rounded-2xl px-4 py-3 border border-white/8">
+        <p
+          className="text-sm font-semibold text-slate-200 mb-4 leading-relaxed bg-white/5 rounded-2xl px-4 py-3 border border-white/8"
+          style={{ animation: "fadeUp 0.45s ease both" }}
+        >
           {headline}
         </p>
       )}
