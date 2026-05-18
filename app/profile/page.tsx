@@ -147,12 +147,80 @@ export default async function ProfilePage() {
   const topGenrePct = genreItems[0]?.rawPct ?? 0;
   const topGenreName = genreItems[0]?.label ?? "";
   const topVibeName = vibeItems[0]?.label ?? "";
-  const tasteHeadline = totalRated >= 3
-    ? topGenreName && topVibeName
-      ? `Your music is ${topGenrePct}% ${topGenreName} and you love ${topVibeName} vibes ✨`
-      : topGenreName ? `You're ${topGenrePct}% into ${topGenreName} right now ✨`
-      : `You're building your taste ✨`
-    : "";
+  const tasteHeadline = (() => {
+    if (totalRated < 3) return "";
+    const avgNum = avgScore ? parseFloat(avgScore) : null;
+    const g0 = genreItems[0]; const g1 = genreItems[1];
+    const v0 = vibeItems[0];  const v1 = vibeItems[1];
+    const replayAvg = dimAvg["Replay Value"] ?? 0;
+    const lyricsAvg = dimAvg["Lyrics"] ?? 0;
+    const prodAvg   = dimAvg["Production"] ?? 0;
+    const topDimEntry = Object.entries(dimAvg).sort((a, b) => b[1] - a[1])[0];
+    const topDim = topDimEntry?.[0] ?? "";
+    const topDimReadable = topDim === "Replay Value" ? "replay" : topDim.toLowerCase();
+    const artistName  = topArtist?.[0];
+    const artistCount = topArtist?.[1] ?? 0;
+
+    const lines: string[] = [];
+
+    if (g0 && v0)
+      lines.push(`Your music is ${g0.rawPct}% ${g0.label} and you love ${v0.label} vibes ✨`);
+    if (g0 && g1)
+      lines.push(`A ${g0.label} head at heart with a soft spot for ${g1.label} 🎵`);
+    if (artistName && artistCount >= 2)
+      lines.push(`${artistName} has your soul right now — ${artistCount} songs deep 🔥`);
+    if (avgNum && totalRated >= 5)
+      lines.push(`You rate harder than most. ${avgScore}/10 average puts you in rare company 👀`);
+    if (topDim && totalRated >= 3)
+      lines.push(`Your ${topDimReadable} scores are elite. You know what sounds good 🎧`);
+    if (totalRated >= 10)
+      lines.push(`${totalRated} songs rated and still going. The library doesn't stop 📚`);
+    if (v0 && v1)
+      lines.push(`Mostly ${v0.label} energy but ${v1.label} sneaks in when you need it 🌙`);
+    if (artistName)
+      lines.push(`If your taste was a playlist it'd start with ${artistName} and never stop 🎤`);
+    if (streak >= 3)
+      lines.push(`${streak} day streak. The ears don't rest 🔥`);
+    if (prodAvg >= 6 && totalRated >= 3)
+      lines.push(`Your production scores average ${prodAvg.toFixed(1)}. You hear things others miss 🎹`);
+    if (v0)
+      lines.push(`The ${v0.label} mood list is getting long. You know the assignment 🌃`);
+    if (replayAvg >= 7)
+      lines.push(`Replay value is your north star — you don't rate songs you won't come back to 🎵`);
+    if (g0 && g1)
+      lines.push(`${g0.label} by day, ${g1.label} by night — it's giving versatile 🎶`);
+    if (g0 && g0.rawPct >= 30)
+      lines.push(`${g0.rawPct}% ${g0.label}. At this point it's a lifestyle 🎤`);
+    if (totalRated >= 20)
+      lines.push(`${totalRated} songs in. The collection speaks for itself 📀`);
+    if (avgNum && avgNum >= 7)
+      lines.push(`Low scores are rare for you — you know what you like and you stick to it 👌`);
+    if (artistName)
+      lines.push(`Most played: ${artistName}. Respectable taste 🎵`);
+    if (lyricsAvg >= 7)
+      lines.push(`Your lyrics scores run high. The words hit different 📝`);
+    if (totalRated >= 5)
+      lines.push(`${totalRated} ratings and counting. Still no signs of stopping 🔥`);
+    if (g0)
+      lines.push(`The ${g0.label} era is in full effect — ${g0.rawPct}% of your library agrees ✨`);
+    if (avgNum)
+      lines.push(`You don't just listen. You rate. Your ${avgScore}/10 average shows it 🎧`);
+    if (streak >= 7)
+      lines.push(`${streak} days in a row. The dedication is real 🔥`);
+    if (g0 && g1)
+      lines.push(`If ${g0.label} ever fails you, ${g1.label} is always there as backup 🎵`);
+    if (artistName && artistCount >= 3)
+      lines.push(`${artistName} — ${artistCount} songs rated and it's not slowing down 🎤`);
+    if (replayAvg >= 5 && totalRated >= 3)
+      lines.push(`A ${replayAvg.toFixed(1)} replay score says you don't rate songs you won't return to 🔁`);
+    if (avgNum && totalRated >= 3)
+      lines.push(`${avgScore}/10 across ${totalRated} songs. The taste is consistent 🎶`);
+
+    if (lines.length === 0) {
+      return g0 ? `You're ${g0.rawPct}% into ${g0.label} right now ✨` : "You're building your taste ✨";
+    }
+    return lines[Math.floor(Math.random() * lines.length)];
+  })();
 
   async function handleSignOut() {
     "use server";
