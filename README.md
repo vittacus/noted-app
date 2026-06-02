@@ -21,7 +21,9 @@ I built Noted as a portfolio project to show the full product lifecycle — from
 **Rating flow**
 Search any song, then rate it across Replay Value, Lyrics, and Production (1–10 each). Pick a vibe tag, write a note if you want, and save. The overall score is a weighted average of your three dimension scores. Quick and opinionated.
 
-![Search and rating flow](public/screenshots/search.png)
+<div align="center">
+  <img src="public/screenshots/search.png" width="320" alt="Search and rating flow" />
+</div>
 
 ---
 
@@ -33,35 +35,45 @@ Your saved songs go head-to-head in a bracket-style battle. Pick the winner and 
 **Moods**
 Every song you tag (Late Night, Workout, Road Trip, etc.) gets sorted into a mood page. Tap a mood to see all your songs for that vibe, filter by score, sort by date or rating, and swipe to delete. It's basically a smart playlist that builds itself.
 
-![Mood detail page](public/screenshots/mood-detail.png)
+<div align="center">
+  <img src="public/screenshots/mood-detail.png" width="320" alt="Mood detail page" />
+</div>
 
 ---
 
 **Taste profile — Genre DNA + Vibe DNA**
 Your profile page shows two radar charts: one for genres, one for vibes. They're built entirely from your ratings — no assumptions, no defaults. The headline at the top rotates every visit and tells you something real about your listening patterns.
 
-![Profile page with Genre DNA and Vibe DNA radar charts](public/screenshots/profile.png)
+<div align="center">
+  <img src="public/screenshots/profile.png" width="320" alt="Profile page with Genre DNA and Vibe DNA radar charts" />
+</div>
 
 ---
 
 **Album tracking**
 Rate songs from an album and Noted tracks your progress automatically. Finish every track and you get a full celebration moment — green flash, drum roll, rolling score counter. Feels earned.
 
-![Album detail page](public/screenshots/album.png)
+<div align="center">
+  <img src="public/screenshots/album.png" width="320" alt="Album detail page" />
+</div>
 
 ---
 
 **Library**
 Every song you've rated, organized in one place. Sort by score, date, or ELO rank. Filter by genre, vibe, or album. It's your personal music database.
 
-![Library page](public/screenshots/library.png)
+<div align="center">
+  <img src="public/screenshots/library.png" width="320" alt="Library page" />
+</div>
 
 ---
 
 **Recommended songs**
 The home screen surfaces tracks you haven't heard based on your top-rated songs. Powered by the Spotify recommendations API seeded with your highest scores. Tap Rate directly from the card to log it without leaving the page.
 
-![Home screen with recommended songs](public/screenshots/home.png)
+<div align="center">
+  <img src="public/screenshots/home.png" width="320" alt="Home screen with recommended songs" />
+</div>
 
 ---
 
