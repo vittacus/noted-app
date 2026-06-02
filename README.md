@@ -46,31 +46,20 @@ See what other people are rating and follow along. Leave comments on any song. T
 
 ## Screenshots
 
-> Screenshots coming soon — add images to `/public/screenshots/` and update the paths below.
-
 **Home screen**
 ![Home screen showing recommended songs and recent activity](public/screenshots/home.png)
-<!-- add screenshot here -->
 
-**Rating flow modal**
-![5-step rating modal with dimension sliders and vibe tags](public/screenshots/rating-modal.png)
-<!-- add screenshot here -->
-
-**Library grid view**
+**Library**
 ![Library page with sort and filter controls](public/screenshots/library.png)
-<!-- add screenshot here -->
 
-**Mood detail page**
-![Mood detail showing filtered songs by vibe tag](public/screenshots/mood-detail.png)
-<!-- add screenshot here -->
+**Moods**
+![Moods page showing vibe tags and song counts](public/screenshots/moods.png)
 
-**Profile page**
+**Profile — Genre DNA + Vibe DNA**
 ![Profile with Genre DNA and Vibe DNA radar charts](public/screenshots/profile.png)
-<!-- add screenshot here -->
 
-**Album detail page**
-![Album page showing track list with per-track ratings](public/screenshots/album-detail.png)
-<!-- add screenshot here -->
+**Album detail**
+![Album page showing track list with per-track ratings](public/screenshots/album.png)
 
 ---
 
