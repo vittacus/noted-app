@@ -27,7 +27,8 @@
 
 body {
   background-color: #000000;
-  background: #000000;
+  /* Subtle noise grain at 2% opacity — barely perceptible but kills flatness on large screens */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
   color: var(--text-primary);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -97,12 +98,3 @@ body {
   animation: newRatingFlash 1.8s ease-out;
 }
 
-/* Background music notes */
-.music-note {
-  position: fixed;
-  color: #ffffff;
-  opacity: 0.04;
-  pointer-events: none;
-  user-select: none;
-  font-size: 0.9rem;
-}
