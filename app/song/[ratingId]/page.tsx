@@ -70,7 +70,7 @@ export default function SongDetailPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-24">
-        <div className="w-6 h-6 border-2 border-[#4fa8ff] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#F5A623] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -97,8 +97,8 @@ export default function SongDetailPage() {
   };
 
   const dims = [
-    { label: "Replay Value", value: rating.replay_value, color: "#4fa8ff" },
-    { label: "Lyrics",       value: rating.lyrics,       color: "#a78bfa" },
+    { label: "Replay Value", value: rating.replay_value, color: "#F5A623" },
+    { label: "Lyrics",       value: rating.lyrics,       color: "#F5A623" },
     { label: "Production",   value: rating.production,   color: "#fb923c" },
   ];
 
@@ -109,10 +109,10 @@ export default function SongDetailPage() {
         {artUrl ? (
           <>
             <Image src={artUrl} alt={song.album_name} fill className="object-cover scale-110" sizes="100vw" />
-            <div className="absolute inset-0 bg-[#0D0D0D]/70 backdrop-blur-xl" />
+            <div className="absolute inset-0 bg-[#000000]/70 backdrop-blur-xl" />
           </>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0D0D0D] to-[#0D0D0D]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#000000] to-[#000000]" />
         )}
 
         {/* Back button */}
@@ -154,7 +154,7 @@ export default function SongDetailPage() {
       {/* Content */}
       <div className="px-4 pt-5 space-y-4">
         {/* Dimension breakdown */}
-        <div className="bg-[#1A1A1A] rounded-2xl border border-white/8 p-4">
+        <div className="bg-[#111111] rounded-2xl border border-white/8 p-4">
           <p className="text-xs font-semibold text-white/38 uppercase tracking-wide mb-3">Breakdown</p>
           <div className="space-y-4">
             {dims.map(({ label, value, color }) => (
@@ -175,7 +175,7 @@ export default function SongDetailPage() {
         </div>
 
         {/* Vibe + date */}
-        <div className="bg-[#1A1A1A] rounded-2xl border border-white/8 p-4 flex gap-4">
+        <div className="bg-[#111111] rounded-2xl border border-white/8 p-4 flex gap-4">
           <div className="flex-1">
             <p className="text-xs font-semibold text-white/38 uppercase tracking-wide mb-1">Vibe</p>
             <p className="text-sm font-semibold text-slate-200">
@@ -192,13 +192,13 @@ export default function SongDetailPage() {
 
         {/* Tags */}
         {((rating.best_for_tags ?? []).length > 0 || (rating.genre_tags ?? []).length > 0) && (
-          <div className="bg-[#1A1A1A] rounded-2xl border border-white/8 p-4">
+          <div className="bg-[#111111] rounded-2xl border border-white/8 p-4">
             {(rating.best_for_tags ?? []).length > 0 && (
               <div className="mb-3">
                 <p className="text-xs font-semibold text-white/38 uppercase tracking-wide mb-2">Best for</p>
                 <div className="flex flex-wrap gap-2">
                   {rating.best_for_tags.map((t: string) => (
-                    <span key={t} className="px-3 py-1 bg-[#4fa8ff]/10 border border-[#4fa8ff]/20 text-[#4fa8ff] text-xs rounded-full font-medium">{t}</span>
+                    <span key={t} className="px-3 py-1 bg-[#F5A623]/10 border border-[#F5A623]/20 text-[#F5A623] text-xs rounded-full font-medium">{t}</span>
                   ))}
                 </div>
               </div>
@@ -218,7 +218,7 @@ export default function SongDetailPage() {
 
         {/* Notes */}
         {rating.notes && (
-          <div className="bg-[#1A1A1A] rounded-2xl border border-white/8 p-4">
+          <div className="bg-[#111111] rounded-2xl border border-white/8 p-4">
             <p className="text-xs font-semibold text-white/38 uppercase tracking-wide mb-2">Notes</p>
             <p className="text-sm text-slate-300 italic leading-relaxed">&ldquo;{rating.notes}&rdquo;</p>
           </div>
@@ -236,7 +236,7 @@ export default function SongDetailPage() {
           <>
             <button
               onClick={() => setReRating(true)}
-              className="w-full h-12 rounded-2xl bg-[#4fa8ff]/50 text-white font-semibold text-sm hover:bg-[#3a90f0] transition-colors shadow-lg shadow-[#0D0D0D]/50"
+              className="w-full h-12 rounded-2xl bg-[#F5A623] text-black font-semibold text-sm hover:bg-[#d4891a] transition-colors shadow-lg shadow-[#000000]/50"
             >
               Re-rate this song
             </button>

@@ -41,7 +41,7 @@ export default function FeedTabs({ isLoggedIn }: { isLoggedIn: boolean }) {
           className="w-full py-2 text-sm font-semibold rounded-xl text-white/28 cursor-not-allowed select-none">
           Friends
         </button>
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-[#1A1A1A] border border-white/10 rounded-xl text-xs text-white/50 whitespace-nowrap shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-20">
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-[#111111] border border-white/10 rounded-xl text-xs text-white/50 whitespace-nowrap shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-20">
           Coming soon
         </div>
       </div>

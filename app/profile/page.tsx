@@ -102,8 +102,8 @@ export default async function ProfilePage() {
 
   const STATS = [
     { icon: "🔥", value: streak > 0 ? streak : "—", label: "day streak",  accent: "#fb923c", bg: "rgba(251,146,60,0.07)"  },
-    { icon: "🎵", value: totalRated || "—",           label: "songs rated", accent: "#4fa8ff", bg: "rgba(79,195,247,0.07)"  },
-    { icon: "📀", value: albumsCount || "—",          label: "albums",      accent: "#a78bfa", bg: "rgba(167,139,250,0.07)" },
+    { icon: "🎵", value: totalRated || "—",           label: "songs rated", accent: "#F5A623", bg: "rgba(245,166,35,0.07)"  },
+    { icon: "📀", value: albumsCount || "—",          label: "albums",      accent: "#F5A623", bg: "rgba(245,166,35,0.07)" },
     { icon: "⭐", value: avgScore ?? "—",             label: "avg score",   accent: "#fbbf24", bg: "rgba(251,191,36,0.07)"  },
   ] as const;
 
@@ -250,7 +250,7 @@ export default async function ProfilePage() {
 
       {/* ── AVATAR + NAME ── */}
       <div className="flex flex-col items-center mb-6">
-        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#4fa8ff] to-[#1A1A1A] flex items-center justify-center text-white text-3xl font-black mb-3 overflow-hidden shadow-xl shadow-[#4fa8ff]/20">
+        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#F5A623] to-[#111111] flex items-center justify-center text-white text-3xl font-black mb-3 overflow-hidden shadow-xl shadow-[#F5A623]/20">
           {profile?.avatar_url
             ? <Image src={profile.avatar_url} alt={profile.username} width={80} height={80} className="object-cover" />
             : (profile?.username?.[0] ?? "?").toUpperCase()}
@@ -266,7 +266,7 @@ export default async function ProfilePage() {
           { label: "Following", value: formatCount(0) },
           { label: "Avg Rating", value: avgScore ?? "—" },
         ].map((s) => (
-          <div key={s.label} className="flex-1 bg-[#1A1A1A] rounded-2xl py-3 text-center border border-white/8">
+          <div key={s.label} className="flex-1 bg-[#111111] rounded-2xl py-3 text-center border border-white/8">
             <p className="text-lg font-black text-slate-100 tabular-nums">{s.value}</p>
             <p className="text-xs text-white/50 mt-0.5">{s.label}</p>
           </div>
@@ -278,17 +278,17 @@ export default async function ProfilePage() {
         <div className="mb-8">
           <div className="flex justify-between items-center mb-3">
             <h2 className="font-bold text-base text-slate-100">Top Songs</h2>
-            <Link href="/library" className="text-xs text-[#4fa8ff] hover:underline">See all →</Link>
+            <Link href="/library" className="text-xs text-[#F5A623] hover:underline">See all →</Link>
           </div>
           <div className="space-y-2">
             {top5Songs.map((r: any, i: number) => (
               <Link key={r.id} href={`/song/${r.id}`}
-                className="flex items-center gap-3 bg-[#1A1A1A] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block">
+                className="flex items-center gap-3 bg-[#111111] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block">
                 <span className="text-sm font-black text-white/38 w-5 text-right shrink-0">{i + 1}</span>
                 <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
                   {r.song?.album_art_url
                     ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="40px" />
-                    : <div className="w-full h-full bg-gradient-to-br from-[#0D0D0D] to-[#0D0D0D]" />}
+                    : <div className="w-full h-full bg-gradient-to-br from-[#000000] to-[#000000]" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
@@ -307,7 +307,7 @@ export default async function ProfilePage() {
           <div className="flex justify-between items-center mb-3">
             <h2 className="font-bold text-base text-slate-100">Top Albums</h2>
             {/* Links to Albums tab in Library */}
-            <Link href="/library?view=albums" className="text-xs text-[#4fa8ff] hover:underline">See all →</Link>
+            <Link href="/library?view=albums" className="text-xs text-[#F5A623] hover:underline">See all →</Link>
           </div>
           <div className="space-y-2">
             {topAlbums.map((album, i) => {
@@ -317,7 +317,7 @@ export default async function ProfilePage() {
                   <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
                     {album.art
                       ? <Image src={album.art} alt={album.name} fill className="object-cover" sizes="40px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#0D0D0D] to-[#0D0D0D]" />}
+                      : <div className="w-full h-full bg-gradient-to-br from-[#000000] to-[#000000]" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm text-slate-100 truncate">{album.name}</p>
@@ -328,11 +328,11 @@ export default async function ProfilePage() {
               );
               return album.spotifyId ? (
                 <Link key={i} href={`/album/${album.spotifyId}`}
-                  className="block bg-[#1A1A1A] rounded-2xl border border-white/8 hover:border-white/10 transition-colors">
+                  className="block bg-[#111111] rounded-2xl border border-white/8 hover:border-white/10 transition-colors">
                   {row}
                 </Link>
               ) : (
-                <div key={i} className="bg-[#1A1A1A] rounded-2xl border border-white/8">{row}</div>
+                <div key={i} className="bg-[#111111] rounded-2xl border border-white/8">{row}</div>
               );
             })}
           </div>
@@ -341,7 +341,7 @@ export default async function ProfilePage() {
 
       {/* ── TASTE CARD ── */}
       {totalRated >= 3 && (
-        <div className="bg-[#1A1A1A] rounded-3xl p-5 border border-white/8 mb-4">
+        <div className="bg-[#111111] rounded-3xl p-5 border border-white/8 mb-4">
           <h2 className="font-bold text-base text-slate-100 mb-4">Your taste</h2>
 
           {/* Stats bar inside taste card */}
@@ -361,8 +361,8 @@ export default async function ProfilePage() {
             <p className="text-xs text-white/38 uppercase tracking-wide font-semibold mb-4">Dimension scores</p>
             <div className="flex justify-around items-end">
               {([
-                { key: "Replay Value", label: "Replay",     color: "#4fa8ff" },
-                { key: "Lyrics",       label: "Lyrics",     color: "#a78bfa" },
+                { key: "Replay Value", label: "Replay",     color: "#F5A623" },
+                { key: "Lyrics",       label: "Lyrics",     color: "#F5A623" },
                 { key: "Production",   label: "Production", color: "#fb923c" },
               ] as const).map(({ key, label, color }) => {
                 const val = dimAvg[key] ?? 0;

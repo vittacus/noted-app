@@ -81,7 +81,7 @@ export default function MoodsPage() {
   }, []);
 
   if (loading) {
-    return <div className="flex justify-center py-24"><div className="w-6 h-6 border-2 border-[#4fa8ff] border-t-transparent rounded-full animate-spin" /></div>;
+    return <div className="flex justify-center py-24"><div className="w-6 h-6 border-2 border-[#F5A623] border-t-transparent rounded-full animate-spin" /></div>;
   }
 
   if (moodCards.length === 0) {
@@ -89,7 +89,7 @@ export default function MoodsPage() {
       <div className="page-enter text-center py-16">
         <p className="text-4xl mb-3">🎭</p>
         <p className="font-medium text-white/50">No moods tagged yet</p>
-        <Link href="/search" className="text-[#4fa8ff] text-sm font-semibold hover:underline mt-2 block">Rate a song →</Link>
+        <Link href="/search" className="text-[#F5A623] text-sm font-semibold hover:underline mt-2 block">Rate a song →</Link>
       </div>
     );
   }
@@ -109,7 +109,7 @@ export default function MoodsPage() {
               className={`relative rounded-3xl overflow-hidden border hover:brightness-110 transition-all min-h-[140px] flex flex-col ${
                 preset
                   ? `bg-gradient-to-br ${preset.gradient} ${preset.border}`
-                  : "bg-[#1A1A1A] border-white/10"
+                  : "bg-[#111111] border-white/10"
               }`}
             >
               {card.previews.length > 0 && (

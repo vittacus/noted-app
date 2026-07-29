@@ -5,7 +5,7 @@ interface RadarChartProps {
 }
 
 const RINGS = [0.25, 0.5, 0.75, 1.0];
-const ACCENT = "#4fa8ff";
+const ACCENT = "#F5A623";
 
 export default function RadarChart({ values, labels, size = 280 }: RadarChartProps) {
   const cx = size / 2;

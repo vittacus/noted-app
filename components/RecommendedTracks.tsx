@@ -105,7 +105,7 @@ export default function RecommendedTracks({
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="shrink-0 w-[120px] bg-[#1A1A1A] rounded-2xl border border-white/8 overflow-hidden animate-pulse">
+            <div key={i} className="shrink-0 w-[120px] bg-[#111111] rounded-2xl border border-white/8 overflow-hidden animate-pulse">
               <div className="w-full aspect-square bg-white/5" />
               <div className="p-2 space-y-1.5">
                 <div className="h-2 bg-white/5 rounded-full w-3/4" />
@@ -134,7 +134,7 @@ export default function RecommendedTracks({
           <div
             key={track.id}
             className="shrink-0 w-[120px] rounded-2xl border border-white/8 overflow-hidden flex flex-col hover:border-white/20 active:scale-95 transition-all cursor-pointer"
-            style={{ backgroundColor: "#1A1A1A" }}
+            style={{ backgroundColor: "#111111" }}
             onClick={() => handleRate(track)}
           >
             {/* Square album art with name overlay */}
@@ -142,7 +142,7 @@ export default function RecommendedTracks({
               {track.album?.images?.[0] ? (
                 <Image src={track.album.images[0].url} alt={track.album?.name ?? ""} fill className="object-cover" sizes="120px" />
               ) : (
-                <div className="absolute inset-0" style={{ backgroundColor: "#242424" }} />
+                <div className="absolute inset-0" style={{ backgroundColor: "#1A1A1A" }} />
               )}
               <div
                 className="absolute inset-x-0 bottom-0 px-2 pb-1.5 pt-4"
@@ -157,7 +157,7 @@ export default function RecommendedTracks({
             <div className="p-1.5 pt-1">
               <div
                 className="w-full py-2.5 rounded-xl text-center text-white font-bold text-[13px] select-none"
-                style={{ background: "linear-gradient(135deg, #4fa8ff, #9747FF)" }}
+                style={{ background: "#F5A623" }}
               >
                 ＋ Rate
               </div>

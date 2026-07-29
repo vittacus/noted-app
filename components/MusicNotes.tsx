@@ -69,7 +69,7 @@ export default function MusicNotes() {
               top: "-3rem",
               left,
               fontSize,
-              color: "#4fa8ff",
+              color: "#ffffff",
               pointerEvents: "none",
               userSelect: "none",
               animationName: "noteDrift",
