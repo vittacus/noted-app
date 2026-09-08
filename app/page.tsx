@@ -9,6 +9,7 @@ import RecommendedTracks from "@/components/RecommendedTracks";
 import ScoreCircle from "@/components/ScoreCircle";
 import NewRatingHighlight from "@/components/NewRatingHighlight";
 import SuggestedFriendsSidebar from "@/components/SuggestedFriendsSidebar";
+import StickySidebar from "@/components/StickySidebar";
 
 export const dynamic = "force-dynamic";
 
@@ -240,19 +241,14 @@ export default async function HomePage({
 
         {/* ── SIDEBAR — desktop only ── */}
         {user && (
-          <aside className="hidden md:block">
-            <div className="sticky top-[5.5rem] flex flex-col gap-6 h-fit overflow-y-auto" style={{ maxHeight: "calc(100vh - 5.5rem)" }}>
-
-              {songsRated >= 1 && (
-                <div className="bg-[#111111] rounded-2xl border border-white/8 p-4">
-                  <RecommendedTracks {...recommendProps} compact title="Recommended" />
-                </div>
-              )}
-
-              <SuggestedFriendsSidebar />
-
-            </div>
-          </aside>
+          <StickySidebar>
+            {songsRated >= 1 && (
+              <div className="bg-[#111111] rounded-2xl border border-white/8 p-4">
+                <RecommendedTracks {...recommendProps} compact title="Recommended" />
+              </div>
+            )}
+            <SuggestedFriendsSidebar />
+          </StickySidebar>
         )}
       </div>
     </div>
