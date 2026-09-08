@@ -241,7 +241,7 @@ export default async function HomePage({
         {/* ── SIDEBAR — desktop only ── */}
         {user && (
           <aside className="hidden md:block">
-            <div className="sticky top-[5.5rem] flex flex-col gap-6">
+            <div className="sticky top-[5.5rem] flex flex-col gap-6 h-fit overflow-y-auto" style={{ maxHeight: "calc(100vh - 5.5rem)" }}>
 
               {songsRated >= 1 && (
                 <div className="bg-[#111111] rounded-2xl border border-white/8 p-4">
