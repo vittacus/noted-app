@@ -256,11 +256,7 @@ export default async function HomePage({
                   )}
                 </Link>
 
-                {tab === "everyone" && (
-                  <div className="border-t border-white/8">
-                    <RatingComments ratingId={r.id} />
-                  </div>
-                )}
+                {tab === "everyone" && <RatingComments ratingId={r.id} />}
               </div>
             ))}
           </div>

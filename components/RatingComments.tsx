@@ -101,12 +101,12 @@ export default function RatingComments({ ratingId }: { ratingId: string }) {
     setSubmitting(false);
   }
 
-  const label = count === null ? ""
-    : count === 0 ? "Add a comment"
-    : `${count} comment${count !== 1 ? "s" : ""}`;
+  if (count === null) return null;
+
+  const label = count === 0 ? "Add a comment" : `${count} comment${count !== 1 ? "s" : ""}`;
 
   return (
-    <div className="px-4 pb-3">
+    <div className="border-t border-white/8 px-4 py-2.5">
       <button onClick={loadComments}
         className="flex items-center gap-1.5 text-xs text-white/38 hover:text-white/50 transition-colors">
         <MessageCircle size={12} />
