@@ -15,7 +15,7 @@ interface Props extends CelebrationData {
 }
 
 const PARTICLE_COUNT = 32;
-const COLORS = ["#4ade80", "#86efac", "#22d3ee", "#F5A623", "#a3e635", "#34d399", "#fff"];
+const COLORS = ["#4ade80", "#86efac", "#22d3ee", "#F64568", "#a3e635", "#34d399", "#fff"];
 const PARTICLES = Array.from({ length: PARTICLE_COUNT }, (_, i) => {
   const angle = (i / PARTICLE_COUNT) * 360 + (Math.random() - 0.5) * 28;
   const rad = (angle * Math.PI) / 180;
@@ -183,7 +183,7 @@ export default function AlbumCompletionCelebration({
             className="rounded-3xl overflow-hidden shadow-2xl"
             style={{
               width: 200, height: 200,
-              background: "#111111",
+              background: "#252748",
               boxShadow: "0 0 40px rgba(74,222,128,0.2)",
             }}
           >

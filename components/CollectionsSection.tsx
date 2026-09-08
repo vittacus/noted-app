@@ -61,7 +61,7 @@ export default function CollectionsSection({ userId }: { userId: string }) {
         <h2 className="font-bold text-base text-slate-100">Collections</h2>
         <button
           onClick={() => setShowInput((v) => !v)}
-          className="flex items-center gap-1.5 text-xs text-[#F5A623] font-semibold hover:opacity-80 transition-opacity"
+          className="flex items-center gap-1.5 text-xs text-[#F64568] font-semibold hover:opacity-80 transition-opacity"
         >
           <Plus size={14} /> New
         </button>
@@ -75,12 +75,12 @@ export default function CollectionsSection({ userId }: { userId: string }) {
             onChange={(e) => setNewName(e.target.value.slice(0, 50))}
             onKeyDown={(e) => e.key === "Enter" && create()}
             placeholder="Collection name…"
-            className="flex-1 px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-[#F5A623]/50"
+            className="flex-1 px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-[#F64568]/50"
           />
           <button
             onClick={create}
             disabled={!newName.trim() || creating}
-            className="px-4 py-2.5 rounded-xl bg-[#F5A623]/20 text-[#F5A623] text-sm font-semibold hover:bg-[#F5A623]/30 transition-colors disabled:opacity-40"
+            className="px-4 py-2.5 rounded-xl bg-[#F64568]/20 text-[#F64568] text-sm font-semibold hover:bg-[#F64568]/30 transition-colors disabled:opacity-40"
           >
             {creating ? "…" : "Create"}
           </button>
@@ -96,10 +96,10 @@ export default function CollectionsSection({ userId }: { userId: string }) {
           <Link
             key={col.id}
             href={`/collection/${col.id}`}
-            className="flex items-center gap-3 bg-[#111111] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block"
+            className="flex items-center gap-3 bg-[#252748] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#F5A623]/10 border border-[#F5A623]/20 flex items-center justify-center shrink-0">
-              <FolderOpen size={18} className="text-[#F5A623]" />
+            <div className="w-10 h-10 rounded-xl bg-[#F64568]/10 border border-[#F64568]/20 flex items-center justify-center shrink-0">
+              <FolderOpen size={18} className="text-[#F64568]" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm text-slate-100 truncate">{col.name}</p>

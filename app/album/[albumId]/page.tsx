@@ -97,7 +97,7 @@ export default function AlbumPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="w-6 h-6 border-2 border-[#F5A623] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#F64568] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -188,7 +188,7 @@ export default function AlbumPage() {
               onClick={() => handleRate(track, rated ? userRatingDetails[track.id] : undefined)}
               className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 border transition-all text-left active:scale-[0.99] ${
                 rated
-                  ? "bg-[#111111] border-white/8 hover:border-white/15"
+                  ? "bg-[#252748] border-white/8 hover:border-white/15"
                   : "bg-white/3 border-white/[0.03] opacity-70 hover:opacity-90"
               }`}
             >
@@ -206,7 +206,7 @@ export default function AlbumPage() {
                   {myScore.toFixed(1)}
                 </span>
               ) : (
-                <span className="shrink-0 px-2.5 py-1 rounded-lg bg-[#F5A623]/10 text-[#F5A623] text-xs font-semibold border border-[#F5A623]/20">
+                <span className="shrink-0 px-2.5 py-1 rounded-lg bg-[#F64568]/10 text-[#F64568] text-xs font-semibold border border-[#F64568]/20">
                   Rate
                 </span>
               )}

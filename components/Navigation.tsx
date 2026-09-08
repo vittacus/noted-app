@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, BookOpen, Sparkles, User, Plus } from "lucide-react";
 
-const AMBER = "#F5A623";
+const AMBER = "#F64568";
 const amberTextStyle = { color: AMBER };
 
 function TabItem({
@@ -41,7 +41,7 @@ export default function Navigation() {
   return (
     <>
       {/* Top header */}
-      <header className="sticky top-0 z-40 bg-[#000000]/85 backdrop-blur border-b border-white/[0.07]">
+      <header className="sticky top-0 z-40 bg-[#41436A]/85 backdrop-blur border-b border-white/[0.07]">
         <div className="max-w-2xl mx-auto px-4 h-14 flex items-center">
           <Link
             href="/"
@@ -54,7 +54,7 @@ export default function Navigation() {
       </header>
 
       {/* Bottom tab bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#000000]/90 backdrop-blur border-t border-white/[0.07]">
+      <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#41436A]/90 backdrop-blur border-t border-white/[0.07]">
         <div className="max-w-2xl mx-auto flex items-end">
 
           <TabItem href="/" icon={Home} label="Home" active={pathname === "/"} />
@@ -67,7 +67,7 @@ export default function Navigation() {
               className="w-[54px] h-[54px] rounded-full flex items-center justify-center shadow-xl -translate-y-4 active:scale-95 transition-all"
               style={{
                 background: AMBER,
-                boxShadow: "0 8px 24px rgba(245,166,35,0.35)",
+                boxShadow: "0 8px 24px rgba(246,69,104,0.35)",
               }}
             >
               <Plus size={24} className="text-black" strokeWidth={2.8} />

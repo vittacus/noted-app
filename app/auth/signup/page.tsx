@@ -41,11 +41,11 @@ export default function SignupPage() {
     <div className="min-h-[70vh] flex flex-col items-center justify-center page-enter">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <span className="text-4xl font-black text-[#F5A623] tracking-tight">noted</span>
+          <span className="text-4xl font-black text-[#F64568] tracking-tight">noted</span>
           <p className="text-white/50 text-sm mt-2">Start rating your music</p>
         </div>
 
-        <form onSubmit={handleSignup} className="bg-[#111111] rounded-3xl border border-white/8 p-6 space-y-4">
+        <form onSubmit={handleSignup} className="bg-[#252748] rounded-3xl border border-white/8 p-6 space-y-4">
           <h1 className="text-lg font-bold text-slate-100">Create account</h1>
 
           {error && (
@@ -60,7 +60,7 @@ export default function SignupPage() {
               onChange={(e) => setUsername(e.target.value)}
               required
               placeholder="sonicsuperuser"
-              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#F5A623]/50"
+              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#F64568]/50"
             />
           </div>
 
@@ -72,7 +72,7 @@ export default function SignupPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#F5A623]/50"
+              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#F64568]/50"
             />
           </div>
 
@@ -85,14 +85,14 @@ export default function SignupPage() {
               required
               placeholder="••••••••"
               minLength={8}
-              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#F5A623]/50"
+              className="w-full px-3.5 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#F64568]/50"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 rounded-2xl bg-[#F5A623] text-black font-semibold text-sm hover:bg-[#d4891a] transition-colors shadow-lg shadow-[#F5A623]/20 disabled:opacity-50"
+            className="w-full h-12 rounded-2xl bg-[#F64568] text-black font-semibold text-sm hover:bg-[#FE9677] transition-colors shadow-lg shadow-[#F64568]/20 disabled:opacity-50"
           >
             {loading ? "Creating account…" : "Create account"}
           </button>
@@ -100,7 +100,7 @@ export default function SignupPage() {
 
         <p className="text-center text-sm text-white/50 mt-5">
           Already have an account?{" "}
-          <Link href="/auth/login" className="text-[#F5A623] font-semibold hover:underline">
+          <Link href="/auth/login" className="text-[#F64568] font-semibold hover:underline">
             Sign in
           </Link>
         </p>

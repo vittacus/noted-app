@@ -6,7 +6,7 @@ import { Music2, LayoutGrid, Swords } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Rating, Song } from "@/types";
-import { formatDuration, genreAccentColor, displayGenres } from "@/lib/utils";
+import { formatDuration, displayGenres } from "@/lib/utils";
 import RatingModal from "@/components/RatingModal";
 import { SpotifyTrack } from "@/types";
 import Link from "next/link";
@@ -286,12 +286,12 @@ export default function LibraryPage() {
 
         return (
         <>
-          {loading && <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-[#F5A623] border-t-transparent rounded-full animate-spin" /></div>}
+          {loading && <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-[#F64568] border-t-transparent rounded-full animate-spin" /></div>}
           {!loading && albumGroups.length === 0 && (
             <div className="text-center py-16">
               <p className="text-4xl mb-3">💿</p>
               <p className="font-medium text-white/50">No albums yet</p>
-              <Link href="/search" className="text-[#F5A623] text-sm font-semibold hover:underline mt-1 block">Rate songs →</Link>
+              <Link href="/search" className="text-[#F64568] text-sm font-semibold hover:underline mt-1 block">Rate songs →</Link>
             </div>
           )}
 
@@ -374,7 +374,7 @@ export default function LibraryPage() {
                     </p>
                   )}
                   <button onClick={() => { setAlbumGenre("all"); setAlbumStatus("all"); }}
-                    className="text-[#F5A623] text-xs font-semibold mt-3 hover:underline">
+                    className="text-[#F64568] text-xs font-semibold mt-3 hover:underline">
                     Clear filters →
                   </button>
                 </>
@@ -397,7 +397,7 @@ export default function LibraryPage() {
                   <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0">
                     {a.albumArt
                       ? <Image src={a.albumArt} alt={a.albumName} fill className="object-cover" sizes="64px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#000000] to-[#000000]" />}
+                      : <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-slate-100 truncate">{a.albumName}</p>
@@ -438,11 +438,11 @@ export default function LibraryPage() {
                   className="rounded-2xl overflow-hidden cursor-pointer active:scale-[0.99] transition-all"
                   style={isComplete ? {
                     border: "1px solid rgba(74,222,128,0.4)",
-                    background: "#111111",
+                    background: "#252748",
                     boxShadow: "0 0 0 1px rgba(74,222,128,0.15), 0 4px 16px rgba(74,222,128,0.08)",
                   } : {
                     border: "1px solid rgba(255,255,255,0.08)",
-                    background: "#111111",
+                    background: "#252748",
                   }}
                 >
                   {inner}
@@ -509,30 +509,30 @@ export default function LibraryPage() {
             </div>
           </div>
 
-          {loading && <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-[#F5A623] border-t-transparent rounded-full animate-spin" /></div>}
+          {loading && <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-[#F64568] border-t-transparent rounded-full animate-spin" /></div>}
           {!loading && filtered.length === 0 && (
             <div className="text-center py-16">
               <p className="text-4xl mb-3">📚</p>
               <p className="font-medium text-white/50">No ratings yet</p>
-              <Link href="/search" className="text-[#F5A623] text-sm font-semibold hover:underline mt-1 block">Rate your first song →</Link>
+              <Link href="/search" className="text-[#F64568] text-sm font-semibold hover:underline mt-1 block">Rate your first song →</Link>
             </div>
           )}
 
           {view === "list" ? (
             <div className="space-y-2">
               {filtered.map((r) => {
-                const accentColor = genreAccentColor(r.genre_tags ?? []);
+                const hasGenre = (r.genre_tags ?? []).length > 0;
                 return (
                   <Link key={r.id} href={`/song/${r.id}`} className="block group">
                     <div
-                      className="bg-[#111111] rounded-2xl border border-white/8 group-hover:border-white/10 transition-colors overflow-hidden"
-                      style={accentColor ? { borderLeft: `4px solid ${accentColor}` } : undefined}
+                      className="bg-[#252748] rounded-2xl border border-white/8 group-hover:border-white/10 transition-colors overflow-hidden"
+                      style={hasGenre ? { borderLeft: `4px solid #984063` } : undefined}
                     >
                       <div className="flex items-center gap-3 px-3 py-3">
                         <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
                           {r.song.album_art_url
                             ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="48px" />
-                            : <div className="w-full h-full bg-gradient-to-br from-[#000000] to-[#000000]" />}
+                            : <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
@@ -564,7 +564,7 @@ export default function LibraryPage() {
                 <Link key={r.id} href={`/song/${r.id}`} className="relative rounded-2xl overflow-hidden aspect-square bg-white/5 group block">
                   {r.song.album_art_url
                     ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="33vw" />
-                    : <div className="w-full h-full bg-gradient-to-br from-[#000000] to-[#000000]" />}
+                    : <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />}
 
                   {/* Hover darkening */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />

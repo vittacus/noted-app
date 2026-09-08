@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 const SUGGESTED_FRIENDS = [
   { id: "10000000-0000-0000-0000-000000000001", username: "beatmaven",   initials: "BM", color: "#f59e0b", match: 94, genre: "Rap / Alt"   },
   { id: "20000000-0000-0000-0000-000000000001", username: "melodyghost", initials: "MG", color: "#ec4899", match: 88, genre: "Latin / Pop"  },
-  { id: "30000000-0000-0000-0000-000000000001", username: "wavesurfer",  initials: "WS", color: "#F5A623", match: 82, genre: "Indie / R&B"  },
+  { id: "30000000-0000-0000-0000-000000000001", username: "wavesurfer",  initials: "WS", color: "#F64568", match: 82, genre: "Indie / R&B"  },
   { id: "40000000-0000-0000-0000-000000000001", username: "lowfreq",     initials: "LF", color: "#a78bfa", match: 79, genre: "Rap / Soul"   },
   { id: "50000000-0000-0000-0000-000000000001", username: "driftpop",    initials: "DP", color: "#4ade80", match: 75, genre: "Pop"          },
 ];
@@ -59,7 +59,7 @@ export default function SuggestedFriendsSidebar() {
   }
 
   return (
-    <div className="bg-[#111111] rounded-2xl border border-white/8 p-4">
+    <div className="bg-[#252748] rounded-2xl border border-white/8 p-4">
       <p className="text-sm font-bold text-slate-100 mb-3">Suggested friends</p>
       <div className="space-y-0.5">
         {SUGGESTED_FRIENDS.map((f) => {
@@ -81,7 +81,7 @@ export default function SuggestedFriendsSidebar() {
                 disabled={!currentUserId}
                 className={`shrink-0 text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors disabled:opacity-40 ${
                   isFollowing
-                    ? "text-[#F5A623] border border-[#F5A623]/40 bg-[#F5A623]/10 hover:bg-[#F5A623]/15"
+                    ? "text-[#F64568] border border-[#F64568]/40 bg-[#F64568]/10 hover:bg-[#F64568]/15"
                     : "text-white/50 border border-white/15 hover:text-white/80 hover:border-white/25"
                 }`}
               >

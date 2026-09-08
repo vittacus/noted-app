@@ -89,7 +89,7 @@ export default function AddToCollectionButton({ songId }: { songId: string }) {
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-[#111111] rounded-t-3xl border-t border-white/8 p-5 max-h-[70vh] flex flex-col">
+          <div className="w-full max-w-lg bg-[#252748] rounded-t-3xl border-t border-white/8 p-5 max-h-[70vh] flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-slate-100">Add to collection</h3>
               <button onClick={() => setOpen(false)} className="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center hover:bg-white/10 transition-colors">
@@ -104,12 +104,12 @@ export default function AddToCollectionButton({ songId }: { songId: string }) {
                 onChange={(e) => setNewName(e.target.value.slice(0, 50))}
                 onKeyDown={(e) => e.key === "Enter" && createCollection()}
                 placeholder="New collection name…"
-                className="flex-1 px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-[#F5A623]/50"
+                className="flex-1 px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-100 placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-[#F64568]/50"
               />
               <button
                 onClick={createCollection}
                 disabled={!newName.trim() || creating}
-                className="px-3.5 py-2.5 rounded-xl bg-[#F5A623]/20 text-[#F5A623] text-sm font-semibold hover:bg-[#F5A623]/30 transition-colors disabled:opacity-40 flex items-center gap-1.5"
+                className="px-3.5 py-2.5 rounded-xl bg-[#F64568]/20 text-[#F64568] text-sm font-semibold hover:bg-[#F64568]/30 transition-colors disabled:opacity-40 flex items-center gap-1.5"
               >
                 <Plus size={14} /> Create
               </button>
@@ -129,12 +129,12 @@ export default function AddToCollectionButton({ songId }: { songId: string }) {
                     onClick={() => toggle(col.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all text-left ${
                       inCollection
-                        ? "border-[#F5A623]/40 bg-[#F5A623]/10"
+                        ? "border-[#F64568]/40 bg-[#F64568]/10"
                         : "border-white/8 bg-white/5 hover:border-white/10"
                     }`}
                   >
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                      inCollection ? "border-[#F5A623] bg-[#F5A623]" : "border-white/12"
+                      inCollection ? "border-[#F64568] bg-[#F64568]" : "border-white/12"
                     }`}>
                       {inCollection && <Check size={11} className="text-white" strokeWidth={3} />}
                     </div>
