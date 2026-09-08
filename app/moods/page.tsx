@@ -207,7 +207,7 @@ export default function MoodsPage() {
       {/* Create Mood modal */}
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="w-full max-w-sm bg-[#252748] rounded-3xl border border-white/10 p-6 space-y-5">
+          <div className="w-full max-w-sm bg-[#1a1a1a] rounded-3xl border border-white/10 p-6 space-y-5">
             <h2 className="text-lg font-bold text-slate-100">New mood</h2>
 
             <div>

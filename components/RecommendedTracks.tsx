@@ -122,7 +122,7 @@ export default function RecommendedTracks({
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="shrink-0 w-[120px] bg-[#252748] rounded-2xl border border-white/8 overflow-hidden animate-pulse">
+            <div key={i} className="shrink-0 w-[120px] bg-[#1a1a1a] rounded-2xl border border-white/8 overflow-hidden animate-pulse">
               <div className="w-full aspect-square bg-white/5" />
               <div className="p-2 space-y-1.5">
                 <div className="h-2 bg-white/5 rounded-full w-3/4" />
@@ -153,7 +153,7 @@ export default function RecommendedTracks({
                 {track.album?.images?.[0] ? (
                   <Image src={track.album.images[0].url} alt="" fill className="object-cover" sizes="40px" />
                 ) : (
-                  <div className="w-full h-full bg-[#2d2f52]" />
+                  <div className="w-full h-full bg-[#232323]" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -205,14 +205,14 @@ export default function RecommendedTracks({
           <div
             key={track.id}
             className="shrink-0 w-[120px] rounded-2xl border border-white/8 overflow-hidden flex flex-col hover:border-white/20 active:scale-95 transition-all cursor-pointer"
-            style={{ backgroundColor: "#252748" }}
+            style={{ backgroundColor: "#1a1a1a" }}
             onClick={() => handleRate(track)}
           >
             <div className="relative w-full aspect-square">
               {track.album?.images?.[0] ? (
                 <Image src={track.album.images[0].url} alt={track.album?.name ?? ""} fill className="object-cover" sizes="120px" />
               ) : (
-                <div className="absolute inset-0" style={{ backgroundColor: "#2d2f52" }} />
+                <div className="absolute inset-0" style={{ backgroundColor: "#232323" }} />
               )}
               <div
                 className="absolute inset-x-0 bottom-0 px-2 pb-1.5 pt-4"

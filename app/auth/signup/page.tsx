@@ -45,7 +45,7 @@ export default function SignupPage() {
           <p className="text-white/50 text-sm mt-2">Start rating your music</p>
         </div>
 
-        <form onSubmit={handleSignup} className="bg-[#252748] rounded-3xl border border-white/8 p-6 space-y-4">
+        <form onSubmit={handleSignup} className="bg-[#1a1a1a] rounded-3xl border border-white/8 p-6 space-y-4">
           <h1 className="text-lg font-bold text-slate-100">Create account</h1>
 
           {error && (

@@ -102,7 +102,7 @@ export default function SearchPage() {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setTimeout(() => setIsFocused(false), 150)}
           placeholder="Search songs and albums…"
-          className="w-full pl-10 pr-4 py-3 rounded-2xl border border-white/10 bg-[#252748] text-sm text-slate-100 placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#F64568]/50"
+          className="w-full pl-10 pr-4 py-3 rounded-2xl border border-white/10 bg-[#1a1a1a] text-sm text-slate-100 placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#F64568]/50"
           autoFocus
         />
         {loading && (
@@ -144,12 +144,12 @@ export default function SearchPage() {
       {tab === "tracks" && (
         <div className="space-y-2">
           {tracks.map((track) => (
-            <div key={track.id} className="flex items-center gap-3 bg-[#252748] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors">
+            <div key={track.id} className="flex items-center gap-3 bg-[#1a1a1a] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors">
               <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
                 {track.album.images[0] ? (
                   <Image src={track.album.images[0].url} alt={track.album.name} fill className="object-cover" sizes="48px" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />
+                  <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -181,13 +181,13 @@ export default function SearchPage() {
             <Link
               key={album.id}
               href={`/album/${album.id}`}
-              className="flex items-center gap-3 bg-[#252748] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block"
+              className="flex items-center gap-3 bg-[#1a1a1a] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block"
             >
               <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
                 {album.images[0] ? (
                   <Image src={album.images[0].url} alt={album.name} fill className="object-cover" sizes="48px" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />
+                  <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />
                 )}
               </div>
               <div className="flex-1 min-w-0">

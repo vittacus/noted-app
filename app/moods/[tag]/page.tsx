@@ -253,7 +253,7 @@ export default function MoodDetailPage() {
 
               {/* Card — slides left to reveal delete; navigates to song on tap */}
               <div
-                className={`relative z-10 bg-[#252748] border border-white/8 rounded-2xl transition-transform duration-200 ease-out group ${
+                className={`relative z-10 bg-[#1a1a1a] border border-white/8 rounded-2xl transition-transform duration-200 ease-out group ${
                   isOpen ? "-translate-x-20" : "translate-x-0"
                 }`}
                 onTouchStart={(e) => handleTouchStart(e, r.id)}
@@ -268,7 +268,7 @@ export default function MoodDetailPage() {
                   <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
                     {r.song?.album_art_url
                       ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="48px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />}
+                      : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
@@ -306,7 +306,7 @@ export default function MoodDetailPage() {
           🎵 Export to Spotify playlist
         </button>
         {tooltipVisible && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#252748] border border-white/10 rounded-xl text-xs text-white/50 whitespace-nowrap shadow-lg pointer-events-none">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#1a1a1a] border border-white/10 rounded-xl text-xs text-white/50 whitespace-nowrap shadow-lg pointer-events-none">
             Coming soon — connect your Spotify account to enable this
           </div>
         )}
@@ -317,7 +317,7 @@ export default function MoodDetailPage() {
         <div className="fixed inset-0 z-[100] flex flex-col justify-end" style={{ isolation: "isolate" }}>
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => { setShowPicker(false); setSelectedIds(new Set()); }} />
-          <div className="relative w-full bg-[#1e1f38] rounded-t-3xl flex flex-col"
+          <div className="relative w-full bg-[#1a1a1a] rounded-t-3xl flex flex-col"
             style={{ maxHeight: "80vh", boxShadow: "0 -8px 40px rgba(0,0,0,0.6)" }}>
             <div className="flex justify-center pt-3 pb-1 shrink-0">
               <div className="w-10 h-1 rounded-full bg-white/10" />
@@ -352,7 +352,7 @@ export default function MoodDetailPage() {
                     <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
                       {r.song?.album_art_url
                         ? <Image src={r.song.album_art_url} alt="" fill className="object-cover" sizes="40px" />
-                        : <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />}
+                        : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
@@ -363,7 +363,7 @@ export default function MoodDetailPage() {
                 );
               })}
             </div>
-            <div className="px-5 pb-8 pt-3 border-t border-white/8 shrink-0 bg-[#1e1f38]">
+            <div className="px-5 pb-8 pt-3 border-t border-white/8 shrink-0 bg-[#1a1a1a]">
               <button onClick={addToMood} disabled={!selectedIds.size || adding}
                 className={`w-full h-12 rounded-2xl font-semibold text-sm transition-all ${
                   selectedIds.size > 0 && !adding

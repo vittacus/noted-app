@@ -98,7 +98,7 @@ export default async function HomePage({
       {/* Hero — logged-out (full width) */}
       {!user && (
         <div className="-mx-4 mb-10">
-          <div className="min-h-[42vh] flex flex-col items-center justify-center text-center bg-gradient-to-b from-[#2d2f52] via-[#41436A] to-[#41436A] px-6 py-12 relative overflow-hidden">
+          <div className="min-h-[42vh] flex flex-col items-center justify-center text-center bg-gradient-to-b from-[#232323] via-[#0a0a0a] to-[#0a0a0a] px-6 py-12 relative overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_20%,rgba(246,69,104,0.12),transparent)] pointer-events-none" />
             <div className="relative">
               <h1 className="text-6xl font-black tracking-tighter text-[#F64568] mb-4 leading-none">noted</h1>
@@ -116,7 +116,7 @@ export default async function HomePage({
               </div>
             </div>
           </div>
-          <div className="text-center py-5 bg-[#252748]/60 border-y border-white/8">
+          <div className="text-center py-5 bg-[#1a1a1a]/60 border-y border-white/8">
             <p className="text-xs text-white/50">
               Join to rate songs →{" "}
               <Link href="/auth/signup" className="text-[#F64568] font-semibold hover:underline">Create a free account</Link>
@@ -156,7 +156,7 @@ export default async function HomePage({
               >
                 {SUGGESTED_FRIENDS.map((f) => (
                   <div key={f.username}
-                    className="shrink-0 w-32 bg-[#252748] rounded-2xl p-3 flex flex-col items-center gap-2 border border-white/8">
+                    className="shrink-0 w-32 bg-[#1a1a1a] rounded-2xl p-3 flex flex-col items-center gap-2 border border-white/8">
                     <div className="rounded-full p-[1.5px]"
                       style={{ background: `linear-gradient(135deg, ${f.color}, transparent)` }}>
                       <div className="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm"
@@ -212,7 +212,7 @@ export default async function HomePage({
               <div
                 key={r.id}
                 data-rating-card
-                className="bg-[#252748] rounded-2xl border border-white/8 overflow-hidden hover:border-white/12 transition-colors"
+                className="bg-[#1a1a1a] rounded-2xl border border-white/8 overflow-hidden hover:border-white/12 transition-colors"
               >
                 <Link href={`/song/${r.id}`} className="block">
                   <div className="flex items-center gap-2 px-4 pt-4 max-w-[740px]">
@@ -231,7 +231,7 @@ export default async function HomePage({
                     <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-lg">
                       {r.song?.album_art_url
                         ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="64px" />
-                        : <div className="w-full h-full bg-[#2d2f52]" />}
+                        : <div className="w-full h-full bg-[#232323]" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-base text-slate-100 truncate leading-tight">{r.song?.title}</p>
@@ -273,7 +273,7 @@ export default async function HomePage({
         {user && (
           <StickySidebar>
             {songsRated >= 1 && (
-              <div className="bg-[#252748] rounded-2xl border border-white/8 p-4">
+              <div className="bg-[#1a1a1a] rounded-2xl border border-white/8 p-4">
                 <RecommendedTracks {...recommendProps} compact title="Recommended" />
               </div>
             )}

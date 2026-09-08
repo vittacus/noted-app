@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="h-full">
       {/* style forces background even if Tailwind CSS variable cascade is overridden */}
-      <body className={`${inter.className} min-h-full text-white`} style={{ backgroundColor: "#41436A" }}>
+      <body className={`${inter.className} min-h-full text-white`} style={{ backgroundColor: "#0a0a0a" }}>
         <div className="relative z-10">
           <Navigation />
           <main className="max-w-[1080px] xl:max-w-[1300px] 2xl:max-w-[1500px] mx-auto px-4 pb-24 pt-6">

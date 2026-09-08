@@ -112,7 +112,7 @@ export default function SongDetailPage() {
             <div className="absolute inset-0 bg-[#000000]/70 backdrop-blur-xl" />
           </>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />
         )}
 
         {/* Back button */}
@@ -154,7 +154,7 @@ export default function SongDetailPage() {
       {/* Content */}
       <div className="px-4 pt-5 space-y-4">
         {/* Dimension breakdown */}
-        <div className="bg-[#252748] rounded-2xl border border-white/8 p-4">
+        <div className="bg-[#1a1a1a] rounded-2xl border border-white/8 p-4">
           <p className="text-xs font-semibold text-white/38 uppercase tracking-wide mb-3">Breakdown</p>
           <div className="space-y-4">
             {dims.map(({ label, value, color }) => (
@@ -175,7 +175,7 @@ export default function SongDetailPage() {
         </div>
 
         {/* Vibe + date */}
-        <div className="bg-[#252748] rounded-2xl border border-white/8 p-4 flex gap-4">
+        <div className="bg-[#1a1a1a] rounded-2xl border border-white/8 p-4 flex gap-4">
           <div className="flex-1">
             <p className="text-xs font-semibold text-white/38 uppercase tracking-wide mb-1">Vibe</p>
             <p className="text-sm font-semibold text-slate-200">
@@ -192,7 +192,7 @@ export default function SongDetailPage() {
 
         {/* Tags */}
         {((rating.best_for_tags ?? []).length > 0 || (rating.genre_tags ?? []).length > 0) && (
-          <div className="bg-[#252748] rounded-2xl border border-white/8 p-4">
+          <div className="bg-[#1a1a1a] rounded-2xl border border-white/8 p-4">
             {(rating.best_for_tags ?? []).length > 0 && (
               <div className="mb-3">
                 <p className="text-xs font-semibold text-white/38 uppercase tracking-wide mb-2">Best for</p>
@@ -218,7 +218,7 @@ export default function SongDetailPage() {
 
         {/* Notes */}
         {rating.notes && (
-          <div className="bg-[#252748] rounded-2xl border border-white/8 p-4">
+          <div className="bg-[#1a1a1a] rounded-2xl border border-white/8 p-4">
             <p className="text-xs font-semibold text-white/38 uppercase tracking-wide mb-2">Notes</p>
             <p className="text-sm text-slate-300 italic leading-relaxed">&ldquo;{rating.notes}&rdquo;</p>
           </div>

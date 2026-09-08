@@ -89,7 +89,7 @@ export default function AddToCollectionButton({ songId }: { songId: string }) {
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-[#252748] rounded-t-3xl border-t border-white/8 p-5 max-h-[70vh] flex flex-col">
+          <div className="w-full max-w-lg bg-[#1a1a1a] rounded-t-3xl border-t border-white/8 p-5 max-h-[70vh] flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-slate-100">Add to collection</h3>
               <button onClick={() => setOpen(false)} className="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center hover:bg-white/10 transition-colors">

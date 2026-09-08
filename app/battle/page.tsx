@@ -217,11 +217,11 @@ export default function BattlePage() {
         <div className="flex gap-3 mb-5">
           {pair.map((song, idx) => (
             <button key={song.ratingId} onClick={() => handlePick(song, pair[1 - idx]!)} disabled={selecting}
-              className="flex-1 flex flex-col rounded-3xl border-2 border-white/10 bg-[#252748] overflow-hidden hover:border-[#F64568]/50 hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 disabled:opacity-60">
+              className="flex-1 flex flex-col rounded-3xl border-2 border-white/10 bg-[#1a1a1a] overflow-hidden hover:border-[#F64568]/50 hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 disabled:opacity-60">
               <div className="relative w-full aspect-square bg-white/5">
                 {song.albumArt
                   ? <Image src={song.albumArt} alt={song.albumName} fill className="object-cover" sizes="50vw" />
-                  : <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />}
+                  : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
                 <div className="absolute bottom-2 right-2">
                   <ScoreCircle score={song.score} size={32} />
                 </div>

@@ -397,7 +397,7 @@ export default function LibraryPage() {
                   <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0">
                     {a.albumArt
                       ? <Image src={a.albumArt} alt={a.albumName} fill className="object-cover" sizes="64px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />}
+                      : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-slate-100 truncate">{a.albumName}</p>
@@ -438,11 +438,11 @@ export default function LibraryPage() {
                   className="rounded-2xl overflow-hidden cursor-pointer active:scale-[0.99] transition-all"
                   style={isComplete ? {
                     border: "1px solid rgba(74,222,128,0.4)",
-                    background: "#252748",
+                    background: "#1a1a1a",
                     boxShadow: "0 0 0 1px rgba(74,222,128,0.15), 0 4px 16px rgba(74,222,128,0.08)",
                   } : {
                     border: "1px solid rgba(255,255,255,0.08)",
-                    background: "#252748",
+                    background: "#1a1a1a",
                   }}
                 >
                   {inner}
@@ -525,14 +525,14 @@ export default function LibraryPage() {
                 return (
                   <Link key={r.id} href={`/song/${r.id}`} className="block group">
                     <div
-                      className="bg-[#252748] rounded-2xl border border-white/8 group-hover:border-white/10 transition-colors overflow-hidden"
+                      className="bg-[#1a1a1a] rounded-2xl border border-white/8 group-hover:border-white/10 transition-colors overflow-hidden"
                       style={hasGenre ? { borderLeft: `4px solid #984063` } : undefined}
                     >
                       <div className="flex items-center gap-3 px-3 py-3">
                         <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
                           {r.song.album_art_url
                             ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="48px" />
-                            : <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />}
+                            : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
@@ -564,7 +564,7 @@ export default function LibraryPage() {
                 <Link key={r.id} href={`/song/${r.id}`} className="relative rounded-2xl overflow-hidden aspect-square bg-white/5 group block">
                   {r.song.album_art_url
                     ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="33vw" />
-                    : <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />}
+                    : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
 
                   {/* Hover darkening */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />

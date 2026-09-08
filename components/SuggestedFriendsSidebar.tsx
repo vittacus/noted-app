@@ -59,7 +59,7 @@ export default function SuggestedFriendsSidebar() {
   }
 
   return (
-    <div className="bg-[#252748] rounded-2xl border border-white/8 p-4">
+    <div className="bg-[#1a1a1a] rounded-2xl border border-white/8 p-4">
       <p className="text-sm font-bold text-slate-100 mb-3">Suggested friends</p>
       <div className="space-y-0.5">
         {SUGGESTED_FRIENDS.map((f) => {

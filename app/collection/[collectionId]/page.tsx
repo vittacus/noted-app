@@ -119,12 +119,12 @@ export default function CollectionPage() {
 
       <div className="space-y-2 mb-6">
         {songs.map((entry, i) => (
-          <div key={entry.id} className="flex items-center gap-3 bg-[#252748] rounded-2xl p-3 border border-white/8">
+          <div key={entry.id} className="flex items-center gap-3 bg-[#1a1a1a] rounded-2xl p-3 border border-white/8">
             <span className="text-sm font-black text-white/28 w-5 text-right shrink-0">{i + 1}</span>
             <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-white/5 shrink-0">
               {entry.song.album_art_url
                 ? <Image src={entry.song.album_art_url} alt={entry.song.album_name} fill className="object-cover" sizes="44px" />
-                : <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />}
+                : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm text-slate-100 truncate">
@@ -157,7 +157,7 @@ export default function CollectionPage() {
           <span>🎵</span> Export to Spotify playlist
         </button>
         {tooltipVisible && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#252748] border border-white/10 rounded-xl text-xs text-white/50 whitespace-nowrap shadow-lg">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#1a1a1a] border border-white/10 rounded-xl text-xs text-white/50 whitespace-nowrap shadow-lg">
             Coming soon — connect your Spotify account to enable this
           </div>
         )}

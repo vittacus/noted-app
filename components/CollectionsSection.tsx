@@ -96,7 +96,7 @@ export default function CollectionsSection({ userId }: { userId: string }) {
           <Link
             key={col.id}
             href={`/collection/${col.id}`}
-            className="flex items-center gap-3 bg-[#252748] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block"
+            className="flex items-center gap-3 bg-[#1a1a1a] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block"
           >
             <div className="w-10 h-10 rounded-xl bg-[#F64568]/10 border border-[#F64568]/20 flex items-center justify-center shrink-0">
               <FolderOpen size={18} className="text-[#F64568]" />

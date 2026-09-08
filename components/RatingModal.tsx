@@ -534,7 +534,7 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-[#252748] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col border border-white/8">
+      <div className="w-full max-w-lg bg-[#1a1a1a] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col border border-white/8">
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-white/8">
@@ -638,7 +638,7 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
                       <div className="relative w-full aspect-square bg-white/5">
                         {card.art
                           ? <Image src={card.art} alt={card.title} fill className="object-cover" sizes="200px" />
-                          : <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />}
+                          : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
                         <span className="absolute top-2 left-2 text-xs font-bold px-1.5 py-0.5 rounded bg-black/50 text-white/70">
                           {card.label}
                         </span>

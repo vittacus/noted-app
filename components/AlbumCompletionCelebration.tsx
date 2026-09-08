@@ -183,7 +183,7 @@ export default function AlbumCompletionCelebration({
             className="rounded-3xl overflow-hidden shadow-2xl"
             style={{
               width: 200, height: 200,
-              background: "#252748",
+              background: "#1a1a1a",
               boxShadow: "0 0 40px rgba(74,222,128,0.2)",
             }}
           >

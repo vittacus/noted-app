@@ -228,7 +228,7 @@ export default async function ProfilePage() {
         <div className="mb-8 md:mb-0">
           {/* Avatar + name */}
           <div className="flex flex-col items-center md:items-start mb-5">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#F64568] to-[#252748] flex items-center justify-center text-white text-3xl font-black mb-3 overflow-hidden shadow-xl shadow-[#F64568]/20">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#F64568] to-[#1a1a1a] flex items-center justify-center text-white text-3xl font-black mb-3 overflow-hidden shadow-xl shadow-[#F64568]/20">
               {profile?.avatar_url
                 ? <Image src={profile.avatar_url} alt={profile.username} width={80} height={80} className="object-cover" />
                 : (profile?.username?.[0] ?? "?").toUpperCase()}
@@ -244,7 +244,7 @@ export default async function ProfilePage() {
               { label: "Following", value: formatCount(followingCount ?? 0) },
               { label: "Avg Rating", value: avgScore ?? "—" },
             ].map((s) => (
-              <div key={s.label} className="flex-1 bg-[#252748] rounded-2xl py-3 text-center border border-white/8">
+              <div key={s.label} className="flex-1 bg-[#1a1a1a] rounded-2xl py-3 text-center border border-white/8">
                 <p className="text-lg font-black text-slate-100 tabular-nums">{s.value}</p>
                 <p className="text-xs text-white/50 mt-0.5">{s.label}</p>
               </div>
@@ -274,12 +274,12 @@ export default async function ProfilePage() {
                   <div className="space-y-2">
                     {top5Songs.map((r: any, i: number) => (
                       <Link key={r.id} href={`/song/${r.id}`}
-                        className="flex items-center gap-3 bg-[#252748] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block">
+                        className="flex items-center gap-3 bg-[#1a1a1a] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block">
                         <span className="text-sm font-black text-white/38 w-5 text-right shrink-0">{i + 1}</span>
                         <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
                           {r.song?.album_art_url
                             ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="40px" />
-                            : <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />}
+                            : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
@@ -307,7 +307,7 @@ export default async function ProfilePage() {
                           <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
                             {album.art
                               ? <Image src={album.art} alt={album.name} fill className="object-cover" sizes="40px" />
-                              : <div className="w-full h-full bg-gradient-to-br from-[#1a1b30] to-[#1a1b30]" />}
+                              : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-semibold text-sm text-slate-100 truncate">{album.name}</p>
@@ -318,11 +318,11 @@ export default async function ProfilePage() {
                       );
                       return album.spotifyId ? (
                         <Link key={i} href={`/album/${album.spotifyId}`}
-                          className="block bg-[#252748] rounded-2xl border border-white/8 hover:border-white/10 transition-colors">
+                          className="block bg-[#1a1a1a] rounded-2xl border border-white/8 hover:border-white/10 transition-colors">
                           {row}
                         </Link>
                       ) : (
-                        <div key={i} className="bg-[#252748] rounded-2xl border border-white/8">{row}</div>
+                        <div key={i} className="bg-[#1a1a1a] rounded-2xl border border-white/8">{row}</div>
                       );
                     })}
                   </div>
@@ -333,7 +333,7 @@ export default async function ProfilePage() {
 
           {/* Taste card */}
           {totalRated >= 3 && (
-            <div className="bg-[#252748] rounded-3xl p-5 border border-white/8 mb-4">
+            <div className="bg-[#1a1a1a] rounded-3xl p-5 border border-white/8 mb-4">
               <h2 className="font-bold text-base text-slate-100 mb-4">Your taste</h2>
 
               {/* Stats row */}

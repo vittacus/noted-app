@@ -188,7 +188,7 @@ export default function AlbumPage() {
               onClick={() => handleRate(track, rated ? userRatingDetails[track.id] : undefined)}
               className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 border transition-all text-left active:scale-[0.99] ${
                 rated
-                  ? "bg-[#252748] border-white/8 hover:border-white/15"
+                  ? "bg-[#1a1a1a] border-white/8 hover:border-white/15"
                   : "bg-white/3 border-white/[0.03] opacity-70 hover:opacity-90"
               }`}
             >
