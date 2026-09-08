@@ -135,6 +135,15 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
   const [customMoodEntries, setCustomMoodEntries] = useState<string[]>([]);
   const [customMoodInput, setCustomMoodInput] = useState("");
 
+  // Custom moods created on the Moods page, loaded from localStorage
+  const [extraMoodTiles, setExtraMoodTiles] = useState<{ tag: string; emoji: string }[]>([]);
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("noted_custom_moods");
+      if (stored) setExtraMoodTiles(JSON.parse(stored));
+    } catch {}
+  }, []);
+
   function toggleMoodCheckbox(name: string) {
     setMoodCheckboxes((prev) => {
       const next = new Set(prev);
@@ -664,7 +673,7 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
 
               {/* 2-column grid of mood tiles — multi-select */}
               <div className="grid grid-cols-2 gap-3 mb-5">
-                {MOOD_TILES.map(({ tag, emoji }) => {
+                {[...MOOD_TILES, ...extraMoodTiles].map(({ tag, emoji }) => {
                   const selected = form.best_for_tags.includes(tag);
                   return (
                     <button key={tag} onClick={() => selectMoodTile(tag)}
