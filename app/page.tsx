@@ -184,7 +184,7 @@ export default async function HomePage({
                 className="bg-[#111111] rounded-2xl border border-white/8 overflow-hidden hover:border-white/12 transition-colors"
               >
                 <Link href={`/song/${r.id}`} className="block">
-                  <div className="flex items-center gap-2 px-4 pt-4">
+                  <div className="flex items-center gap-2 px-4 pt-4 max-w-[740px]">
                     <div className="w-6 h-6 rounded-full bg-[#F5A623]/20 flex items-center justify-center text-[#F5A623] font-bold text-xs overflow-hidden shrink-0">
                       {r.user?.avatar_url
                         ? <Image src={r.user.avatar_url} alt={r.user.username} width={24} height={24} className="object-cover" />
@@ -196,7 +196,7 @@ export default async function HomePage({
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-4 px-4 py-4">
+                  <div className="flex items-center gap-4 px-4 py-4 max-w-[740px]">
                     <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-lg">
                       {r.song?.album_art_url
                         ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="64px" />
@@ -222,7 +222,7 @@ export default async function HomePage({
                   </div>
 
                   {r.notes && (
-                    <p className="text-xs text-white/50 italic mx-4 mb-4 line-clamp-2 border-t border-white/8 pt-3 leading-relaxed">
+                    <p className="text-xs text-white/50 italic mx-4 mb-4 line-clamp-2 border-t border-white/8 pt-3 leading-relaxed max-w-[708px]">
                       &ldquo;{r.notes}&rdquo;
                     </p>
                   )}
