@@ -524,14 +524,11 @@ export default function LibraryPage() {
                 const accentColor = genreAccentColor(r.genre_tags ?? []);
                 return (
                   <Link key={r.id} href={`/song/${r.id}`} className="block group">
-                    <div className="bg-[#111111] rounded-2xl border border-white/8 group-hover:border-white/10 transition-colors overflow-hidden">
-                      {/* Pokemon accent */}
-                      {accentColor && (
-                        <div className="flex justify-center pt-2">
-                          <div className="h-[3px] rounded-full" style={{ width: "60%", background: `linear-gradient(to right, ${accentColor}, transparent)` }} />
-                        </div>
-                      )}
-                      <div className={`flex items-center gap-3 px-3 pb-3 ${accentColor ? "pt-2" : "pt-3"}`}>
+                    <div
+                      className="bg-[#111111] rounded-2xl border border-white/8 group-hover:border-white/10 transition-colors overflow-hidden"
+                      style={accentColor ? { borderLeft: `4px solid ${accentColor}` } : undefined}
+                    >
+                      <div className="flex items-center gap-3 px-3 py-3">
                         <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
                           {r.song.album_art_url
                             ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="48px" />
@@ -549,7 +546,7 @@ export default function LibraryPage() {
                             ))}
                           </div>
                           <p className="text-xs text-white/28 mt-0.5">
-                            Rated {new Date(r.created_at).getMonth() + 1}/{new Date(r.created_at).getDate()}
+                            Rated {new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                           </p>
                         </div>
                         <button onClick={(e) => { e.preventDefault(); openReRate(r); }} className="hover:opacity-75 transition-opacity">
