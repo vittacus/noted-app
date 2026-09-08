@@ -14,13 +14,20 @@ export default async function ProfilePage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  const [{ data: profile }, { data: ratings }] = await Promise.all([
+  const [
+    { data: profile },
+    { data: ratings },
+    { count: followersCount },
+    { count: followingCount },
+  ] = await Promise.all([
     supabase.from("users").select("*").eq("id", user.id).single(),
     supabase
       .from("ratings")
       .select("*, song:songs(*)")
       .eq("user_id", user.id)
       .order("overall_score", { ascending: false }),
+    supabase.from("follows").select("*", { count: "exact", head: true }).eq("following_id", user.id),
+    supabase.from("follows").select("*", { count: "exact", head: true }).eq("follower_id", user.id),
   ]);
 
   const totalRated = ratings?.length ?? 0;
@@ -233,8 +240,8 @@ export default async function ProfilePage() {
           {/* Stats pills */}
           <div className="flex gap-2 mb-5">
             {[
-              { label: "Followers", value: formatCount(67_000) },
-              { label: "Following", value: formatCount(0) },
+              { label: "Followers", value: formatCount(followersCount ?? 0) },
+              { label: "Following", value: formatCount(followingCount ?? 0) },
               { label: "Avg Rating", value: avgScore ?? "—" },
             ].map((s) => (
               <div key={s.label} className="flex-1 bg-[#111111] rounded-2xl py-3 text-center border border-white/8">

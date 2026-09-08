@@ -53,18 +53,41 @@ export default async function HomePage({
       .slice(0, 5);
   }
 
-  let feedQuery = supabase
-    .from("ratings")
-    .select(`
-      id, overall_score, vibe, listened_at, notes, genre_tags, best_for_tags,
-      user:users(id, username, avatar_url),
-      song:songs(id, title, artist, album_art_url, album_name)
-    `)
-    .order("created_at", { ascending: false })
-    .limit(30);
+  const FEED_SELECT = `
+    id, overall_score, vibe, listened_at, notes, genre_tags, best_for_tags,
+    user:users(id, username, avatar_url),
+    song:songs(id, title, artist, album_art_url, album_name)
+  `;
 
-  if (tab === "mine" && user) feedQuery = feedQuery.eq("user_id", user.id);
-  const { data: ratings } = await feedQuery;
+  let ratings: any[] | null = null;
+
+  if (tab === "friends" && user) {
+    const { data: followRows } = await supabase
+      .from("follows")
+      .select("following_id")
+      .eq("follower_id", user.id);
+    const followingIds = (followRows ?? []).map((f: any) => f.following_id);
+    if (followingIds.length > 0) {
+      const { data } = await supabase
+        .from("ratings")
+        .select(FEED_SELECT)
+        .in("user_id", followingIds)
+        .order("created_at", { ascending: false })
+        .limit(30);
+      ratings = data;
+    } else {
+      ratings = [];
+    }
+  } else {
+    let q = supabase
+      .from("ratings")
+      .select(FEED_SELECT)
+      .order("created_at", { ascending: false })
+      .limit(30);
+    if (tab === "mine" && user) q = q.eq("user_id", user.id);
+    const { data } = await q;
+    ratings = data;
+  }
 
   const vibeEmoji: Record<string, string> = { loved: "🔥", liked: "👍", didnt_like: "😐" };
 
@@ -174,6 +197,13 @@ export default async function HomePage({
               <p className="text-5xl mb-4">🎵</p>
               <p className="font-semibold text-slate-300 text-lg">No ratings yet</p>
               <Link href="/search" className="text-[#F5A623] text-sm font-semibold hover:underline mt-1 block">Be the first →</Link>
+            </div>
+          )}
+          {tab === "friends" && (ratings?.length ?? 0) === 0 && (
+            <div className="text-center py-20">
+              <p className="text-5xl mb-4">👥</p>
+              <p className="font-semibold text-slate-300 text-lg">No ratings from people you follow</p>
+              <p className="text-sm text-white/50 mt-2">Follow friends from the sidebar to see their ratings here</p>
             </div>
           )}
 
