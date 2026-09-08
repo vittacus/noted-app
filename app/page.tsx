@@ -240,16 +240,18 @@ export default async function HomePage({
 
         {/* ── SIDEBAR — desktop only ── */}
         {user && (
-          <aside className="hidden md:flex flex-col gap-6 sticky top-[5.5rem]">
+          <aside className="hidden md:block">
+            <div className="sticky top-[5.5rem] flex flex-col gap-6">
 
-            {songsRated >= 1 && (
-              <div className="bg-[#111111] rounded-2xl border border-white/8 p-4">
-                <RecommendedTracks {...recommendProps} compact title="Recommended" />
-              </div>
-            )}
+              {songsRated >= 1 && (
+                <div className="bg-[#111111] rounded-2xl border border-white/8 p-4">
+                  <RecommendedTracks {...recommendProps} compact title="Recommended" />
+                </div>
+              )}
 
-            <SuggestedFriendsSidebar />
+              <SuggestedFriendsSidebar />
 
+            </div>
           </aside>
         )}
       </div>
