@@ -120,7 +120,7 @@ export default function RatingComments({ ratingId }: { ratingId: string }) {
           )}
           {comments.map((c) => (
             <div key={c.id} className="flex gap-2">
-              <span className="text-xs font-semibold text-[#F64568] shrink-0 mt-0.5">
+              <span className="text-xs font-semibold text-[#117ACA] shrink-0 mt-0.5">
                 {c.user?.username ?? "?"}
               </span>
               <p className="text-xs text-white/50 leading-relaxed">{c.content}</p>
@@ -136,16 +136,16 @@ export default function RatingComments({ ratingId }: { ratingId: string }) {
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Add a comment…"
                 maxLength={500}
-                className="flex-1 text-xs bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-slate-200 placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-[#F64568]/50"
+                className="flex-1 text-xs bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-slate-200 placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-[#117ACA]/50"
               />
               <button type="submit" disabled={!text.trim() || submitting}
-                className="w-8 h-8 rounded-xl bg-[#F64568]/10 border border-[#F64568]/20 flex items-center justify-center hover:bg-[#F64568]/20 transition-colors disabled:opacity-40">
-                <Send size={12} className="text-[#F64568]" />
+                className="w-8 h-8 rounded-xl bg-[#117ACA]/10 border border-[#117ACA]/20 flex items-center justify-center hover:bg-[#117ACA]/20 transition-colors disabled:opacity-40">
+                <Send size={12} className="text-[#117ACA]" />
               </button>
             </form>
           ) : (
             <p className="text-xs text-white/28 mt-1">
-              <a href="/auth/login" className="text-[#F64568] hover:underline">Sign in</a> to comment
+              <a href="/auth/login" className="text-[#117ACA] hover:underline">Sign in</a> to comment
             </p>
           )}
         </div>

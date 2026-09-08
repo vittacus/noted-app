@@ -102,11 +102,11 @@ export default function SearchPage() {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setTimeout(() => setIsFocused(false), 150)}
           placeholder="Search songs and albums…"
-          className="w-full pl-10 pr-4 py-3 rounded-2xl border border-white/10 bg-[#1a1a1a] text-sm text-slate-100 placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#F64568]/50"
+          className="w-full pl-10 pr-4 py-3 rounded-2xl border border-white/10 bg-[#161616] text-sm text-slate-100 placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#117ACA]/50"
           autoFocus
         />
         {loading && (
-          <Loader2 size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#F64568] animate-spin" />
+          <Loader2 size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#117ACA] animate-spin" />
         )}
       </div>
 
@@ -144,12 +144,12 @@ export default function SearchPage() {
       {tab === "tracks" && (
         <div className="space-y-2">
           {tracks.map((track) => (
-            <div key={track.id} className="flex items-center gap-3 bg-[#1a1a1a] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors">
+            <div key={track.id} className="flex items-center gap-3 bg-[#161616] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors">
               <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
                 {track.album.images[0] ? (
                   <Image src={track.album.images[0].url} alt={track.album.name} fill className="object-cover" sizes="48px" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />
+                  <div className="w-full h-full bg-gradient-to-br from-[#161616] to-[#161616]" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -165,7 +165,7 @@ export default function SearchPage() {
                 className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors ${
                   ratedMap[track.id]
                     ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                    : "bg-[#F64568]/10 text-[#F64568] hover:bg-[#F64568]/20 border-[#F64568]/20"
+                    : "bg-[#117ACA]/10 text-[#117ACA] hover:bg-[#117ACA]/20 border-[#117ACA]/20"
                 }`}
               >
                 {ratedMap[track.id] ? "✓ Rated" : "Rate"}
@@ -181,13 +181,13 @@ export default function SearchPage() {
             <Link
               key={album.id}
               href={`/album/${album.id}`}
-              className="flex items-center gap-3 bg-[#1a1a1a] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block"
+              className="flex items-center gap-3 bg-[#161616] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block"
             >
               <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
                 {album.images[0] ? (
                   <Image src={album.images[0].url} alt={album.name} fill className="object-cover" sizes="48px" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />
+                  <div className="w-full h-full bg-gradient-to-br from-[#161616] to-[#161616]" />
                 )}
               </div>
               <div className="flex-1 min-w-0">

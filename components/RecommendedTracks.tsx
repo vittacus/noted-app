@@ -122,7 +122,7 @@ export default function RecommendedTracks({
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="shrink-0 w-[120px] bg-[#1a1a1a] rounded-2xl border border-white/8 overflow-hidden animate-pulse">
+            <div key={i} className="shrink-0 w-[120px] bg-[#161616] rounded-2xl border border-white/8 overflow-hidden animate-pulse">
               <div className="w-full aspect-square bg-white/5" />
               <div className="p-2 space-y-1.5">
                 <div className="h-2 bg-white/5 rounded-full w-3/4" />
@@ -153,20 +153,20 @@ export default function RecommendedTracks({
                 {track.album?.images?.[0] ? (
                   <Image src={track.album.images[0].url} alt="" fill className="object-cover" sizes="40px" />
                 ) : (
-                  <div className="w-full h-full bg-[#232323]" />
+                  <div className="w-full h-full bg-[#212121]" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-slate-100 line-clamp-2 leading-tight">{track.name}</p>
                 <p className="text-xs text-white/45 truncate mt-0.5">{track.artists.map((a) => a.name).join(", ")}</p>
               </div>
-              <span className="shrink-0 text-xs font-semibold text-[#F64568] px-2 py-1 rounded-lg bg-[#F64568]/10 border border-[#F64568]/20 opacity-40 group-hover:opacity-100 transition-opacity">
+              <span className="shrink-0 text-xs font-semibold text-[#117ACA] px-2 py-1 rounded-lg bg-[#117ACA]/10 border border-[#117ACA]/20 opacity-40 group-hover:opacity-100 transition-opacity">
                 Rate
               </span>
             </button>
           ))}
         </div>
-        <Link href="/search" className="block text-xs text-[#F64568] hover:underline mt-2 px-2">
+        <Link href="/search" className="block text-xs text-[#117ACA] hover:underline mt-2 px-2">
           See more →
         </Link>
         {!onRate && ratingTrack && (
@@ -205,14 +205,14 @@ export default function RecommendedTracks({
           <div
             key={track.id}
             className="shrink-0 w-[120px] rounded-2xl border border-white/8 overflow-hidden flex flex-col hover:border-white/20 active:scale-95 transition-all cursor-pointer"
-            style={{ backgroundColor: "#1a1a1a" }}
+            style={{ backgroundColor: "#161616" }}
             onClick={() => handleRate(track)}
           >
             <div className="relative w-full aspect-square">
               {track.album?.images?.[0] ? (
                 <Image src={track.album.images[0].url} alt={track.album?.name ?? ""} fill className="object-cover" sizes="120px" />
               ) : (
-                <div className="absolute inset-0" style={{ backgroundColor: "#232323" }} />
+                <div className="absolute inset-0" style={{ backgroundColor: "#212121" }} />
               )}
               <div
                 className="absolute inset-x-0 bottom-0 px-2 pb-1.5 pt-4"
@@ -225,7 +225,7 @@ export default function RecommendedTracks({
             <div className="p-1.5 pt-1">
               <div
                 className="w-full py-2.5 rounded-xl text-center text-black font-bold text-[13px] select-none"
-                style={{ background: "#F64568" }}
+                style={{ background: "#117ACA" }}
               >
                 ＋ Rate
               </div>

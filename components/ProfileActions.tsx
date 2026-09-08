@@ -47,7 +47,7 @@ export default function ProfileActions({ username }: Props) {
             <Share2 size={15} className="text-white/50" />
           </button>
           {copied && (
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-[#232323] border border-white/10 rounded-xl text-xs text-white/80 whitespace-nowrap shadow-lg pointer-events-none z-20">
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-[#212121] border border-white/10 rounded-xl text-xs text-white/80 whitespace-nowrap shadow-lg pointer-events-none z-20">
               Link copied ✓
             </div>
           )}
@@ -69,7 +69,7 @@ export default function ProfileActions({ username }: Props) {
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
           onClick={(e) => { if (e.target === e.currentTarget) setShowSettings(false); }}
         >
-          <div className="w-full max-w-sm bg-[#1a1a1a] rounded-3xl border border-white/10 p-6 space-y-4">
+          <div className="w-full max-w-sm bg-[#161616] rounded-3xl border border-white/10 p-6 space-y-4">
             <div className="flex items-center justify-between mb-1">
               <h2 className="text-lg font-bold text-slate-100">Settings</h2>
               <button

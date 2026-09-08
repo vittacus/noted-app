@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, BookOpen, Sparkles, User, Plus } from "lucide-react";
 
-const AMBER = "#F64568";
+const AMBER = "#117ACA";
 const amberTextStyle = { color: AMBER };
 
 function TabItem({
@@ -67,7 +67,7 @@ export default function Navigation() {
               className="w-[54px] h-[54px] rounded-full flex items-center justify-center shadow-xl -translate-y-4 active:scale-95 transition-all"
               style={{
                 background: AMBER,
-                boxShadow: "0 8px 24px rgba(246,69,104,0.35)",
+                boxShadow: "0 8px 24px rgba(17,122,202,0.35)",
               }}
             >
               <Plus size={24} className="text-black" strokeWidth={2.8} />

@@ -77,8 +77,8 @@ const DIMENSION_META = [
 ];
 
 const DIM_COLORS: Record<string, string> = {
-  replay_value: "#F64568",
-  lyrics:       "#F64568",
+  replay_value: "#117ACA",
+  lyrics:       "#117ACA",
   production:   "#fb923c",
 };
 
@@ -534,7 +534,7 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-[#1a1a1a] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col border border-white/8">
+      <div className="w-full max-w-lg bg-[#161616] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col border border-white/8">
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-white/8">
@@ -558,7 +558,7 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
         <div className="px-5 pt-3">
           <div className="flex gap-1.5">
             {Array.from({ length: totalSteps }, (_, i) => (
-              <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i + 1 <= step ? "bg-[#F64568]" : "bg-white/8"}`} />
+              <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i + 1 <= step ? "bg-[#117ACA]" : "bg-white/8"}`} />
             ))}
           </div>
           <p className="text-xs text-white/38 mt-1.5">Step {step} of {totalSteps}</p>
@@ -577,7 +577,7 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
                   <button key={key} onClick={() => setForm((f) => ({ ...f, vibe: key }))}
                     className={`vibe-btn flex items-center gap-4 px-5 py-4 rounded-2xl border-2 font-semibold text-left transition-all ${
                       form.vibe === key
-                        ? "border-[#F64568] bg-[#F64568]/10 text-slate-100 ring-2 ring-[#F64568]/30"
+                        ? "border-[#117ACA] bg-[#117ACA]/10 text-slate-100 ring-2 ring-[#117ACA]/30"
                         : "border-white/10 bg-white/5 text-slate-300 hover:border-white/12"
                     }`}
                   >
@@ -633,12 +633,12 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
                     },
                   ].map((card) => (
                     <button key={card.label} onClick={card.onPick}
-                      className="flex-1 flex flex-col rounded-2xl border-2 border-white/10 bg-white/5 hover:border-[#F64568]/60 hover:bg-[#F64568]/5 active:scale-[0.98] transition-all overflow-hidden">
+                      className="flex-1 flex flex-col rounded-2xl border-2 border-white/10 bg-white/5 hover:border-[#117ACA]/60 hover:bg-[#117ACA]/5 active:scale-[0.98] transition-all overflow-hidden">
                       {/* Album art */}
                       <div className="relative w-full aspect-square bg-white/5">
                         {card.art
                           ? <Image src={card.art} alt={card.title} fill className="object-cover" sizes="200px" />
-                          : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
+                          : <div className="w-full h-full bg-gradient-to-br from-[#161616] to-[#161616]" />}
                         <span className="absolute top-2 left-2 text-xs font-bold px-1.5 py-0.5 rounded bg-black/50 text-white/70">
                           {card.label}
                         </span>
@@ -679,13 +679,13 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
                     <button key={tag} onClick={() => selectMoodTile(tag)}
                       className={`flex items-center gap-3 px-4 py-4 rounded-2xl border-2 transition-all text-left active:scale-[0.97] ${
                         selected
-                          ? "border-[#F64568] bg-[#F64568]/15 text-slate-100 shadow-md shadow-[#F64568]/20"
+                          ? "border-[#117ACA] bg-[#117ACA]/15 text-slate-100 shadow-md shadow-[#117ACA]/20"
                           : "border-white/10 bg-white/5 text-white/50 hover:border-white/12"
                       }`}>
                       <span className="text-2xl shrink-0">{emoji}</span>
                       <span className="font-semibold text-sm leading-tight">{tag}</span>
                       {selected && (
-                        <div className="ml-auto w-4 h-4 rounded-full bg-[#F64568] flex items-center justify-center shrink-0">
+                        <div className="ml-auto w-4 h-4 rounded-full bg-[#117ACA] flex items-center justify-center shrink-0">
                           <Check size={10} className="text-[#000000]" strokeWidth={3} />
                         </div>
                       )}
@@ -707,7 +707,7 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
                           <label className="flex items-center gap-2.5 cursor-pointer group">
                             <button type="button" onClick={() => toggleMoodCheckbox(name)}
                               className={`w-[18px] h-[18px] rounded border-2 flex items-center justify-center shrink-0 transition-all ${
-                                checked ? "bg-[#F64568] border-[#F64568]" : "border-white/15 group-hover:border-white/20"
+                                checked ? "bg-[#117ACA] border-[#117ACA]" : "border-white/15 group-hover:border-white/20"
                               }`}>
                               {checked && <Check size={11} className="text-[#000000]" strokeWidth={3} />}
                             </button>
@@ -724,13 +724,13 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
                       );
                     })}
                   <div className="flex items-center gap-2 pt-0.5">
-                    <span className="text-[#F64568] text-base font-bold leading-none shrink-0">+</span>
+                    <span className="text-[#117ACA] text-base font-bold leading-none shrink-0">+</span>
                     <input value={customMoodInput}
                       onChange={(e) => setCustomMoodInput(e.target.value.slice(0, 50))}
                       onKeyDown={(e) => e.key === "Enter" && addCustomMoodEntry()}
                       onBlur={addCustomMoodEntry}
                       placeholder="Custom mood list…"
-                      className="flex-1 bg-transparent text-sm text-slate-300 placeholder-white/20 outline-none border-b border-white/10 pb-0.5 focus:border-[#F64568]/50 transition-colors" />
+                      className="flex-1 bg-transparent text-sm text-slate-300 placeholder-white/20 outline-none border-b border-white/10 pb-0.5 focus:border-[#117ACA]/50 transition-colors" />
                   </div>
                 </div>
               )}
@@ -760,7 +760,7 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
                 </label>
                 <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
                   placeholder="What stood out?" rows={3}
-                  className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm bg-white/5 text-slate-100 resize-none focus:outline-none focus:ring-2 focus:ring-[#F64568]/50 placeholder-white/20" />
+                  className="w-full px-3 py-2.5 rounded-xl border border-white/10 text-sm bg-white/5 text-slate-100 resize-none focus:outline-none focus:ring-2 focus:ring-[#117ACA]/50 placeholder-white/20" />
               </div>
             </div>
           )}
@@ -779,7 +779,7 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
                 </div>
               )}
 
-              <div className="score-reveal relative w-40 h-40 rounded-full flex items-center justify-center shadow-2xl shadow-[#000000]/60 bg-gradient-to-br from-[#F64568] to-[#FE9677] mb-8">
+              <div className="score-reveal relative w-40 h-40 rounded-full flex items-center justify-center shadow-2xl shadow-[#000000]/60 bg-gradient-to-br from-[#117ACA] to-[#2E93DC] mb-8">
                 <span className="text-5xl font-black text-white">{displayScore.toFixed(1)}</span>
               </div>
 
@@ -820,7 +820,7 @@ export default function RatingModal({ track, onClose, onSaved, prefill }: Rating
           <button onClick={advance} disabled={!canAdvance()}
             className={`flex-1 h-12 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
               canAdvance()
-                ? "bg-[#F64568] text-black hover:bg-[#FE9677] shadow-lg shadow-[#000000]/50"
+                ? "bg-[#117ACA] text-black hover:bg-[#2E93DC] shadow-lg shadow-[#000000]/50"
                 : "bg-white/5 text-white/38 cursor-not-allowed"
             }`}
           >

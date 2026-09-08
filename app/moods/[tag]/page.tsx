@@ -121,7 +121,7 @@ export default function MoodDetailPage() {
   }
 
   if (loading) {
-    return <div className="flex justify-center py-24"><div className="w-6 h-6 border-2 border-[#F64568] border-t-transparent rounded-full animate-spin" /></div>;
+    return <div className="flex justify-center py-24"><div className="w-6 h-6 border-2 border-[#117ACA] border-t-transparent rounded-full animate-spin" /></div>;
   }
 
   // ── Derived: unique PRIMARY artists (dedup by name before first comma) ──────
@@ -161,8 +161,8 @@ export default function MoodDetailPage() {
             {processed.length}{processed.length !== songs.length ? ` of ${songs.length}` : ""} song{processed.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <button onClick={openPicker} className="w-9 h-9 rounded-full bg-[#F64568]/10 border border-[#F64568]/20 flex items-center justify-center hover:bg-[#F64568]/20 transition-colors shrink-0">
-          <Plus size={16} className="text-[#F64568]" />
+        <button onClick={openPicker} className="w-9 h-9 rounded-full bg-[#117ACA]/10 border border-[#117ACA]/20 flex items-center justify-center hover:bg-[#117ACA]/20 transition-colors shrink-0">
+          <Plus size={16} className="text-[#117ACA]" />
         </button>
       </div>
 
@@ -200,14 +200,14 @@ export default function MoodDetailPage() {
               <button onClick={() => setArtistFilter("all")}
                 className={`shrink-0 px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
                   artistFilter === "all"
-                    ? "bg-[#F64568]/20 border-[#F64568]/60 text-[#F64568]"
+                    ? "bg-[#117ACA]/20 border-[#117ACA]/60 text-[#117ACA]"
                     : "bg-transparent border-white/10 text-white/50 hover:border-white/18"
                 }`}>All Artists</button>
               {distinctArtists.map((artist: string) => (
                 <button key={artist} onClick={() => setArtistFilter(artistFilter === artist ? "all" : artist)}
                   className={`shrink-0 px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
                     artistFilter === artist
-                      ? "bg-[#F64568]/20 border-[#F64568]/60 text-[#F64568]"
+                      ? "bg-[#117ACA]/20 border-[#117ACA]/60 text-[#117ACA]"
                       : "bg-transparent border-white/10 text-white/50 hover:border-white/18"
                   }`}>
                   {artist}
@@ -230,7 +230,7 @@ export default function MoodDetailPage() {
         <div className="text-center py-10">
           <p className="font-medium text-white/50">No songs match these filters</p>
           <button onClick={() => { setScoreFilter("all"); setArtistFilter("all"); }}
-            className="text-[#F64568] text-xs font-semibold mt-2 hover:underline">Clear filters →</button>
+            className="text-[#117ACA] text-xs font-semibold mt-2 hover:underline">Clear filters →</button>
         </div>
       )}
 
@@ -253,7 +253,7 @@ export default function MoodDetailPage() {
 
               {/* Card — slides left to reveal delete; navigates to song on tap */}
               <div
-                className={`relative z-10 bg-[#1a1a1a] border border-white/8 rounded-2xl transition-transform duration-200 ease-out group ${
+                className={`relative z-10 bg-[#161616] border border-white/8 rounded-2xl transition-transform duration-200 ease-out group ${
                   isOpen ? "-translate-x-20" : "translate-x-0"
                 }`}
                 onTouchStart={(e) => handleTouchStart(e, r.id)}
@@ -268,7 +268,7 @@ export default function MoodDetailPage() {
                   <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
                     {r.song?.album_art_url
                       ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="48px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
+                      : <div className="w-full h-full bg-gradient-to-br from-[#161616] to-[#161616]" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
@@ -306,7 +306,7 @@ export default function MoodDetailPage() {
           🎵 Export to Spotify playlist
         </button>
         {tooltipVisible && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#1a1a1a] border border-white/10 rounded-xl text-xs text-white/50 whitespace-nowrap shadow-lg pointer-events-none">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#161616] border border-white/10 rounded-xl text-xs text-white/50 whitespace-nowrap shadow-lg pointer-events-none">
             Coming soon — connect your Spotify account to enable this
           </div>
         )}
@@ -317,7 +317,7 @@ export default function MoodDetailPage() {
         <div className="fixed inset-0 z-[100] flex flex-col justify-end" style={{ isolation: "isolate" }}>
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => { setShowPicker(false); setSelectedIds(new Set()); }} />
-          <div className="relative w-full bg-[#1a1a1a] rounded-t-3xl flex flex-col"
+          <div className="relative w-full bg-[#161616] rounded-t-3xl flex flex-col"
             style={{ maxHeight: "80vh", boxShadow: "0 -8px 40px rgba(0,0,0,0.6)" }}>
             <div className="flex justify-center pt-3 pb-1 shrink-0">
               <div className="w-10 h-1 rounded-full bg-white/10" />
@@ -335,7 +335,7 @@ export default function MoodDetailPage() {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-5 py-3 space-y-2 min-h-0">
-              {pickerLoading && <div className="flex justify-center py-10"><div className="w-5 h-5 border-2 border-[#F64568] border-t-transparent rounded-full animate-spin" /></div>}
+              {pickerLoading && <div className="flex justify-center py-10"><div className="w-5 h-5 border-2 border-[#117ACA] border-t-transparent rounded-full animate-spin" /></div>}
               {!pickerLoading && pickerSongs.length === 0 && (
                 <p className="text-center text-white/38 text-sm py-10">All your rated songs are already in this mood 🎉</p>
               )}
@@ -344,15 +344,15 @@ export default function MoodDetailPage() {
                 return (
                   <button key={r.id} onClick={() => toggleSelect(r.id)}
                     className={`w-full flex items-center gap-3 rounded-2xl p-3 border transition-all text-left ${
-                      sel ? "border-[#F64568]/40 bg-[#F64568]/5" : "border-white/8 bg-white/5 hover:border-white/10"
+                      sel ? "border-[#117ACA]/40 bg-[#117ACA]/5" : "border-white/8 bg-white/5 hover:border-white/10"
                     }`}>
-                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${sel ? "bg-[#F64568] border-[#F64568]" : "border-white/15"}`}>
+                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${sel ? "bg-[#117ACA] border-[#117ACA]" : "border-white/15"}`}>
                       {sel && <Check size={11} className="text-[#000000]" strokeWidth={3} />}
                     </div>
                     <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
                       {r.song?.album_art_url
                         ? <Image src={r.song.album_art_url} alt="" fill className="object-cover" sizes="40px" />
-                        : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
+                        : <div className="w-full h-full bg-gradient-to-br from-[#161616] to-[#161616]" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
@@ -363,11 +363,11 @@ export default function MoodDetailPage() {
                 );
               })}
             </div>
-            <div className="px-5 pb-8 pt-3 border-t border-white/8 shrink-0 bg-[#1a1a1a]">
+            <div className="px-5 pb-8 pt-3 border-t border-white/8 shrink-0 bg-[#161616]">
               <button onClick={addToMood} disabled={!selectedIds.size || adding}
                 className={`w-full h-12 rounded-2xl font-semibold text-sm transition-all ${
                   selectedIds.size > 0 && !adding
-                    ? "bg-[#F64568] text-black hover:bg-[#FE9677]"
+                    ? "bg-[#117ACA] text-black hover:bg-[#2E93DC]"
                     : "bg-white/5 text-white/38 cursor-not-allowed"
                 }`}>
                 {adding ? "Adding…" : selectedIds.size > 0

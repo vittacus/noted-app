@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 const SUGGESTED_FRIENDS = [
   { username: "beatmaven",   initials: "BM", color: "#f59e0b", match: 94, genre: "Rap / Alt"    },
   { username: "melodyghost", initials: "MG", color: "#ec4899", match: 88, genre: "Latin / Pop"  },
-  { username: "wavesurfer",  initials: "WS", color: "#F64568", match: 82, genre: "Indie / R&B"  },
+  { username: "wavesurfer",  initials: "WS", color: "#117ACA", match: 82, genre: "Indie / R&B"  },
   { username: "lowfreq",     initials: "LF", color: "#a78bfa", match: 79, genre: "Rap / Soul"   },
   { username: "driftpop",    initials: "DP", color: "#4ade80", match: 75, genre: "Pop"           },
 ];
@@ -98,16 +98,16 @@ export default async function HomePage({
       {/* Hero — logged-out (full width) */}
       {!user && (
         <div className="-mx-4 mb-10">
-          <div className="min-h-[42vh] flex flex-col items-center justify-center text-center bg-gradient-to-b from-[#232323] via-[#0a0a0a] to-[#0a0a0a] px-6 py-12 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_20%,rgba(246,69,104,0.12),transparent)] pointer-events-none" />
+          <div className="min-h-[42vh] flex flex-col items-center justify-center text-center bg-gradient-to-b from-[#212121] via-[#0a0a0a] to-[#0a0a0a] px-6 py-12 relative overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_20%,rgba(17,122,202,0.12),transparent)] pointer-events-none" />
             <div className="relative">
-              <h1 className="text-6xl font-black tracking-tighter text-[#F64568] mb-4 leading-none">noted</h1>
+              <h1 className="text-6xl font-black tracking-tighter text-[#117ACA] mb-4 leading-none">noted</h1>
               <p className="text-xl font-semibold text-white mb-2">Rate and discover the music you love</p>
               <p className="text-sm text-white/50 mb-8 max-w-xs mx-auto leading-relaxed">
                 Track every song. Build your taste. Find your top 100.
               </p>
               <div className="flex gap-3 justify-center">
-                <Link href="/auth/signup" className="px-7 py-3.5 bg-[#F64568] text-[#000000] font-bold text-sm rounded-2xl hover:bg-[#FE9677] transition-colors shadow-lg shadow-[#F64568]/25">
+                <Link href="/auth/signup" className="px-7 py-3.5 bg-[#117ACA] text-[#000000] font-bold text-sm rounded-2xl hover:bg-[#2E93DC] transition-colors shadow-lg shadow-[#117ACA]/25">
                   Get started
                 </Link>
                 <Link href="/auth/login" className="px-7 py-3.5 border-2 border-white/12 text-white font-bold text-sm rounded-2xl hover:bg-white/8 transition-colors">
@@ -116,10 +116,10 @@ export default async function HomePage({
               </div>
             </div>
           </div>
-          <div className="text-center py-5 bg-[#1a1a1a]/60 border-y border-white/8">
+          <div className="text-center py-5 bg-[#161616]/60 border-y border-white/8">
             <p className="text-xs text-white/50">
               Join to rate songs →{" "}
-              <Link href="/auth/signup" className="text-[#F64568] font-semibold hover:underline">Create a free account</Link>
+              <Link href="/auth/signup" className="text-[#117ACA] font-semibold hover:underline">Create a free account</Link>
             </p>
           </div>
         </div>
@@ -156,7 +156,7 @@ export default async function HomePage({
               >
                 {SUGGESTED_FRIENDS.map((f) => (
                   <div key={f.username}
-                    className="shrink-0 w-32 bg-[#1a1a1a] rounded-2xl p-3 flex flex-col items-center gap-2 border border-white/8">
+                    className="shrink-0 w-32 bg-[#161616] rounded-2xl p-3 flex flex-col items-center gap-2 border border-white/8">
                     <div className="rounded-full p-[1.5px]"
                       style={{ background: `linear-gradient(135deg, ${f.color}, transparent)` }}>
                       <div className="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm"
@@ -187,7 +187,7 @@ export default async function HomePage({
             <div className="text-center py-20">
               <p className="text-5xl mb-4">🎵</p>
               <p className="font-semibold text-slate-300 text-lg">No ratings yet</p>
-              <Link href="/search" className="inline-block mt-4 px-5 py-2.5 bg-[#F64568]/50 text-white text-sm font-semibold rounded-full hover:bg-[#FE9677] transition-colors">
+              <Link href="/search" className="inline-block mt-4 px-5 py-2.5 bg-[#117ACA]/50 text-white text-sm font-semibold rounded-full hover:bg-[#2E93DC] transition-colors">
                 Rate a song →
               </Link>
             </div>
@@ -196,7 +196,7 @@ export default async function HomePage({
             <div className="text-center py-20">
               <p className="text-5xl mb-4">🎵</p>
               <p className="font-semibold text-slate-300 text-lg">No ratings yet</p>
-              <Link href="/search" className="text-[#F64568] text-sm font-semibold hover:underline mt-1 block">Be the first →</Link>
+              <Link href="/search" className="text-[#117ACA] text-sm font-semibold hover:underline mt-1 block">Be the first →</Link>
             </div>
           )}
           {tab === "friends" && (ratings?.length ?? 0) === 0 && (
@@ -212,11 +212,11 @@ export default async function HomePage({
               <div
                 key={r.id}
                 data-rating-card
-                className="bg-[#1a1a1a] rounded-2xl border border-white/8 overflow-hidden hover:border-white/12 transition-colors"
+                className="bg-[#161616] rounded-2xl border border-white/8 overflow-hidden hover:border-white/12 transition-colors"
               >
                 <Link href={`/song/${r.id}`} className="block">
                   <div className="flex items-center gap-2 px-4 pt-4 max-w-[740px]">
-                    <div className="w-6 h-6 rounded-full bg-[#F64568]/20 flex items-center justify-center text-[#F64568] font-bold text-xs overflow-hidden shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-[#117ACA]/20 flex items-center justify-center text-[#117ACA] font-bold text-xs overflow-hidden shrink-0">
                       {r.user?.avatar_url
                         ? <Image src={r.user.avatar_url} alt={r.user.username} width={24} height={24} className="object-cover" />
                         : (r.user?.username?.[0] ?? "?").toUpperCase()}
@@ -231,7 +231,7 @@ export default async function HomePage({
                     <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-lg">
                       {r.song?.album_art_url
                         ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="64px" />
-                        : <div className="w-full h-full bg-[#232323]" />}
+                        : <div className="w-full h-full bg-[#212121]" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-base text-slate-100 truncate leading-tight">{r.song?.title}</p>
@@ -245,7 +245,7 @@ export default async function HomePage({
                           .filter((t: string) => !["Late Night","Workout","Focus","Heartbreak","Hype","Road Trip","Chill","Other"].includes(t))
                           .slice(0, 1)
                           .map((tag: string) => (
-                            <span key={tag} className="text-xs bg-[#F64568]/10 text-[#F64568] px-2 py-0.5 rounded-full border border-[#F64568]/20">{tag}</span>
+                            <span key={tag} className="text-xs bg-[#117ACA]/10 text-[#117ACA] px-2 py-0.5 rounded-full border border-[#117ACA]/20">{tag}</span>
                           ))}
                       </div>
                     </div>
@@ -273,7 +273,7 @@ export default async function HomePage({
         {user && (
           <StickySidebar>
             {songsRated >= 1 && (
-              <div className="bg-[#1a1a1a] rounded-2xl border border-white/8 p-4">
+              <div className="bg-[#161616] rounded-2xl border border-white/8 p-4">
                 <RecommendedTracks {...recommendProps} compact title="Recommended" />
               </div>
             )}

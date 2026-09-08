@@ -133,7 +133,7 @@ export default function BattlePage() {
   if (loading) {
     return (
       <div className="flex justify-center py-24">
-        <div className="w-6 h-6 border-2 border-[#F64568] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#117ACA] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -144,7 +144,7 @@ export default function BattlePage() {
         <Swords size={40} className="text-white/38 mx-auto mb-4" />
         <p className="font-bold text-slate-100 text-lg mb-2">Not enough rated songs</p>
         <p className="text-white/50 text-sm mb-6">Rate at least 2 songs to start battling</p>
-        <Link href="/search" className="inline-block px-6 py-3 bg-[#F64568] text-black font-semibold rounded-2xl hover:bg-[#FE9677] transition-colors">
+        <Link href="/search" className="inline-block px-6 py-3 bg-[#117ACA] text-black font-semibold rounded-2xl hover:bg-[#2E93DC] transition-colors">
           Rate songs →
         </Link>
       </div>
@@ -167,7 +167,7 @@ export default function BattlePage() {
         <div className="flex flex-col gap-3 items-center">
           <button
             onClick={() => { setUsedPairs(new Set()); setBattleCount(0); setAllDone(false); pickPair(allRatings, new Set(), 0); }}
-            className="px-8 py-3.5 bg-[#F64568] text-black font-bold rounded-2xl hover:bg-[#FE9677] transition-colors text-base">
+            className="px-8 py-3.5 bg-[#117ACA] text-black font-bold rounded-2xl hover:bg-[#2E93DC] transition-colors text-base">
             Battle again
           </button>
           <button
@@ -190,7 +190,7 @@ export default function BattlePage() {
           </button>
           <div>
             <h1 className="font-black text-xl text-slate-100 flex items-center gap-2">
-              <Swords size={20} className="text-[#F64568]" /> Battle mode
+              <Swords size={20} className="text-[#117ACA]" /> Battle mode
             </h1>
             <p className="text-xs text-white/50">Pick your preference — scores adjust live</p>
           </div>
@@ -217,11 +217,11 @@ export default function BattlePage() {
         <div className="flex gap-3 mb-5">
           {pair.map((song, idx) => (
             <button key={song.ratingId} onClick={() => handlePick(song, pair[1 - idx]!)} disabled={selecting}
-              className="flex-1 flex flex-col rounded-3xl border-2 border-white/10 bg-[#1a1a1a] overflow-hidden hover:border-[#F64568]/50 hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 disabled:opacity-60">
+              className="flex-1 flex flex-col rounded-3xl border-2 border-white/10 bg-[#161616] overflow-hidden hover:border-[#117ACA]/50 hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 disabled:opacity-60">
               <div className="relative w-full aspect-square bg-white/5">
                 {song.albumArt
                   ? <Image src={song.albumArt} alt={song.albumName} fill className="object-cover" sizes="50vw" />
-                  : <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#1a1a1a]" />}
+                  : <div className="w-full h-full bg-gradient-to-br from-[#161616] to-[#161616]" />}
                 <div className="absolute bottom-2 right-2">
                   <ScoreCircle score={song.score} size={32} />
                 </div>

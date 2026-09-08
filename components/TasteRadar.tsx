@@ -74,8 +74,8 @@ function HexagonChart({ items }: { items: TasteItem[] }) {
       ))}
 
       {/* Filled profile */}
-      <path d={profilePath} fill="rgba(246,69,104,0.14)"
-        stroke="#F64568" strokeWidth={3} strokeLinejoin="round" />
+      <path d={profilePath} fill="rgba(17,122,202,0.14)"
+        stroke="#117ACA" strokeWidth={3} strokeLinejoin="round" />
 
       {/* Colored vertex dots — positioned at the same plotV radius as the polygon */}
       {items.map((item, i) => {

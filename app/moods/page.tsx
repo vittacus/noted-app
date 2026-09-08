@@ -137,7 +137,7 @@ export default function MoodsPage() {
   }
 
   if (loading) {
-    return <div className="flex justify-center py-24"><div className="w-6 h-6 border-2 border-[#F64568] border-t-transparent rounded-full animate-spin" /></div>;
+    return <div className="flex justify-center py-24"><div className="w-6 h-6 border-2 border-[#117ACA] border-t-transparent rounded-full animate-spin" /></div>;
   }
 
   return (
@@ -149,7 +149,7 @@ export default function MoodsPage() {
         <div className="text-center py-16 mb-4">
           <p className="text-4xl mb-3">🎭</p>
           <p className="font-medium text-white/50">No moods tagged yet</p>
-          <Link href="/search" className="text-[#F64568] text-sm font-semibold hover:underline mt-2 block">Rate a song →</Link>
+          <Link href="/search" className="text-[#117ACA] text-sm font-semibold hover:underline mt-2 block">Rate a song →</Link>
         </div>
       )}
 
@@ -207,7 +207,7 @@ export default function MoodsPage() {
       {/* Create Mood modal */}
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="w-full max-w-sm bg-[#1a1a1a] rounded-3xl border border-white/10 p-6 space-y-5">
+          <div className="w-full max-w-sm bg-[#161616] rounded-3xl border border-white/10 p-6 space-y-5">
             <h2 className="text-lg font-bold text-slate-100">New mood</h2>
 
             <div>
@@ -218,7 +218,7 @@ export default function MoodsPage() {
                 onChange={(e) => setNewName(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && createMood()}
                 placeholder="e.g. Sunday Morning"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder:text-white/28 focus:outline-none focus:border-[#F64568]/50"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder:text-white/28 focus:outline-none focus:border-[#117ACA]/50"
               />
             </div>
 
@@ -231,7 +231,7 @@ export default function MoodsPage() {
                     onClick={() => setNewEmoji(e)}
                     className={`h-9 rounded-xl text-lg flex items-center justify-center transition-all ${
                       newEmoji === e
-                        ? "bg-[#F64568]/20 ring-2 ring-[#F64568]/60"
+                        ? "bg-[#117ACA]/20 ring-2 ring-[#117ACA]/60"
                         : "bg-white/5 hover:bg-white/10"
                     }`}
                   >
@@ -251,7 +251,7 @@ export default function MoodsPage() {
               <button
                 onClick={createMood}
                 disabled={!newName.trim()}
-                className="flex-1 py-3 rounded-2xl bg-[#F64568] text-black font-bold text-sm disabled:opacity-40 hover:bg-[#FE9677] transition-colors"
+                className="flex-1 py-3 rounded-2xl bg-[#117ACA] text-black font-bold text-sm disabled:opacity-40 hover:bg-[#2E93DC] transition-colors"
               >
                 Create
               </button>
