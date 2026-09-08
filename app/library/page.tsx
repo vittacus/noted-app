@@ -12,6 +12,34 @@ import { SpotifyTrack } from "@/types";
 import Link from "next/link";
 import ScoreCircle from "@/components/ScoreCircle";
 
+// Blue accent opacity tiers per genre — ensures visual differentiation within the single-hue palette
+const GENRE_BORDER_OPACITY: Record<string, number> = {
+  Rap:          1.00,
+  Drill:        1.00,
+  Electronic:   0.88,
+  Afrobeats:    0.78,
+  "R&B":        0.70,
+  Trap:         0.70,
+  "K-Pop":      0.60,
+  Latin:        0.60,
+  Pop:          0.50,
+  Alternative:  0.50,
+  Soul:         0.40,
+  Indie:        0.32,
+  Folk:         0.32,
+  House:        0.25,
+  Country:      0.22,
+  Metal:        0.18,
+  Jazz:         0.14,
+  Classical:    0.10,
+  Ambient:      0.10,
+};
+
+function genreBorderColor(tags: string[]): string {
+  const alpha = GENRE_BORDER_OPACITY[tags?.[0]] ?? 0.45;
+  return `rgba(17,122,202,${alpha})`;
+}
+
 type SortKey = "score" | "date" | "artist";
 type ViewMode = "list" | "grid";
 type LibraryMode = "songs" | "albums";
@@ -232,13 +260,13 @@ export default function LibraryPage() {
       </div>
 
       {/* Songs / Albums toggle */}
-      <div className="flex gap-1 bg-white/5 rounded-2xl p-1 mb-5">
+      <div className="flex gap-1.5 mb-5">
         {(["songs", "albums"] as LibraryMode[]).map((m) => (
           <button key={m} onClick={() => setLibraryMode(m)}
             className={`flex-1 py-2 text-sm font-semibold rounded-xl transition-all capitalize ${
               libraryMode === m
-                ? "text-white bg-gradient-accent shadow-sm"
-                : "text-white/50 hover:text-white/80"
+                ? "bg-[#117ACA] text-white shadow-sm"
+                : "bg-transparent text-[#117ACA]/55 border border-[#117ACA]/25 hover:border-[#117ACA]/50 hover:text-[#117ACA]/85"
             }`}>
             {m} {m === "songs" ? `(${ratings.length})` : `(${albumGroups.length})`}
           </button>
@@ -526,7 +554,7 @@ export default function LibraryPage() {
                   <Link key={r.id} href={`/song/${r.id}`} className="block group">
                     <div
                       className="bg-[#161616] rounded-2xl border border-white/8 group-hover:border-white/10 group-hover:scale-[1.005] group-hover:shadow-xl transition-all duration-200 overflow-hidden"
-                      style={hasGenre ? { borderLeft: `4px solid #117ACA` } : undefined}
+                      style={hasGenre ? { borderLeft: `4px solid ${genreBorderColor(r.genre_tags ?? [])}` } : undefined}
                     >
                       <div className="flex items-center gap-3 px-3 py-3">
                         <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
