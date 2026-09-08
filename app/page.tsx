@@ -102,10 +102,10 @@ export default async function HomePage({
       )}
 
       {/* Two-column shell — stacks on mobile, side-by-side on md+ */}
-      <div className="md:grid md:grid-cols-[1fr_300px] md:gap-8 md:items-start">
+      <div className="md:grid md:grid-cols-[1fr_300px] md:gap-8">
 
         {/* ── MAIN COLUMN ── */}
-        <div className="min-w-0">
+        <div className="min-w-0 md:self-start">
 
           {/* Mobile-only: horizontal-scroll discovery sections */}
           {user && songsRated >= 1 && (
