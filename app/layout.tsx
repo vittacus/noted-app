@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.className} min-h-full text-white`} style={{ backgroundColor: "#000000" }}>
         <div className="relative z-10">
           <Navigation />
-          <main className="max-w-[900px] mx-auto px-4 pb-24 pt-6">
+          <main className="max-w-[1080px] xl:max-w-[1300px] 2xl:max-w-[1500px] mx-auto px-4 pb-24 pt-6">
             {children}
           </main>
         </div>

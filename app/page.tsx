@@ -8,6 +8,7 @@ import RatingComments from "@/components/RatingComments";
 import RecommendedTracks from "@/components/RecommendedTracks";
 import ScoreCircle from "@/components/ScoreCircle";
 import NewRatingHighlight from "@/components/NewRatingHighlight";
+import SuggestedFriendsSidebar from "@/components/SuggestedFriendsSidebar";
 
 export const dynamic = "force-dynamic";
 
@@ -101,7 +102,7 @@ export default async function HomePage({
       )}
 
       {/* Two-column shell — stacks on mobile, side-by-side on md+ */}
-      <div className="md:grid md:grid-cols-[1fr_256px] md:gap-8 md:items-start">
+      <div className="md:grid md:grid-cols-[1fr_300px] md:gap-8 md:items-start">
 
         {/* ── MAIN COLUMN ── */}
         <div className="min-w-0">
@@ -247,28 +248,7 @@ export default async function HomePage({
               </div>
             )}
 
-            <div className="bg-[#111111] rounded-2xl border border-white/8 p-4">
-              <p className="text-sm font-bold text-slate-100 mb-3">Suggested friends</p>
-              <div className="space-y-0.5">
-                {SUGGESTED_FRIENDS.slice(0, 4).map((f) => (
-                  <div key={f.username} className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-white/5 transition-colors">
-                    <div
-                      className="w-9 h-9 rounded-full flex items-center justify-center font-black text-xs shrink-0"
-                      style={{ backgroundColor: `${f.color}20`, color: f.color }}
-                    >
-                      {f.initials}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-100 truncate leading-tight">{f.username}</p>
-                      <p className="text-xs text-white/38 truncate">{f.genre}</p>
-                    </div>
-                    <button disabled className="shrink-0 text-xs font-semibold text-white/30 border border-white/10 px-2.5 py-1 rounded-lg cursor-not-allowed">
-                      Follow
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <SuggestedFriendsSidebar />
 
           </aside>
         )}

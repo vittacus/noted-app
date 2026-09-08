@@ -157,10 +157,10 @@ export default function RecommendedTracks({
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-100 truncate leading-tight">{track.name}</p>
+                <p className="text-sm font-semibold text-slate-100 line-clamp-2 leading-tight">{track.name}</p>
                 <p className="text-xs text-white/45 truncate mt-0.5">{track.artists.map((a) => a.name).join(", ")}</p>
               </div>
-              <span className="shrink-0 text-xs font-semibold text-[#F5A623] px-2 py-1 rounded-lg bg-[#F5A623]/10 border border-[#F5A623]/20 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="shrink-0 text-xs font-semibold text-[#F5A623] px-2 py-1 rounded-lg bg-[#F5A623]/10 border border-[#F5A623]/20 opacity-40 group-hover:opacity-100 transition-opacity">
                 Rate
               </span>
             </button>
