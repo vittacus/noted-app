@@ -19,7 +19,7 @@ export default function StickySidebar({ children }: { children: React.ReactNode 
       }
       const rect = el.getBoundingClientRect();
       // Anchor from the right edge so centering/max-width changes don't drift the sidebar
-      setRight(window.innerWidth - rect.right);
+      setRight(document.documentElement.clientWidth - rect.right);
       setWidth(rect.width);
       setFixed(rect.top <= TOP_OFFSET);
     }
