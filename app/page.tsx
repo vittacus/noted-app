@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
-import { genreAccentColor, displayGenres } from "@/lib/utils";
+import { displayGenres } from "@/lib/utils";
 import FeedTabs from "@/components/FeedTabs";
 import RatingComments from "@/components/RatingComments";
 import RecommendedTracks from "@/components/RecommendedTracks";
@@ -15,7 +15,7 @@ const SUGGESTED_FRIENDS = [
   { username: "beatmaven",   initials: "BM", color: "#f59e0b", match: 94, genre: "Rap / Alt"    },
   { username: "melodyghost", initials: "MG", color: "#ec4899", match: 88, genre: "Latin / Pop"  },
   { username: "wavesurfer",  initials: "WS", color: "#F5A623", match: 82, genre: "Indie / R&B"  },
-  { username: "lowfreq",     initials: "LF", color: "#F5A623", match: 79, genre: "Rap / Soul"   },
+  { username: "lowfreq",     initials: "LF", color: "#a78bfa", match: 79, genre: "Rap / Soul"   },
   { username: "driftpop",    initials: "DP", color: "#4ade80", match: 75, genre: "Pop"           },
 ];
 
@@ -28,7 +28,6 @@ export default async function HomePage({
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Recommendation seed data (no stats — those live on the Profile page)
   let songsRated = 0;
   let seedTrackIds: string[] = [];
   let ratedSpotifyIds: string[] = [];
@@ -52,7 +51,6 @@ export default async function HomePage({
       .slice(0, 5);
   }
 
-  // Feed query
   let feedQuery = supabase
     .from("ratings")
     .select(`
@@ -68,9 +66,11 @@ export default async function HomePage({
 
   const vibeEmoji: Record<string, string> = { loved: "🔥", liked: "👍", didnt_like: "😐" };
 
+  const recommendProps = { seedTrackIds, ratedSpotifyIds, topArtistNames };
+
   return (
     <div className="page-enter">
-      {/* Hero — logged-out */}
+      {/* Hero — logged-out (full width) */}
       {!user && (
         <div className="-mx-4 mb-10">
           <div className="min-h-[42vh] flex flex-col items-center justify-center text-center bg-gradient-to-b from-[#000000] via-[#000000] to-[#000000] px-6 py-12 relative overflow-hidden">
@@ -100,148 +100,178 @@ export default async function HomePage({
         </div>
       )}
 
-      {/* Recommended for you */}
-      {user && songsRated >= 1 && (
-        <RecommendedTracks
-          seedTrackIds={seedTrackIds}
-          ratedSpotifyIds={ratedSpotifyIds}
-          topArtistNames={topArtistNames}
-        />
-      )}
+      {/* Two-column shell — stacks on mobile, side-by-side on md+ */}
+      <div className="md:grid md:grid-cols-[1fr_256px] md:gap-8 md:items-start">
 
-      {/* Highlight newly added rating card */}
-      <NewRatingHighlight />
+        {/* ── MAIN COLUMN ── */}
+        <div className="min-w-0">
 
-      {/* Suggested friends */}
-      {user && (
-        <div className="mb-8">
-          <div className="mb-3">
-            <h2 className="text-xl font-bold text-slate-100">Suggested friends</h2>
-            <p className="text-xs text-white/38 mt-0.5">People with similar taste</p>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
-            {SUGGESTED_FRIENDS.map((f) => (
-              <div key={f.username}
-                className="shrink-0 w-32 bg-[#111111] rounded-2xl p-3 flex flex-col items-center gap-2"
-                style={{ border: `1px solid ${f.color}35` }}>
-                {/* Avatar with gradient ring in their color */}
-                <div className="rounded-full p-[1.5px]"
-                  style={{ background: `linear-gradient(135deg, ${f.color}, transparent)` }}>
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm text-white bg-[#111111]"
-                    style={{ backgroundColor: `${f.color}20` }}>
-                    {f.initials}
+          {/* Mobile-only: horizontal-scroll discovery sections */}
+          {user && songsRated >= 1 && (
+            <div className="md:hidden">
+              <RecommendedTracks {...recommendProps} />
+            </div>
+          )}
+
+          <NewRatingHighlight />
+
+          {user && (
+            <div className="md:hidden mb-8">
+              <div className="mb-3">
+                <h2 className="text-xl font-bold text-slate-100">Suggested friends</h2>
+                <p className="text-xs text-white/38 mt-0.5">People with similar taste</p>
+              </div>
+              {/* Right-edge gradient fade signals more cards off-screen */}
+              <div
+                className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4"
+                style={{
+                  WebkitMaskImage: "linear-gradient(to right, black 80%, transparent 100%)",
+                  maskImage: "linear-gradient(to right, black 80%, transparent 100%)",
+                }}
+              >
+                {SUGGESTED_FRIENDS.map((f) => (
+                  <div key={f.username}
+                    className="shrink-0 w-32 bg-[#111111] rounded-2xl p-3 flex flex-col items-center gap-2 border border-white/8">
+                    <div className="rounded-full p-[1.5px]"
+                      style={{ background: `linear-gradient(135deg, ${f.color}, transparent)` }}>
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm"
+                        style={{ backgroundColor: `${f.color}20`, color: f.color }}>
+                        {f.initials}
+                      </div>
+                    </div>
+                    <p className="text-xs font-semibold text-slate-200 truncate w-full text-center">{f.username}</p>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <p className="text-xs font-bold" style={{ color: f.color }}>{f.match}% match</p>
+                      <p className="text-xs text-white/38 text-center leading-tight">{f.genre}</p>
+                    </div>
+                    <button disabled className="w-full py-1 rounded-lg border border-white/10 text-xs text-white/38 cursor-not-allowed">
+                      Follow
+                    </button>
                   </div>
-                </div>
-                <p className="text-xs font-semibold text-slate-200 truncate w-full text-center">{f.username}</p>
-                <div className="flex flex-col items-center gap-0.5">
-                  <p className="text-xs font-bold" style={{ color: f.color }}>{f.match}% match</p>
-                  <p className="text-xs text-white/38 text-center leading-tight">{f.genre}</p>
-                </div>
-                <button disabled className="w-full py-1 rounded-lg border border-white/10 text-xs text-white/38 cursor-not-allowed">
-                  Follow
-                </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Feed */}
+          <Suspense>
+            <FeedTabs isLoggedIn={!!user} />
+          </Suspense>
+
+          {tab === "mine" && user && (ratings?.length ?? 0) === 0 && (
+            <div className="text-center py-20">
+              <p className="text-5xl mb-4">🎵</p>
+              <p className="font-semibold text-slate-300 text-lg">No ratings yet</p>
+              <Link href="/search" className="inline-block mt-4 px-5 py-2.5 bg-[#F5A623]/50 text-white text-sm font-semibold rounded-full hover:bg-[#d4891a] transition-colors">
+                Rate a song →
+              </Link>
+            </div>
+          )}
+          {tab === "everyone" && (ratings?.length ?? 0) === 0 && (
+            <div className="text-center py-20">
+              <p className="text-5xl mb-4">🎵</p>
+              <p className="font-semibold text-slate-300 text-lg">No ratings yet</p>
+              <Link href="/search" className="text-[#F5A623] text-sm font-semibold hover:underline mt-1 block">Be the first →</Link>
+            </div>
+          )}
+
+          <div className="space-y-4">
+            {ratings?.map((r: any) => (
+              <div
+                key={r.id}
+                data-rating-card
+                className="bg-[#111111] rounded-2xl border border-white/8 overflow-hidden hover:border-white/12 transition-colors"
+              >
+                <Link href={`/song/${r.id}`} className="block">
+                  <div className="flex items-center gap-2 px-4 pt-4">
+                    <div className="w-6 h-6 rounded-full bg-[#F5A623]/20 flex items-center justify-center text-[#F5A623] font-bold text-xs overflow-hidden shrink-0">
+                      {r.user?.avatar_url
+                        ? <Image src={r.user.avatar_url} alt={r.user.username} width={24} height={24} className="object-cover" />
+                        : (r.user?.username?.[0] ?? "?").toUpperCase()}
+                    </div>
+                    <span className="text-xs font-semibold text-white/50">{r.user?.username ?? "Unknown"}</span>
+                    <span className="text-xs text-white/28 ml-auto">
+                      {new Date(r.listened_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-4 px-4 py-4">
+                    <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-lg">
+                      {r.song?.album_art_url
+                        ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="64px" />
+                        : <div className="w-full h-full bg-[#1A1A1A]" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-base text-slate-100 truncate leading-tight">{r.song?.title}</p>
+                      <p className="text-sm text-white/50 truncate mt-0.5">{r.song?.artist}</p>
+                      <div className="flex items-center gap-2 mt-2 flex-wrap">
+                        <span className="text-sm">{vibeEmoji[r.vibe] ?? ""}</span>
+                        {displayGenres(r.genre_tags ?? []).map((tag: string) => (
+                          <span key={tag} className="text-xs bg-white/5 text-white/50 px-2 py-0.5 rounded-full">{tag}</span>
+                        ))}
+                        {(r.best_for_tags ?? [])
+                          .filter((t: string) => !["Late Night","Workout","Focus","Heartbreak","Hype","Road Trip","Chill","Other"].includes(t))
+                          .slice(0, 1)
+                          .map((tag: string) => (
+                            <span key={tag} className="text-xs bg-[#F5A623]/10 text-[#F5A623] px-2 py-0.5 rounded-full border border-[#F5A623]/20">{tag}</span>
+                          ))}
+                      </div>
+                    </div>
+                    <ScoreCircle score={r.overall_score} size={40} />
+                  </div>
+
+                  {r.notes && (
+                    <p className="text-xs text-white/50 italic mx-4 mb-4 line-clamp-2 border-t border-white/8 pt-3 leading-relaxed">
+                      &ldquo;{r.notes}&rdquo;
+                    </p>
+                  )}
+                </Link>
+
+                {tab === "everyone" && (
+                  <div className="border-t border-white/8">
+                    <RatingComments ratingId={r.id} />
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </div>
-      )}
 
-      {/* Feed toggle */}
-      <Suspense>
-        <FeedTabs isLoggedIn={!!user} />
-      </Suspense>
+        {/* ── SIDEBAR — desktop only ── */}
+        {user && (
+          <aside className="hidden md:flex flex-col gap-6 sticky top-[5.5rem]">
 
-      {/* Empty states */}
-      {tab === "mine" && user && (ratings?.length ?? 0) === 0 && (
-        <div className="text-center py-20">
-          <p className="text-5xl mb-4">🎵</p>
-          <p className="font-semibold text-slate-300 text-lg">No ratings yet</p>
-          <Link href="/search" className="inline-block mt-4 px-5 py-2.5 bg-[#F5A623]/50 text-white text-sm font-semibold rounded-full hover:bg-[#d4891a] transition-colors">
-            Rate a song →
-          </Link>
-        </div>
-      )}
-      {tab === "everyone" && (ratings?.length ?? 0) === 0 && (
-        <div className="text-center py-20">
-          <p className="text-5xl mb-4">🎵</p>
-          <p className="font-semibold text-slate-300 text-lg">No ratings yet</p>
-          <Link href="/search" className="text-[#F5A623] text-sm font-semibold hover:underline mt-1 block">Be the first →</Link>
-        </div>
-      )}
+            {songsRated >= 1 && (
+              <div className="bg-[#111111] rounded-2xl border border-white/8 p-4">
+                <RecommendedTracks {...recommendProps} compact title="Recommended" />
+              </div>
+            )}
 
-      {/* Rating cards */}
-      <div className="space-y-4">
-        {ratings?.map((r: any) => {
-          const accentColor = genreAccentColor(r.genre_tags ?? []);
-          return (
-            <div
-              key={r.id}
-              data-rating-card
-              className="bg-[#111111] rounded-2xl border border-white/8 overflow-hidden hover:border-white/10 transition-colors"
-              style={accentColor ? { borderLeft: `2px solid ${accentColor}` } : undefined}
-            >
-              {/* Genre accent top bar */}
-              {accentColor && (
-                <div className="flex justify-center pt-2">
-                  <div className="h-[3px] rounded-full" style={{ width: "60%", background: `linear-gradient(to right, ${accentColor}, transparent)` }} />
-                </div>
-              )}
-
-              <Link href={`/song/${r.id}`} className="block">
-                {/* User + date */}
-                <div className={`flex items-center gap-2 px-4 ${accentColor ? "pt-2" : "pt-4"}`}>
-                  <div className="w-6 h-6 rounded-full bg-[#F5A623]/20 flex items-center justify-center text-[#F5A623] font-bold text-xs overflow-hidden shrink-0">
-                    {r.user?.avatar_url
-                      ? <Image src={r.user.avatar_url} alt={r.user.username} width={24} height={24} className="object-cover" />
-                      : (r.user?.username?.[0] ?? "?").toUpperCase()}
-                  </div>
-                  <span className="text-xs font-semibold text-white/50">{r.user?.username ?? "Unknown"}</span>
-                  <span className="text-xs text-white/28 ml-auto">
-                    {new Date(r.listened_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                  </span>
-                </div>
-
-                {/* Song row */}
-                <div className="flex items-center gap-4 px-4 py-4">
-                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-lg">
-                    {r.song?.album_art_url
-                      ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="64px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#000000] to-[#000000]" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-base text-slate-100 truncate leading-tight">{r.song?.title}</p>
-                    <p className="text-sm text-white/50 truncate mt-0.5">{r.song?.artist}</p>
-                    <div className="flex items-center gap-2 mt-2 flex-wrap">
-                      <span className="text-sm">{vibeEmoji[r.vibe] ?? ""}</span>
-                      {displayGenres(r.genre_tags ?? []).map((tag: string) => (
-                        <span key={tag} className="text-xs bg-white/5 text-white/50 px-2 py-0.5 rounded-full">{tag}</span>
-                      ))}
-                      {(r.best_for_tags ?? [])
-                        .filter((t: string) => !["Late Night","Workout","Focus","Heartbreak","Hype","Road Trip","Chill","Other"].includes(t))
-                        .slice(0, 1)
-                        .map((tag: string) => (
-                          <span key={tag} className="text-xs bg-[#F5A623]/10 text-[#F5A623] px-2 py-0.5 rounded-full border border-[#F5A623]/20">{tag}</span>
-                        ))}
+            <div className="bg-[#111111] rounded-2xl border border-white/8 p-4">
+              <p className="text-sm font-bold text-slate-100 mb-3">Suggested friends</p>
+              <div className="space-y-0.5">
+                {SUGGESTED_FRIENDS.slice(0, 4).map((f) => (
+                  <div key={f.username} className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-white/5 transition-colors">
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center font-black text-xs shrink-0"
+                      style={{ backgroundColor: `${f.color}20`, color: f.color }}
+                    >
+                      {f.initials}
                     </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-slate-100 truncate leading-tight">{f.username}</p>
+                      <p className="text-xs text-white/38 truncate">{f.genre}</p>
+                    </div>
+                    <button disabled className="shrink-0 text-xs font-semibold text-white/30 border border-white/10 px-2.5 py-1 rounded-lg cursor-not-allowed">
+                      Follow
+                    </button>
                   </div>
-                  <ScoreCircle score={r.overall_score} size={40} />
-                </div>
-
-                {r.notes && (
-                  <p className="text-xs text-white/50 italic mx-4 mb-4 line-clamp-2 border-t border-white/8 pt-3 leading-relaxed">
-                    &ldquo;{r.notes}&rdquo;
-                  </p>
-                )}
-              </Link>
-
-              {tab === "everyone" && (
-                <div className="border-t border-white/8">
-                  <RatingComments ratingId={r.id} />
-                </div>
-              )}
+                ))}
+              </div>
             </div>
-          );
-        })}
+
+          </aside>
+        )}
       </div>
     </div>
   );
