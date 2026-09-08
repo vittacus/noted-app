@@ -5,6 +5,7 @@ import Link from "next/link";
 import ScoreCircle from "@/components/ScoreCircle";
 import TasteRadar, { type TasteItem } from "@/components/TasteRadar";
 import ProfileActions from "@/components/ProfileActions";
+import StickyLeftColumn from "@/components/StickyLeftColumn";
 import { calculateStreak, formatCount } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -218,7 +219,7 @@ export default async function ProfilePage() {
       <div className="md:grid md:grid-cols-[300px_1fr] md:gap-8 md:items-start">
 
         {/* ── LEFT COLUMN: identity ── */}
-        <div className="mb-8 md:mb-0">
+        <StickyLeftColumn>
           {/* Avatar + name */}
           <div className="flex flex-col items-center md:items-start mb-5">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#F5A623] to-[#111111] flex items-center justify-center text-white text-3xl font-black mb-3 overflow-hidden shadow-xl shadow-[#F5A623]/20">
@@ -248,7 +249,7 @@ export default async function ProfilePage() {
           <div className="hidden md:block">
             <ProfileActions username={profile?.username ?? null} />
           </div>
-        </div>
+        </StickyLeftColumn>
 
         {/* ── RIGHT COLUMN: content ── */}
         <div className="min-w-0">
