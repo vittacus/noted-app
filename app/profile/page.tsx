@@ -6,6 +6,7 @@ import ScoreCircle from "@/components/ScoreCircle";
 import TasteRadar, { type TasteItem } from "@/components/TasteRadar";
 import ProfileActions from "@/components/ProfileActions";
 import { calculateStreak, formatCount } from "@/lib/utils";
+import { Swords, ChevronRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -250,6 +251,19 @@ export default async function ProfilePage() {
               </div>
             ))}
           </div>
+
+          {/* Battle Mode */}
+          <Link href="/battle"
+            className="flex items-center gap-3 bg-[#161616] rounded-2xl p-4 border border-[#117ACA]/20 hover:border-[#117ACA]/45 hover:scale-[1.01] transition-all duration-200 mb-5 group">
+            <div className="w-10 h-10 rounded-xl bg-[#117ACA]/15 flex items-center justify-center shrink-0 group-hover:bg-[#117ACA]/25 transition-colors">
+              <Swords size={18} className="text-[#117ACA]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-sm text-slate-100 leading-tight">Battle your top picks</p>
+              <p className="text-xs text-white/50 mt-0.5 leading-relaxed">Head-to-head matchups — see if your rankings still hold up.</p>
+            </div>
+            <ChevronRight size={15} className="text-white/30 shrink-0 group-hover:text-[#117ACA] transition-colors" />
+          </Link>
 
           {/* Share + Settings — desktop only */}
           <div className="hidden md:block">

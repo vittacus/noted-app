@@ -41,8 +41,8 @@ export default function Navigation() {
   return (
     <>
       {/* Top header */}
-      <header className="sticky top-0 z-40 bg-[#0a0a0a]/85 backdrop-blur border-b border-white/[0.07]">
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center">
+      <header className="sticky top-0 z-40 bg-[#0d0d0f]/85 backdrop-blur border-b border-white/[0.07]">
+        <div className="max-w-[1080px] xl:max-w-[1300px] 2xl:max-w-[1500px] mx-auto px-4 h-14 flex items-center">
           <Link
             href="/"
             className="font-black text-2xl tracking-tighter"
@@ -54,7 +54,7 @@ export default function Navigation() {
       </header>
 
       {/* Bottom tab bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#0a0a0a]/90 backdrop-blur border-t border-white/[0.07]">
+      <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#0d0d0f]/90 backdrop-blur border-t border-white/[0.07]">
         <div className="max-w-2xl mx-auto flex items-end">
 
           <TabItem href="/" icon={Home} label="Home" active={pathname === "/"} />

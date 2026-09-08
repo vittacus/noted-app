@@ -10,6 +10,7 @@ import ScoreCircle from "@/components/ScoreCircle";
 import NewRatingHighlight from "@/components/NewRatingHighlight";
 import SuggestedFriendsSidebar from "@/components/SuggestedFriendsSidebar";
 import StickySidebar from "@/components/StickySidebar";
+import AlbumArtImage from "@/components/AlbumArtImage";
 
 export const dynamic = "force-dynamic";
 
@@ -212,7 +213,7 @@ export default async function HomePage({
               <div
                 key={r.id}
                 data-rating-card
-                className="bg-[#161616] rounded-2xl border border-white/8 overflow-hidden hover:border-white/12 transition-colors"
+                className="bg-[#161616] rounded-2xl border border-white/8 overflow-hidden hover:border-white/12 hover:scale-[1.005] hover:shadow-xl transition-all duration-200"
               >
                 <Link href={`/song/${r.id}`} className="block">
                   <div className="flex items-center gap-2 px-4 pt-4 max-w-[740px]">
@@ -228,10 +229,8 @@ export default async function HomePage({
                   </div>
 
                   <div className="flex items-center gap-4 px-4 py-4 max-w-[740px]">
-                    <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-lg">
-                      {r.song?.album_art_url
-                        ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="64px" />
-                        : <div className="w-full h-full bg-[#212121]" />}
+                    <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-[0_4px_16px_rgba(0,0,0,0.55)]">
+                      <AlbumArtImage src={r.song?.album_art_url} alt={r.song?.album_name ?? "Album"} fill className="object-cover" sizes="64px" fallbackClassName="w-full h-full bg-[#212121]" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-base text-slate-100 truncate leading-tight">{r.song?.title}</p>

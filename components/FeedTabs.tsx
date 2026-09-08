@@ -22,7 +22,7 @@ export default function FeedTabs({ isLoggedIn }: { isLoggedIn: boolean }) {
       {/* Everyone */}
       <button onClick={() => go("everyone")}
         className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all ${
-          tab === "everyone" ? "bg-white/8 text-white shadow-sm" : "text-white/50 hover:text-slate-300 hover:bg-white/5"
+          tab === "everyone" ? "bg-[#117ACA]/15 text-white border border-[#117ACA]/25 shadow-[0_0_10px_rgba(17,122,202,0.2)]" : "text-white/50 hover:text-slate-300 hover:bg-white/5"
         }`}>
         Everyone
       </button>
@@ -30,7 +30,7 @@ export default function FeedTabs({ isLoggedIn }: { isLoggedIn: boolean }) {
       {/* My ratings */}
       <button onClick={() => go("mine")}
         className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all ${
-          tab === "mine" ? "bg-white/8 text-white shadow-sm" : "text-white/50 hover:text-slate-300 hover:bg-white/5"
+          tab === "mine" ? "bg-[#117ACA]/15 text-white border border-[#117ACA]/25 shadow-[0_0_10px_rgba(17,122,202,0.2)]" : "text-white/50 hover:text-slate-300 hover:bg-white/5"
         }`}>
         My ratings
       </button>
@@ -38,7 +38,7 @@ export default function FeedTabs({ isLoggedIn }: { isLoggedIn: boolean }) {
       {/* Friends */}
       <button onClick={() => go("friends")}
         className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all ${
-          tab === "friends" ? "bg-white/8 text-white shadow-sm" : "text-white/50 hover:text-slate-300 hover:bg-white/5"
+          tab === "friends" ? "bg-[#117ACA]/15 text-white border border-[#117ACA]/25 shadow-[0_0_10px_rgba(17,122,202,0.2)]" : "text-white/50 hover:text-slate-300 hover:bg-white/5"
         }`}>
         Friends
       </button>

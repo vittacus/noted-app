@@ -394,7 +394,7 @@ export default function LibraryPage() {
 
               const inner = (
                 <div className="flex items-center gap-3 p-3">
-                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0">
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-[0_4px_16px_rgba(0,0,0,0.55)]">
                     {a.albumArt
                       ? <Image src={a.albumArt} alt={a.albumName} fill className="object-cover" sizes="64px" />
                       : <div className="w-full h-full bg-gradient-to-br from-[#161616] to-[#161616]" />}
@@ -435,7 +435,7 @@ export default function LibraryPage() {
                 <div
                   key={a.key}
                   onClick={() => handleAlbumTap(a)}
-                  className="rounded-2xl overflow-hidden cursor-pointer active:scale-[0.99] transition-all"
+                  className="rounded-2xl overflow-hidden cursor-pointer hover:scale-[1.005] hover:shadow-xl active:scale-[0.99] transition-all duration-200"
                   style={isComplete ? {
                     border: "1px solid rgba(74,222,128,0.4)",
                     background: "#161616",
@@ -525,11 +525,11 @@ export default function LibraryPage() {
                 return (
                   <Link key={r.id} href={`/song/${r.id}`} className="block group">
                     <div
-                      className="bg-[#161616] rounded-2xl border border-white/8 group-hover:border-white/10 transition-colors overflow-hidden"
+                      className="bg-[#161616] rounded-2xl border border-white/8 group-hover:border-white/10 group-hover:scale-[1.005] group-hover:shadow-xl transition-all duration-200 overflow-hidden"
                       style={hasGenre ? { borderLeft: `4px solid #117ACA` } : undefined}
                     >
                       <div className="flex items-center gap-3 px-3 py-3">
-                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0">
+                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
                           {r.song.album_art_url
                             ? <Image src={r.song.album_art_url} alt={r.song.album_name} fill className="object-cover" sizes="48px" />
                             : <div className="w-full h-full bg-gradient-to-br from-[#161616] to-[#161616]" />}
