@@ -223,12 +223,10 @@ export default async function HomePage({
                         : (r.user?.username?.[0] ?? "?").toUpperCase()}
                     </div>
                     <span className="text-xs font-semibold text-white/50">{r.user?.username ?? "Unknown"}</span>
-                    <span className="text-xs text-white/28 ml-auto">
-                      {new Date(r.listened_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                    </span>
+                    <span className="text-xs text-white/28">· {new Date(r.listened_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
                   </div>
 
-                  <div className="flex items-center gap-4 px-4 py-4 max-w-[740px]">
+                  <div className="flex items-center gap-4 px-4 pt-3 pb-2 max-w-[740px]">
                     <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-[0_4px_16px_rgba(0,0,0,0.55)]">
                       <AlbumArtImage src={r.song?.album_art_url} alt={r.song?.album_name ?? "Album"} fill className="object-cover" sizes="64px" fallbackClassName="w-full h-full bg-[#212121]" />
                     </div>
@@ -252,7 +250,7 @@ export default async function HomePage({
                   </div>
 
                   {r.notes && (
-                    <p className="text-xs text-white/50 italic mx-4 mb-4 line-clamp-2 border-t border-white/8 pt-3 leading-relaxed max-w-[708px]">
+                    <p className="text-xs text-white/50 italic mx-4 mb-3 line-clamp-2 border-t border-white/8 pt-2 leading-relaxed max-w-[708px]">
                       &ldquo;{r.notes}&rdquo;
                     </p>
                   )}
