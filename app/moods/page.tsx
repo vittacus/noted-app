@@ -7,15 +7,30 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 const PRESET_MOODS = [
-  { tag: "Late Night", emoji: "🌙", gradient: "from-indigo-950 to-slate-900",    border: "border-indigo-500/20"  },
-  { tag: "Workout",    emoji: "💪", gradient: "from-orange-950 to-red-950",       border: "border-orange-500/20"  },
-  { tag: "Focus",      emoji: "🧠", gradient: "from-teal-950 to-cyan-950",        border: "border-teal-500/20"    },
-  { tag: "Heartbreak", emoji: "💔", gradient: "from-rose-950 to-pink-950",        border: "border-rose-500/20"    },
-  { tag: "Hype",       emoji: "🔥", gradient: "from-amber-950 to-yellow-950",     border: "border-amber-500/20"   },
-  { tag: "Road Trip",  emoji: "🚗", gradient: "from-emerald-950 to-green-950",    border: "border-emerald-500/20" },
-  { tag: "Chill",      emoji: "🫶", gradient: "from-sky-950 to-blue-950",         border: "border-sky-500/20"     },
-  { tag: "Other",      emoji: "🎵", gradient: "from-violet-950 to-purple-950",    border: "border-violet-500/20"  },
+  { tag: "Late Night", emoji: "🌙", gradient: "from-indigo-900 to-black",        border: "border-indigo-500/25"  },
+  { tag: "Workout",    emoji: "💪", gradient: "from-red-900 to-orange-800",       border: "border-red-500/25"     },
+  { tag: "Focus",      emoji: "🧠", gradient: "from-teal-800 to-slate-900",       border: "border-teal-500/25"    },
+  { tag: "Heartbreak", emoji: "💔", gradient: "from-rose-900 to-pink-950",        border: "border-rose-500/25"    },
+  { tag: "Hype",       emoji: "🔥", gradient: "from-amber-700 to-orange-900",     border: "border-amber-500/25"   },
+  { tag: "Road Trip",  emoji: "🚗", gradient: "from-emerald-800 to-teal-900",     border: "border-emerald-500/25" },
+  { tag: "Chill",      emoji: "🫶", gradient: "from-sky-800 to-indigo-900",       border: "border-sky-500/25"     },
+  { tag: "Other",      emoji: "🎵", gradient: "from-slate-700 to-slate-950",      border: "border-slate-500/25"   },
 ];
+
+// Rotating gradients for custom moods — assigned deterministically from tag string
+const CUSTOM_GRADIENTS = [
+  { gradient: "from-purple-800 to-violet-950",   border: "border-purple-500/25"  },
+  { gradient: "from-cyan-800 to-blue-900",        border: "border-cyan-500/25"    },
+  { gradient: "from-fuchsia-700 to-purple-900",   border: "border-fuchsia-500/25" },
+  { gradient: "from-yellow-700 to-amber-900",     border: "border-yellow-500/25"  },
+  { gradient: "from-lime-800 to-emerald-900",     border: "border-lime-500/25"    },
+  { gradient: "from-pink-800 to-rose-950",        border: "border-pink-500/25"    },
+];
+
+function customGradient(tag: string) {
+  const idx = tag.split("").reduce((s, c) => s + c.charCodeAt(0), 0) % CUSTOM_GRADIENTS.length;
+  return CUSTOM_GRADIENTS[idx];
+}
 
 const PRESET_EMOJIS = [
   "🎸","🎹","🎺","🎷","🥁","🎻","🎵","🎶",
@@ -42,7 +57,6 @@ export default function MoodsPage() {
   const [loading, setLoading] = useState(true);
   const [customMoodDefs, setCustomMoodDefs] = useState<CustomMoodDef[]>([]);
 
-  // Create modal state
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState("");
   const [newEmoji, setNewEmoji] = useState("🎸");
@@ -52,7 +66,6 @@ export default function MoodsPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/auth/login"); return; }
 
-      // Load custom mood defs from localStorage
       let customDefs: CustomMoodDef[] = [];
       try {
         const stored = localStorage.getItem(CUSTOM_MOODS_KEY);
@@ -95,12 +108,10 @@ export default function MoodsPage() {
         cards.push({
           tag, count: songs.length,
           previews: songs.slice(0, 3).map((s) => s.art).filter(Boolean) as string[],
-          isPreset: false,
-          emoji: customDef?.emoji,
+          isPreset: false, emoji: customDef?.emoji,
         });
       }
 
-      // Custom moods with no songs yet
       for (const def of customDefs) {
         if (seen.has(def.tag)) continue;
         cards.push({ tag: def.tag, count: 0, previews: [], isPreset: false, emoji: def.emoji });
@@ -145,45 +156,38 @@ export default function MoodsPage() {
       <div className="grid grid-cols-2 gap-3">
         {moodCards.map((card) => {
           const preset = PRESET_MOODS.find((m) => m.tag === card.tag);
+          const { gradient, border } = preset ?? customGradient(card.tag);
           const emoji = preset?.emoji ?? card.emoji ?? "🎵";
+
           return (
             <Link
               key={card.tag}
               href={`/moods/${encodeURIComponent(card.tag)}`}
-              className={`relative rounded-3xl overflow-hidden border hover:brightness-110 transition-all min-h-[140px] flex flex-col ${
-                preset
-                  ? `bg-gradient-to-br ${preset.gradient} ${preset.border}`
-                  : "bg-[#111111] border-white/10"
-              }`}
+              className={`relative rounded-3xl overflow-hidden border hover:brightness-110 transition-all min-h-[140px] flex flex-col bg-gradient-to-br ${gradient} ${border}`}
             >
-              {/* Album art collage — full opacity, art clearly visible */}
-              {card.previews.length > 0 && (
-                <div className="absolute inset-0">
-                  <div className={`grid h-full ${card.previews.length === 1 ? "grid-cols-1" : card.previews.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}>
-                    {card.previews.map((art, i) => (
-                      <div key={i} className="relative overflow-hidden">
-                        <Image src={art} alt="" fill className="object-cover" sizes="80px" />
+              <div className="relative p-4 flex flex-col flex-1">
+                {/* Emoji with dark backing chip */}
+                <span className="w-9 h-9 flex items-center justify-center rounded-full bg-black/40 text-xl shrink-0">
+                  {emoji}
+                </span>
+
+                <div className="flex-1" />
+
+                {/* Compact thumbnail strip — up to 3 small squares, not stretched */}
+                {card.previews.length > 0 && (
+                  <div className="flex gap-1.5 mb-2.5">
+                    {card.previews.slice(0, 3).map((art, i) => (
+                      <div key={i} className="relative w-7 h-7 rounded-md overflow-hidden border border-white/25 shrink-0">
+                        <Image src={art} alt="" fill className="object-cover" sizes="28px" />
                       </div>
                     ))}
                   </div>
-                  {/* Subtle overall darkening */}
-                  <div className="absolute inset-0 bg-black/25" />
-                  {/* Bottom gradient keeps text legible */}
-                  <div
-                    className="absolute inset-x-0 bottom-0 h-[50%]"
-                    style={{ background: "linear-gradient(to bottom, transparent, rgba(0,0,0,0.88))" }}
-                  />
-                </div>
-              )}
+                )}
 
-              <div className="relative p-4 flex flex-col flex-1">
-                {/* Emoji with dark backing chip */}
-                <span className="w-9 h-9 flex items-center justify-center rounded-full bg-black/50 text-xl mb-auto">
-                  {emoji}
-                </span>
-                <div className="mt-3">
-                  <p className="font-bold text-slate-100 text-sm leading-tight">{card.tag}</p>
-                  <p className="text-xs text-white/50 mt-0.5">{card.count} song{card.count !== 1 ? "s" : ""}</p>
+                {/* Name + count */}
+                <div>
+                  <p className="font-bold text-white text-sm leading-tight">{card.tag}</p>
+                  <p className="text-xs text-white/55 mt-0.5">{card.count} song{card.count !== 1 ? "s" : ""}</p>
                 </div>
               </div>
             </Link>
@@ -206,7 +210,6 @@ export default function MoodsPage() {
           <div className="w-full max-w-sm bg-[#111111] rounded-3xl border border-white/10 p-6 space-y-5">
             <h2 className="text-lg font-bold text-slate-100">New mood</h2>
 
-            {/* Name input */}
             <div>
               <label className="text-xs font-semibold text-white/38 uppercase tracking-wide block mb-2">Name</label>
               <input
@@ -219,7 +222,6 @@ export default function MoodsPage() {
               />
             </div>
 
-            {/* Emoji picker */}
             <div>
               <label className="text-xs font-semibold text-white/38 uppercase tracking-wide block mb-2">Icon</label>
               <div className="grid grid-cols-8 gap-1.5">
@@ -239,7 +241,6 @@ export default function MoodsPage() {
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex gap-3 pt-1">
               <button
                 onClick={() => { setShowCreate(false); setNewName(""); setNewEmoji("🎸"); }}
