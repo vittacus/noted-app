@@ -167,7 +167,7 @@ export default function MoodsPage() {
             >
               <div className="relative p-4 flex flex-col flex-1">
                 {/* Emoji with dark backing chip */}
-                <span className="w-9 h-9 flex items-center justify-center rounded-full bg-black/40 text-xl shrink-0">
+                <span className="w-9 h-9 flex items-center justify-center rounded-full bg-black/55 text-xl shrink-0">
                   {emoji}
                 </span>
 
@@ -175,7 +175,7 @@ export default function MoodsPage() {
 
                 {/* Compact thumbnail strip — up to 3 small squares, not stretched */}
                 {card.previews.length > 0 && (
-                  <div className="flex gap-1.5 mb-2.5">
+                  <div className={`flex gap-1.5 mb-2.5 ${card.previews.length < 3 ? "justify-center" : ""}`}>
                     {card.previews.slice(0, 3).map((art, i) => (
                       <div key={i} className="relative w-7 h-7 rounded-md overflow-hidden border border-white/25 shrink-0">
                         <Image src={art} alt="" fill className="object-cover" sizes="28px" />
