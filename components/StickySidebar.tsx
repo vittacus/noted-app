@@ -7,7 +7,7 @@ const TOP_OFFSET = 88; // 5.5rem — matches nav height
 export default function StickySidebar({ children }: { children: React.ReactNode }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [fixed, setFixed] = useState(false);
-  const [left, setLeft] = useState(0);
+  const [right, setRight] = useState(0);
   const [width, setWidth] = useState(300);
 
   useEffect(() => {
@@ -18,7 +18,8 @@ export default function StickySidebar({ children }: { children: React.ReactNode 
         return;
       }
       const rect = el.getBoundingClientRect();
-      setLeft(rect.left);
+      // Anchor from the right edge so centering/max-width changes don't drift the sidebar
+      setRight(window.innerWidth - rect.right);
       setWidth(rect.width);
       setFixed(rect.top <= TOP_OFFSET);
     }
@@ -42,10 +43,8 @@ export default function StickySidebar({ children }: { children: React.ReactNode 
             ? {
                 position: "fixed",
                 top: TOP_OFFSET,
-                left,
+                right,
                 width,
-                maxHeight: `calc(100vh - ${TOP_OFFSET}px)`,
-                overflowY: "auto",
               }
             : {}
         }

@@ -37,7 +37,7 @@ export default function RecommendedTracks({
 
   const seeds = seedTrackIds.slice(0, 3);
   const ratedSet = new Set(ratedSpotifyIds);
-  const fetchLimit = compact ? 4 : limit;
+  const fetchLimit = compact ? 3 : limit;
 
   useEffect(() => {
     if (!seeds.length || hasFetched.current) return;
