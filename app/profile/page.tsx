@@ -2,9 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, Share2, Settings } from "lucide-react";
 import ScoreCircle from "@/components/ScoreCircle";
 import TasteRadar, { type TasteItem } from "@/components/TasteRadar";
+import ProfileActions from "@/components/ProfileActions";
 import { calculateStreak, formatCount } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -29,33 +29,23 @@ export default async function ProfilePage() {
       ? (ratings!.reduce((s, r) => s + r.overall_score, 0) / totalRated).toFixed(1)
       : null;
 
-  // Member since
   const memberSince = profile?.created_at
     ? new Date(profile.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })
     : "recently";
 
-  // Genre counts
   const genreCounts: Record<string, number> = {};
   ratings?.forEach((r: any) => {
     (r.genre_tags ?? []).forEach((g: string) => { genreCounts[g] = (genreCounts[g] ?? 0) + 1; });
   });
-  const topGenre = Object.entries(genreCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
 
-  // Dimension averages
   const dimAvg: Record<string, number> = {
     "Replay Value": totalRated > 0 ? ratings!.reduce((s, r) => s + r.replay_value, 0) / totalRated : 0,
     "Lyrics":       totalRated > 0 ? ratings!.reduce((s, r) => s + r.lyrics, 0) / totalRated : 0,
     "Production":   totalRated > 0 ? ratings!.reduce((s, r) => s + r.production, 0) / totalRated : 0,
   };
 
-  // Top artist — credit all collaborators via artist_names array when available
   const artistCounts: Record<string, number> = {};
   ratings?.forEach((r: any) => {
-    // Prefer artist_names (multi-artist array) saved since the collab fix,
-    // fall back to splitting song.artist string for older ratings
-    // Use stored artist_names array (supports multi-artist) when available.
-    // For older ratings without artist_names, treat song.artist as ONE name —
-    // never split on commas because artist names can contain commas ("Tyler, The Creator").
     const names: string[] =
       (r.artist_names as string[] | undefined)?.length
         ? (r.artist_names as string[])
@@ -66,10 +56,8 @@ export default async function ProfilePage() {
   });
   const topArtist = Object.entries(artistCounts).sort((a, b) => b[1] - a[1])[0] ?? null;
 
-  // Top 5 songs by score
   const top5Songs = ratings?.slice(0, 3) ?? [];
 
-  // Top 5 albums by avg score
   const albumScoreMap = new Map<string, {
     name: string; art: string | null; totalScore: number; count: number; spotifyId: string | null;
   }>();
@@ -95,7 +83,6 @@ export default async function ProfilePage() {
     .sort((a, b) => b.avgScore - a.avgScore)
     .slice(0, 3);
 
-  // Stats for taste card
   const streak = calculateStreak((ratings ?? []).map((r: any) => r.listened_at));
   const albumNamesSet = new Set((ratings ?? []).map((r: any) => r.song?.album_name?.trim()).filter(Boolean));
   const albumsCount = albumNamesSet.size;
@@ -107,7 +94,6 @@ export default async function ProfilePage() {
     { icon: "⭐", value: avgScore ?? "—",             label: "avg score",   accent: "#fbbf24", bg: "rgba(251,191,36,0.07)"  },
   ] as const;
 
-  // TasteRadar data
   const GENRE_EMOJIS: Record<string, string> = {
     Rap:"🎤", "R&B":"🎸", Pop:"⭐", Indie:"🌿", Electronic:"🎛️", Alternative:"🎵",
     Jazz:"🎺", Classical:"🎻", Country:"🤠", Latin:"💃", Afrobeats:"🥁", Soul:"🎶",
@@ -144,9 +130,6 @@ export default async function ProfilePage() {
       color: VIBE_COLORS[i % VIBE_COLORS.length],
     }));
 
-  const topGenrePct = genreItems[0]?.rawPct ?? 0;
-  const topGenreName = genreItems[0]?.label ?? "";
-  const topVibeName = vibeItems[0]?.label ?? "";
   const tasteHeadline = (() => {
     if (totalRated < 3) return "";
     const avgNum = avgScore ? parseFloat(avgScore) : null;
@@ -222,192 +205,188 @@ export default async function ProfilePage() {
     return lines[Math.floor(Math.random() * lines.length)];
   })();
 
-  async function handleSignOut() {
-    "use server";
-    const supabase = await createClient();
-    await supabase.auth.signOut();
-    redirect("/auth/login");
-  }
-
   return (
     <div className="page-enter -mt-2">
 
-      {/* ── HEADER ROW ── */}
-      <div className="flex items-center justify-between mb-6">
-        <button className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-          <Menu size={17} className="text-white/50" />
-        </button>
+      {/* Mobile-only header row */}
+      <div className="flex items-center justify-between mb-6 md:hidden">
         <p className="font-bold text-base text-slate-100 tracking-tight">{profile?.username}</p>
-        <div className="flex gap-2">
-          <button className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/8 transition-colors">
-            <Share2 size={15} className="text-white/50" />
-          </button>
-          <button className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/8 transition-colors">
-            <Settings size={15} className="text-white/50" />
-          </button>
-        </div>
+        <ProfileActions username={profile?.username ?? null} />
       </div>
 
-      {/* ── AVATAR + NAME ── */}
-      <div className="flex flex-col items-center mb-6">
-        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#F5A623] to-[#111111] flex items-center justify-center text-white text-3xl font-black mb-3 overflow-hidden shadow-xl shadow-[#F5A623]/20">
-          {profile?.avatar_url
-            ? <Image src={profile.avatar_url} alt={profile.username} width={80} height={80} className="object-cover" />
-            : (profile?.username?.[0] ?? "?").toUpperCase()}
-        </div>
-        <h1 className="text-2xl font-black text-slate-100 tracking-tight">{profile?.username}</h1>
-        <p className="text-xs text-white/50 mt-1">Member since {memberSince}</p>
-      </div>
+      {/* Two-column on desktop, single-column on mobile */}
+      <div className="md:grid md:grid-cols-[300px_1fr] md:gap-8 md:items-start">
 
-      {/* ── STATS PILLS ── */}
-      <div className="flex gap-2 mb-8">
-        {[
-          { label: "Followers", value: formatCount(67_000) },
-          { label: "Following", value: formatCount(0) },
-          { label: "Avg Rating", value: avgScore ?? "—" },
-        ].map((s) => (
-          <div key={s.label} className="flex-1 bg-[#111111] rounded-2xl py-3 text-center border border-white/8">
-            <p className="text-lg font-black text-slate-100 tabular-nums">{s.value}</p>
-            <p className="text-xs text-white/50 mt-0.5">{s.label}</p>
+        {/* ── LEFT COLUMN: identity ── */}
+        <div className="mb-8 md:mb-0">
+          {/* Avatar + name */}
+          <div className="flex flex-col items-center md:items-start mb-5">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#F5A623] to-[#111111] flex items-center justify-center text-white text-3xl font-black mb-3 overflow-hidden shadow-xl shadow-[#F5A623]/20">
+              {profile?.avatar_url
+                ? <Image src={profile.avatar_url} alt={profile.username} width={80} height={80} className="object-cover" />
+                : (profile?.username?.[0] ?? "?").toUpperCase()}
+            </div>
+            <h1 className="text-2xl font-black text-slate-100 tracking-tight">{profile?.username}</h1>
+            <p className="text-xs text-white/50 mt-1">Member since {memberSince}</p>
           </div>
-        ))}
-      </div>
 
-      {/* ── TOP SONGS — full-width list rows ── */}
-      {top5Songs.length > 0 && (
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="font-bold text-base text-slate-100">Top Songs</h2>
-            <Link href="/library" className="text-xs text-[#F5A623] hover:underline">See all →</Link>
-          </div>
-          <div className="space-y-2">
-            {top5Songs.map((r: any, i: number) => (
-              <Link key={r.id} href={`/song/${r.id}`}
-                className="flex items-center gap-3 bg-[#111111] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block">
-                <span className="text-sm font-black text-white/38 w-5 text-right shrink-0">{i + 1}</span>
-                <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
-                  {r.song?.album_art_url
-                    ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="40px" />
-                    : <div className="w-full h-full bg-gradient-to-br from-[#000000] to-[#000000]" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
-                  <p className="text-xs text-white/50 truncate">{r.song?.artist}</p>
-                </div>
-                <ScoreCircle score={r.overall_score} size={40} />
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── TOP ALBUMS — full-width list rows ── */}
-      {topAlbums.length > 0 && (
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="font-bold text-base text-slate-100">Top Albums</h2>
-            {/* Links to Albums tab in Library */}
-            <Link href="/library?view=albums" className="text-xs text-[#F5A623] hover:underline">See all →</Link>
-          </div>
-          <div className="space-y-2">
-            {topAlbums.map((album, i) => {
-              const row = (
-                <div className="flex items-center gap-3 p-3">
-                  <span className="text-sm font-black text-white/38 w-5 text-right shrink-0">{i + 1}</span>
-                  <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
-                    {album.art
-                      ? <Image src={album.art} alt={album.name} fill className="object-cover" sizes="40px" />
-                      : <div className="w-full h-full bg-gradient-to-br from-[#000000] to-[#000000]" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm text-slate-100 truncate">{album.name}</p>
-                    <p className="text-xs text-white/38 mt-0.5">{album.count} track{album.count !== 1 ? "s" : ""} rated</p>
-                  </div>
-                  <ScoreCircle score={album.avgScore} size={40} />
-                </div>
-              );
-              return album.spotifyId ? (
-                <Link key={i} href={`/album/${album.spotifyId}`}
-                  className="block bg-[#111111] rounded-2xl border border-white/8 hover:border-white/10 transition-colors">
-                  {row}
-                </Link>
-              ) : (
-                <div key={i} className="bg-[#111111] rounded-2xl border border-white/8">{row}</div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ── TASTE CARD ── */}
-      {totalRated >= 3 && (
-        <div className="bg-[#111111] rounded-3xl p-5 border border-white/8 mb-4">
-          <h2 className="font-bold text-base text-slate-100 mb-4">Your taste</h2>
-
-          {/* Stats bar inside taste card */}
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 mb-6">
-            {STATS.map((s) => (
-              <div key={s.label} className="shrink-0 rounded-2xl border border-white/8 px-4 py-3 text-center min-w-[74px]"
-                style={{ background: s.bg, borderLeft: `3px solid ${s.accent}` }}>
-                <p className="text-lg leading-none mb-1.5">{s.icon}</p>
-                <p className="text-xl font-black leading-none tabular-nums" style={{ color: s.accent }}>{s.value}</p>
-                <p className="text-[10px] text-white/50 mt-1.5 leading-tight">{s.label}</p>
+          {/* Stats pills */}
+          <div className="flex gap-2 mb-5">
+            {[
+              { label: "Followers", value: formatCount(67_000) },
+              { label: "Following", value: formatCount(0) },
+              { label: "Avg Rating", value: avgScore ?? "—" },
+            ].map((s) => (
+              <div key={s.label} className="flex-1 bg-[#111111] rounded-2xl py-3 text-center border border-white/8">
+                <p className="text-lg font-black text-slate-100 tabular-nums">{s.value}</p>
+                <p className="text-xs text-white/50 mt-0.5">{s.label}</p>
               </div>
             ))}
           </div>
 
-          {/* Dimension circles */}
-          <div className="mb-6">
-            <p className="text-xs text-white/38 uppercase tracking-wide font-semibold mb-4">Dimension scores</p>
-            <div className="flex justify-around items-end">
-              {([
-                { key: "Replay Value", label: "Replay",     color: "#F5A623" },
-                { key: "Lyrics",       label: "Lyrics",     color: "#F5A623" },
-                { key: "Production",   label: "Production", color: "#fb923c" },
-              ] as const).map(({ key, label, color }) => {
-                const val = dimAvg[key] ?? 0;
-                const sz = Math.round(72 + (val / 10) * 28);
-                return (
-                  <div key={key} className="flex flex-col items-center gap-2">
-                    <div className="flex items-center justify-center rounded-full"
-                      style={{ width: sz, height: sz, backgroundColor: `${color}22`, border: `3px solid ${color}` }}>
-                      <div className="text-center">
-                        <p className="font-black leading-none tabular-nums" style={{ fontSize: Math.round(sz * 0.26), color }}>
-                          {val.toFixed(1)}
-                        </p>
-                        <p className="font-semibold leading-none mt-0.5" style={{ fontSize: Math.round(sz * 0.13), color: `${color}aa` }}>
-                          /10
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-xs font-semibold text-white/50">{label}</p>
-                  </div>
-                );
-              })}
-            </div>
+          {/* Share + Settings — desktop only */}
+          <div className="hidden md:block">
+            <ProfileActions username={profile?.username ?? null} />
           </div>
+        </div>
 
-          {topArtist && (
-            <div className="mb-5">
-              <p className="text-xs text-white/38 uppercase tracking-wide font-semibold mb-1">Top artist</p>
-              <p className="text-sm font-semibold text-slate-200">
-                {topArtist[0]}{" "}
-                <span className="text-white/50 font-normal">— {topArtist[1]} song{topArtist[1] !== 1 ? "s" : ""} rated</span>
-              </p>
+        {/* ── RIGHT COLUMN: content ── */}
+        <div className="min-w-0">
+
+          {/* Top Songs + Top Albums — side by side on desktop */}
+          {(top5Songs.length > 0 || topAlbums.length > 0) && (
+            <div className="md:grid md:grid-cols-2 md:gap-4 space-y-8 md:space-y-0 mb-8">
+
+              {/* Top Songs */}
+              {top5Songs.length > 0 && (
+                <div>
+                  <div className="flex justify-between items-center mb-3">
+                    <h2 className="font-bold text-base text-slate-100">Top Songs</h2>
+                    <Link href="/library" className="text-xs text-[#F5A623] hover:underline">See all →</Link>
+                  </div>
+                  <div className="space-y-2">
+                    {top5Songs.map((r: any, i: number) => (
+                      <Link key={r.id} href={`/song/${r.id}`}
+                        className="flex items-center gap-3 bg-[#111111] rounded-2xl p-3 border border-white/8 hover:border-white/10 transition-colors block">
+                        <span className="text-sm font-black text-white/38 w-5 text-right shrink-0">{i + 1}</span>
+                        <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
+                          {r.song?.album_art_url
+                            ? <Image src={r.song.album_art_url} alt={r.song.title} fill className="object-cover" sizes="40px" />
+                            : <div className="w-full h-full bg-gradient-to-br from-[#000000] to-[#000000]" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sm text-slate-100 truncate">{r.song?.title}</p>
+                          <p className="text-xs text-white/50 truncate">{r.song?.artist}</p>
+                        </div>
+                        <ScoreCircle score={r.overall_score} size={40} />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Top Albums */}
+              {topAlbums.length > 0 && (
+                <div>
+                  <div className="flex justify-between items-center mb-3">
+                    <h2 className="font-bold text-base text-slate-100">Top Albums</h2>
+                    <Link href="/library?view=albums" className="text-xs text-[#F5A623] hover:underline">See all →</Link>
+                  </div>
+                  <div className="space-y-2">
+                    {topAlbums.map((album, i) => {
+                      const row = (
+                        <div className="flex items-center gap-3 p-3">
+                          <span className="text-sm font-black text-white/38 w-5 text-right shrink-0">{i + 1}</span>
+                          <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0">
+                            {album.art
+                              ? <Image src={album.art} alt={album.name} fill className="object-cover" sizes="40px" />
+                              : <div className="w-full h-full bg-gradient-to-br from-[#000000] to-[#000000]" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-sm text-slate-100 truncate">{album.name}</p>
+                            <p className="text-xs text-white/38 mt-0.5">{album.count} track{album.count !== 1 ? "s" : ""} rated</p>
+                          </div>
+                          <ScoreCircle score={album.avgScore} size={40} />
+                        </div>
+                      );
+                      return album.spotifyId ? (
+                        <Link key={i} href={`/album/${album.spotifyId}`}
+                          className="block bg-[#111111] rounded-2xl border border-white/8 hover:border-white/10 transition-colors">
+                          {row}
+                        </Link>
+                      ) : (
+                        <div key={i} className="bg-[#111111] rounded-2xl border border-white/8">{row}</div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
-          <TasteRadar genreItems={genreItems} vibeItems={vibeItems} headline={tasteHeadline} />
-        </div>
-      )}
+          {/* Taste card */}
+          {totalRated >= 3 && (
+            <div className="bg-[#111111] rounded-3xl p-5 border border-white/8 mb-4">
+              <h2 className="font-bold text-base text-slate-100 mb-4">Your taste</h2>
 
-      {/* Sign out */}
-      <form action={handleSignOut}>
-        <button type="submit"
-          className="w-full py-3 rounded-2xl border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/5 transition-colors">
-          Sign out
-        </button>
-      </form>
+              {/* Stats row */}
+              <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 mb-6">
+                {STATS.map((s) => (
+                  <div key={s.label} className="shrink-0 rounded-2xl border border-white/8 px-4 py-3 text-center min-w-[74px]"
+                    style={{ background: s.bg, borderLeft: `3px solid ${s.accent}` }}>
+                    <p className="text-lg leading-none mb-1.5">{s.icon}</p>
+                    <p className="text-xl font-black leading-none tabular-nums" style={{ color: s.accent }}>{s.value}</p>
+                    <p className="text-[10px] text-white/50 mt-1.5 leading-tight">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Dimension circles */}
+              <div className="mb-6">
+                <p className="text-xs text-white/38 uppercase tracking-wide font-semibold mb-4">Dimension scores</p>
+                <div className="flex justify-around items-end">
+                  {([
+                    { key: "Replay Value", label: "Replay",     color: "#F5A623" },
+                    { key: "Lyrics",       label: "Lyrics",     color: "#F5A623" },
+                    { key: "Production",   label: "Production", color: "#fb923c" },
+                  ] as const).map(({ key, label, color }) => {
+                    const val = dimAvg[key] ?? 0;
+                    const sz = Math.round(72 + (val / 10) * 28);
+                    return (
+                      <div key={key} className="flex flex-col items-center gap-2">
+                        <div className="flex items-center justify-center rounded-full"
+                          style={{ width: sz, height: sz, backgroundColor: `${color}22`, border: `3px solid ${color}` }}>
+                          <div className="text-center">
+                            <p className="font-black leading-none tabular-nums" style={{ fontSize: Math.round(sz * 0.26), color }}>
+                              {val.toFixed(1)}
+                            </p>
+                            <p className="font-semibold leading-none mt-0.5" style={{ fontSize: Math.round(sz * 0.13), color: `${color}aa` }}>
+                              /10
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-xs font-semibold text-white/50">{label}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {topArtist && (
+                <div className="mb-5">
+                  <p className="text-xs text-white/38 uppercase tracking-wide font-semibold mb-1">Top artist</p>
+                  <p className="text-sm font-semibold text-slate-200">
+                    {topArtist[0]}{" "}
+                    <span className="text-white/50 font-normal">— {topArtist[1]} song{topArtist[1] !== 1 ? "s" : ""} rated</span>
+                  </p>
+                </div>
+              )}
+
+              <TasteRadar genreItems={genreItems} vibeItems={vibeItems} headline={tasteHeadline} />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
