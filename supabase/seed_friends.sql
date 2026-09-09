@@ -21,6 +21,16 @@ INSERT INTO auth.users (
    'driftpop@noted.fake',    crypt('noted_seed_2024', gen_salt('bf')), now(), now(), now(), '{"username":"driftpop"}'::jsonb)
 ON CONFLICT (id) DO NOTHING;
 
+-- Required for email/password sign-in — Supabase auth won't work without this row.
+INSERT INTO auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
+VALUES
+  ('10000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','{"sub":"10000000-0000-0000-0000-000000000001","email":"beatmaven@noted.fake","email_verified":true,"phone_verified":false}'::jsonb,  'email',now(),now(),now()),
+  ('20000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','{"sub":"20000000-0000-0000-0000-000000000001","email":"melodyghost@noted.fake","email_verified":true,"phone_verified":false}'::jsonb, 'email',now(),now(),now()),
+  ('30000000-0000-0000-0000-000000000001','30000000-0000-0000-0000-000000000001','{"sub":"30000000-0000-0000-0000-000000000001","email":"wavesurfer@noted.fake","email_verified":true,"phone_verified":false}'::jsonb,  'email',now(),now(),now()),
+  ('40000000-0000-0000-0000-000000000001','40000000-0000-0000-0000-000000000001','{"sub":"40000000-0000-0000-0000-000000000001","email":"lowfreq@noted.fake","email_verified":true,"phone_verified":false}'::jsonb,     'email',now(),now(),now()),
+  ('50000000-0000-0000-0000-000000000001','50000000-0000-0000-0000-000000000001','{"sub":"50000000-0000-0000-0000-000000000001","email":"driftpop@noted.fake","email_verified":true,"phone_verified":false}'::jsonb,    'email',now(),now(),now())
+ON CONFLICT (provider_id, provider) DO NOTHING;
+
 -- Defensive insert in case the trigger already fired or failed
 INSERT INTO public.users (id, email, username) VALUES
   ('10000000-0000-0000-0000-000000000001', 'beatmaven@noted.fake',   'beatmaven'),

@@ -23,6 +23,16 @@ INSERT INTO auth.users (
   '{"username":"noteduser"}'::jsonb
 ) ON CONFLICT (id) DO NOTHING;
 
+-- Required for email/password sign-in — Supabase auth won't work without this row.
+INSERT INTO auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
+VALUES (
+  'd0000000-0000-0000-0000-000000000001',
+  'd0000000-0000-0000-0000-000000000001',
+  '{"sub":"d0000000-0000-0000-0000-000000000001","email":"demo@noted.app","email_verified":true,"phone_verified":false}'::jsonb,
+  'email',
+  now(), now(), now()
+) ON CONFLICT (provider_id, provider) DO NOTHING;
+
 INSERT INTO public.users (id, email, username) VALUES
   ('d0000000-0000-0000-0000-000000000001', 'demo@noted.app', 'noteduser')
 ON CONFLICT (id) DO NOTHING;
