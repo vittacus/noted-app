@@ -18,13 +18,14 @@ Noted is built around three ideas: rating should be multi-dimensional instead of
 **1. Three-dimensional rating system:** Every song is scored on Replay Value, Lyrics, and Production. It also includes a quick vibe check (whether the user loved, liked, didn't like) and a mood tag. This is the input that makes the taste profile visualizations below meaningful, rather than a single flattened score.
 
 **2. ELO-based Battle Mode:** Users can re-rank their library by pitting two previously rated songs head to head, tournament style. An entry point for it sits on the Profile page ("Battle your top picks") to give people a reason to revisit their rankings as their taste changes.
-<![Uploading Screenshot 2026-09-09 at 1.13.44 AM.png…]()/>
+<img width="1001" height="715" alt="Screenshot 2026-09-09 at 1 14 48 AM" src="https://github.com/user-attachments/assets/c5c0c5e8-303e-4f08-b472-3a128f505f09" />
 
 **3. Genre DNA and Vibe DNA:** A user's rating history is aggregated into two radar charts on their profile. First, a genre breakdown of what they actually rate highly, and not just what they listen to. Second, a mood/vibe breakdown pulled from their tags. Auto generated one-line taste summaries sit alongside the charts following a users input (ex: "Low scores are rare for you, you know what you like and stick to it!")
-<img width="697" height="393" alt="Genre DNA radar chart screenshot" src="PLACEHOLDER_URL" />
+<img width="759" height="252" alt="Screenshot 2026-09-09 at 1 15 27 AM" src="https://github.com/user-attachments/assets/8fe1306b-84c0-48b2-b4dc-04b78ec93aa4" />
+<img width="759" height="249" alt="Screenshot 2026-09-09 at 1 15 42 AM" src="https://github.com/user-attachments/assets/3009ea88-3888-449f-949d-71c2debb729c" />
 
 **4. Mood-taged collections, including user-created mood:** Songs are auto-sorted into collections (Late Night, Workout, Focus, Heartbreak, Hype, Road Trip, Chill) with score filters. A "Create Mood" flow lets users define their own mood with a custom name and icon, which then becomes selectable during rating alongside the built-in set. Each mood card renders with a fixed brand-color gradient rather than raw album art as its background, since a mood with only one or two songs could otherwise look broken depending on what that specific cover art happened to look like (a single-color album cover, for instance, made a whole card look like a rendering bug).
-<img width="697" height="393" alt="Moods grid screenshot" src="PLACEHOLDER_URL" />
+<img width="998" height="579" alt="Screenshot 2026-09-09 at 1 16 06 AM" src="https://github.com/user-attachments/assets/0580c5cb-1175-4725-9842-2bcf9323058b" />
 
 **5. Community Feed** A social feed (Everyone, My Ratings, Friends tabs) shows ratings as they happen, with inline commenting backed by a relational table and row-level security.
 
@@ -33,7 +34,7 @@ Noted is built around three ideas: rating should be multi-dimensional instead of
 **7. Multi-artist, multi-genre song metadata** Every song stores all credited artists individually, so a feature or collab credits everyone rather than just the primary artist, and up to two auto-detected genres are pulled from Spotify's artist endpoint.
 
 **8. Library with Dual View Modes** A full library (Songs, Albums tabs) with sort (Score, Artist, Date, all bidirectional), genre filtering, and a grid/list toggle. Each song card carries a genre-coded accent color and matching tag, so the library is scannable by category at a glance
-<img width="697" height="393" alt="Library screenshot" src="PLACEHOLDER_URL" />
+<img width="1503" height="810" alt="Screenshot 2026-09-09 at 1 16 57 AM" src="https://github.com/user-attachments/assets/12aefcbb-0238-47e8-b57a-5fc645b24deb" />
 
 **9. Read-only Public Demo** Since this is a portfolio piece, a dedicated /demo route renders a fully-seeded example profile (18+ rated songs, populated moods, real Genre/Vibe DNA) with no login and no write actions exposed. This was originally built as an auto-login flow, then rebuilt as a read-only server-rendered view instead, since it's faster, avoids an entire class of authentication bugs, and matches what someone evaluating the project actually wants (to look, not to interact).
 
