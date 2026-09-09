@@ -3,7 +3,9 @@ noted
 Overview: Rate the music you love. A full-stack music rating and discovery platform, built end-to-end as a product management portfolio project. 
 From PRD to production, iterating with Claude Code through the full development lifecycle. Users rate songs across three dimensions, build a taste profile over time, and follow friends to see what they're rating.
 
-Live App: (https://noted-app-eight.vercel.app) Try the Demo: (https://noted-app-eight.vercel.app/demo) (no sign-up required)
+**Live Web App** (https://noted-app-eight.vercel.app)
+
+**Demo Here!** (https://noted-app-eight.vercel.app/demo) - No Sign-Up Required
 
 <img width="701" height="631" alt="Home feed screenshot" src="PLACEHOLDER_URL" /> <img width="688" height="541" alt="Rating modal screenshot" src="PLACEHOLDER_URL" /> <img width="697" height="393" alt="Profile Genre DNA screenshot" src="PLACEHOLDER_URL" />
 
