@@ -565,9 +565,13 @@ export default function LibraryPage() {
                           </div>
                           <p className="text-xs text-white/50 truncate">{r.song.artist}</p>
                           <div className="flex gap-1.5 mt-1 flex-wrap">
-                            {displayGenres(r.genre_tags ?? []).map((t: string) => (
-                              <span key={t} className="text-xs bg-white/5 text-white/50 px-2 py-0.5 rounded-full">{t}</span>
-                            ))}
+                            {displayGenres(r.genre_tags ?? []).map((t: string) => {
+                              const c = GENRE_COLORS[t] ?? GENRE_COLOR_DEFAULT;
+                              return (
+                                <span key={t} className="text-xs px-2 py-0.5 rounded-full font-medium"
+                                  style={{ backgroundColor: `${c}22`, color: c }}>{t}</span>
+                              );
+                            })}
                           </div>
                           <p className="text-xs text-white/28 mt-0.5">
                             Rated {new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
