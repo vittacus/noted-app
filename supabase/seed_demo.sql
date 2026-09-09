@@ -2,9 +2,8 @@
 -- Run in Supabase Dashboard → SQL Editor.
 -- Safe to re-run — all inserts use ON CONFLICT DO NOTHING.
 --
--- Credentials (set matching vars in .env.local and Vercel):
---   NEXT_PUBLIC_DEMO_EMAIL=demo@noted.app
---   NEXT_PUBLIC_DEMO_PASSWORD=noted_demo_2024
+-- The /demo route reads this user's data directly by ID (no login required).
+-- Demo user ID: d0000000-0000-0000-0000-000000000001
 --
 -- All album_art_url values were verified via the Spotify Search API
 -- (scripts/backfill-demo-album-art.mjs) — not guessed or constructed.
