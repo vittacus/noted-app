@@ -12,32 +12,22 @@ import { SpotifyTrack } from "@/types";
 import Link from "next/link";
 import ScoreCircle from "@/components/ScoreCircle";
 
-// Blue accent opacity tiers per genre — ensures visual differentiation within the single-hue palette
-const GENRE_BORDER_OPACITY: Record<string, number> = {
-  Rap:          1.00,
-  Drill:        1.00,
-  Electronic:   0.88,
-  Afrobeats:    0.78,
-  "R&B":        0.70,
-  Trap:         0.70,
-  "K-Pop":      0.60,
-  Latin:        0.60,
-  Pop:          0.50,
-  Alternative:  0.50,
-  Soul:         0.40,
-  Indie:        0.32,
-  Folk:         0.32,
-  House:        0.25,
-  Country:      0.22,
-  Metal:        0.18,
-  Jazz:         0.14,
-  Classical:    0.10,
-  Ambient:      0.10,
+const GENRE_COLORS: Record<string, string> = {
+  Rap:   "#8B5CF6",
+  "R&B": "#EC4899",
+  Latin: "#14B8A6",
+  Indie: "#22D3EE",
+  Pop:   "#D946EF",
 };
+const GENRE_COLOR_DEFAULT = "#6B7280";
 
-function genreBorderColor(tags: string[]): string {
-  const alpha = GENRE_BORDER_OPACITY[tags?.[0]] ?? 0.45;
-  return `rgba(17,122,202,${alpha})`;
+function genreColor(tags: string[]): string {
+  return GENRE_COLORS[tags?.[0]] ?? GENRE_COLOR_DEFAULT;
+}
+
+function genrePillActiveStyle(g: string): React.CSSProperties {
+  const c = GENRE_COLORS[g] ?? GENRE_COLOR_DEFAULT;
+  return { backgroundColor: `${c}20`, borderColor: `${c}80`, color: c };
 }
 
 type SortKey = "score" | "date" | "artist";
@@ -360,8 +350,13 @@ export default function LibraryPage() {
                   {["all", ...albumAllGenres].map((g) => (
                     <button key={g} onClick={() => setAlbumGenre(g)}
                       className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap shrink-0 ${
-                        albumGenre === g ? "bg-slate-100 text-gray-900 border-slate-100" : "bg-white/5 text-white/50 border-white/10 hover:border-white/12"
-                      }`}>
+                        albumGenre === g && g === "all"
+                          ? "bg-slate-100 text-gray-900 border-slate-100"
+                          : albumGenre !== g
+                          ? "bg-white/5 text-white/50 border-white/10 hover:border-white/12"
+                          : ""
+                      }`}
+                      style={albumGenre === g && g !== "all" ? genrePillActiveStyle(g) : undefined}>
                       {g === "all" ? "All" : g}
                     </button>
                   ))}
@@ -531,8 +526,9 @@ export default function LibraryPage() {
               {genres.map((g) => (
                 <button key={g} onClick={() => setGenre(g)}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap shrink-0 ${
-                    genre === g ? "bg-slate-100 text-gray-900 border-slate-100" : "bg-white/5 text-white/50 border-white/10 hover:border-white/12"
-                  }`}>{g}</button>
+                    genre !== g ? "bg-white/5 text-white/50 border-white/10 hover:border-white/12" : ""
+                  }`}
+                  style={genre === g ? genrePillActiveStyle(g) : undefined}>{g}</button>
               ))}
             </div>
           </div>
@@ -554,7 +550,7 @@ export default function LibraryPage() {
                   <Link key={r.id} href={`/song/${r.id}`} className="block group">
                     <div
                       className="bg-[#161616] rounded-2xl border border-white/8 group-hover:border-white/10 group-hover:scale-[1.005] group-hover:shadow-xl transition-all duration-200 overflow-hidden"
-                      style={hasGenre ? { borderLeft: `4px solid ${genreBorderColor(r.genre_tags ?? [])}` } : undefined}
+                      style={hasGenre ? { borderLeft: `4px solid ${genreColor(r.genre_tags ?? [])}` } : undefined}
                     >
                       <div className="flex items-center gap-3 px-3 py-3">
                         <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
