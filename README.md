@@ -10,9 +10,6 @@ From PRD to production, iterating with Claude Code through the full development 
 ## Home Feed
 <img width="1504" height="930" alt="Screenshot 2026-09-09 at 1 19 01 AM" src="https://github.com/user-attachments/assets/715d0bf2-06c2-4a22-aa13-213a0610f845" />
 
-## Ranking Songs
-<img width="511" height="711" alt="Screenshot 2026-09-09 at 1 20 20 AM" src="https://github.com/user-attachments/assets/e59c4190-b26b-4a57-a15a-bfa3efbe86e0" />
-
 ## The Idea
 
 Letterboxd showed that people don't just want to log what they watch, they want to rate it thoughtfully and build an identity around their taste. Nothing does this well for music. Spotify's own rating system is a binary like/dislike buried in a menu, and it doesn't capture what actually made a song work (the lyrics, the production, or just its replay value), nor does it turn a listening history into something browsable or shareable.
