@@ -26,20 +26,19 @@ Noted is built around three ideas: rating should be multi-dimensional instead of
 **5. Community Feed** A social feed (Everyone, My Ratings, Friends tabs) shows ratings as they happen, with inline commenting backed by a relational table and row-level security.
 
 **6. Social Graph** Follow is backed by a genuine follows table in Postgres with RLS policies, a Friends tab that queries ratings scoped to who a user actually follows, and live Follower/Following counts pulled from that same table rather than placeholder numbers. A handful of friend accounts were seeded with real rating histories so a first-time visitor sees a populated feature rather than an empty state.
-**Multi-artist, multi-genre song metadata** Every song stores all credited artists individually, so a feature or collab credits everyone rather than just the primary artist, and up to two auto-detected genres are pulled from Spotify's artist endpoint.
 
-**7. Library with Dual View Modes** A full library (Songs, Albums tabs) with sort (Score, Artist, Date, all bidirectional), genre filtering, and a grid/list toggle. Each song card carries a genre-coded accent color and matching tag, so the library is scannable by category at a glance
+**7. Multi-artist, multi-genre song metadata** Every song stores all credited artists individually, so a feature or collab credits everyone rather than just the primary artist, and up to two auto-detected genres are pulled from Spotify's artist endpoint.
 
-**8. Read-only Public Demo** Since this is a portfolio piece, a dedicated /demo route renders a fully-seeded example profile (18+ rated songs, populated moods, real Genre/Vibe DNA) with no login and no write actions exposed. This was originally built as an auto-login flow, then rebuilt as a read-only server-rendered view instead, since it's faster, avoids an entire class of authentication bugs, and matches what someone evaluating the project actually wants (to look, not to interact).
+**8. Library with Dual View Modes** A full library (Songs, Albums tabs) with sort (Score, Artist, Date, all bidirectional), genre filtering, and a grid/list toggle. Each song card carries a genre-coded accent color and matching tag, so the library is scannable by category at a glance
+
+**9. Read-only Public Demo** Since this is a portfolio piece, a dedicated /demo route renders a fully-seeded example profile (18+ rated songs, populated moods, real Genre/Vibe DNA) with no login and no write actions exposed. This was originally built as an auto-login flow, then rebuilt as a read-only server-rendered view instead, since it's faster, avoids an entire class of authentication bugs, and matches what someone evaluating the project actually wants (to look, not to interact).
 
 ## Architecture
 
-```
-Frontend and backend: Next.js 14 (App Router), with server components handling most data fetching.
-Database and auth: Supabase (PostgreSQL, Auth, Row-Level Security). Key tables: ratings (with artist_ids, artist_names, and genres stored as arrays, plus an elo_score column for Battle Mode), comments, follows, and moods.
-Music data: Spotify Web API, used for song search and metadata and for artist/genre lookups. No user OAuth, since the app doesn't need access to a user's actual Spotify library.
-Hosting: Vercel, auto-deploying on push to main.
-```
+- Frontend and backend: Next.js 14 (App Router), with server components handling most data fetching.
+- Database and auth: Supabase (PostgreSQL, Auth, Row-Level Security). Key tables: ratings (with artist_ids, artist_names, and genres stored as arrays, plus an elo_score column for Battle Mode), comments, follows, and moods.
+- Music data: Spotify Web API, used for song search and metadata and for artist/genre lookups. No user OAuth, since the app doesn't need access to a user's actual Spotify library.
+- Hosting: Vercel, auto-deploying on push to main.
 
 ## Design System
 
