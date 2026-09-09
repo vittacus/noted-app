@@ -1,97 +1,81 @@
-# noted
+noted
 
-**Rate your music. Actually know your taste.**
+Overview: Rate the music you love. A full-stack music rating and discovery platform, built end-to-end as a product management portfolio project. 
+From PRD to production, iterating with Claude Code through the full development lifecycle. Users rate songs across three dimensions, build a taste profile over time, and follow friends to see what they're rating.
 
----
+Live App: (https://noted-app-eight.vercel.app) Try the Demo: (https://noted-app-eight.vercel.app/demo) (no sign-up required)
 
-## What is this?
+<img width="701" height="631" alt="Home feed screenshot" src="PLACEHOLDER_URL" /> <img width="688" height="541" alt="Rating modal screenshot" src="PLACEHOLDER_URL" /> <img width="697" height="393" alt="Profile Genre DNA screenshot" src="PLACEHOLDER_URL" />
 
-Noted is a music rating and discovery app — think Letterboxd or Beli, but for songs. You search for any track on Spotify, rate it across three dimensions (Replay Value, Lyrics, Production), pick the vibe it fits (Late Night, Hype, Workout, Heartbreak...), and Noted builds a taste profile out of everything you've logged. The more you rate, the more your Genre DNA and Vibe DNA charts start to look like you. It's also just a really satisfying way to have opinions about music.
+## The Idea
 
----
+Letterboxd showed that people don't just want to log what they watch, they want to rate it thoughtfully and build an identity around their taste. Nothing does this well for music. Spotify's own rating system is a binary like/dislike buried in a menu, and it doesn't capture what actually made a song work (the lyrics, the production, or just its replay value), nor does it turn a listening history into something browsable or shareable.
 
-## Why I built it
-
-I built Noted as a portfolio project to show the full product lifecycle — from writing a PRD to shipping something real people can use. Every feature decision reflects a deliberate tradeoff: what to build first, what to cut, what to simplify. The goal wasn't to build something perfect; it was to build something intentional and demonstrate how I think as a PM.
-
----
+Noted is built around three ideas: rating should be multi-dimensional instead of a single score, a user's rating history should generate a visual taste profile rather than sit in a list, and the whole thing should feel social rather than like solo data entry.
 
 ## Features
 
-**Rating flow**
-Search any song, then rate it across Replay Value, Lyrics, and Production (1–10 each). Pick a vibe tag, write a note if you want, and save. The overall score is a weighted average of your three dimension scores. Quick and opinionated.
+**Three-dimensional rating system:** Every song is scored on Replay Value, Lyrics, and Production. It also includes a quick vibe check (whether the user loved, liked, didn't like) and a mood tag. This is the input that makes the taste profile visualizations below meaningful, rather than a single flattened score.
+**ELO-based Battle Mode:** Users can re-rank their library by pitting two previously rated songs head to head, tournament style. An entry point for it sits on the Profile page ("Battle your top picks") to give people a reason to revisit their rankings as their taste changes.
+**Genre DNA and Vibe DNA:** A user's rating history is aggregated into two radar charts on their profile. First, a genre breakdown of what they actually rate highly, and not just what they listen to. Second, a mood/vibe breakdown pulled from their tags. Auto generated one-line taste summaries sit alongside the charts following a users input (ex: "Low scores are rare for you, you know what you like and stick to it!")
+**Mood-taged collections, including user-created mood:** Songs are auto-sorted into collections (Late Night, Workout, Focus, Heartbreak, Hype, Road Trip, Chill) with score filters. A "Create Mood" flow lets users define their own mood with a custom name and icon, which then becomes selectable during rating alongside the built-in set. Each mood card renders with a fixed brand-color gradient rather than raw album art as its background, since a mood with only one or two songs could otherwise look broken depending on what that specific cover art happened to look like (a single-color album cover, for instance, made a whole card look like a rendering bug).
+**Community Feed** A social feed (Everyone, My Ratings, Friends tabs) shows ratings as they happen, with inline commenting backed by a relational table and row-level security.
+**Social Graph** Follow is backed by a genuine follows table in Postgres with RLS policies, a Friends tab that queries ratings scoped to who a user actually follows, and live Follower/Following counts pulled from that same table rather than placeholder numbers. A handful of friend accounts were seeded with real rating histories so a first-time visitor sees a populated feature rather than an empty state.
+**Multi-artist, multi-genre song metadata** Every song stores all credited artists individually, so a feature or collab credits everyone rather than just the primary artist, and up to two auto-detected genres are pulled from Spotify's artist endpoint.
+**Library with Dual View Modes** A full library (Songs, Albums tabs) with sort (Score, Artist, Date, all bidirectional), genre filtering, and a grid/list toggle. Each song card carries a genre-coded accent color and matching tag, so the library is scannable by category at a glance
+**Read-only Public Demo** Since this is a portfolio piece, a dedicated /demo route renders a fully-seeded example profile (18+ rated songs, populated moods, real Genre/Vibe DNA) with no login and no write actions exposed. This was originally built as an auto-login flow, then rebuilt as a read-only server-rendered view instead, since it's faster, avoids an entire class of authentication bugs, and matches what someone evaluating the project actually wants (to look, not to interact).
 
-<div align="center">
-  <img src="public/screenshots/search.png" width="320" alt="Search and rating flow" />
-</div>
+## Architecture
 
----
+```
+Frontend and backend: Next.js 14 (App Router), with server components handling most data fetching.
+Database and auth: Supabase (PostgreSQL, Auth, Row-Level Security). Key tables: ratings (with artist_ids, artist_names, and genres stored as arrays, plus an elo_score column for Battle Mode), comments, follows, and moods.
+Music data: Spotify Web API, used for song search and metadata and for artist/genre lookups. No user OAuth, since the app doesn't need access to a user's actual Spotify library.
+Hosting: Vercel, auto-deploying on push to main.
+```
 
-**Battle Mode / ELO ranking**
-Your saved songs go head-to-head in a bracket-style battle. Pick the winner and both songs get their ELO score updated — just like chess rankings. Over time this surfaces your actual favorites, not just what you rated highly in the moment.
+## Design System
 
----
+The visual identity went through three iterations before landing on the current one, documented here rather than just showing the final result.
 
-**Moods**
-Every song you tag (Late Night, Workout, Road Trip, etc.) gets sorted into a mood page. Tap a mood to see all your songs for that vibe, filter by score, sort by date or rating, and swipe to delete. It's basically a smart playlist that builds itself.
+The first version used an amber accent on a pure black background. It was clean, but read as a generic dark-mode default rather than something considered. The second version replaced it with a full warm palette (navy-plum background, coral-red accent, wine and peach as secondary colors), which fixed the genericness but introduced a new problem: two similarly saturated colors sitting next to each other clashed instead of contrasting, and the background tint made cards hard to distinguish from the page itself.
 
-<div align="center">
-  <img src="public/screenshots/mood-detail.png" width="320" alt="Mood detail page" />
-</div>
+The final version returned to a near-black neutral base (
+#0a0a0a background, 
+#161616 cards, 
+#212121 secondary UI) with a single accent color, Blue (
+#117ACA), used the way Spotify uses its green: for primary actions, active states, and the logo, and nothing else. Functional color coding (score circles: green/yellow/orange/red; genre accents: a small curated palette) is treated as a separate system from brand color, similar to how Letterboxd separates its neutral gray UI from its green/orange/blue category accents
 
----
+## Engineering Challenges
 
-**Taste profile — Genre DNA + Vibe DNA**
-Your profile page shows two radar charts: one for genres, one for vibes. They're built entirely from your ratings — no assumptions, no defaults. The headline at the top rotates every visit and tells you something real about your listening patterns.
+**The sticky sidebar:** Getting the right-hand sidebar to stay pinned during scroll took five iterations. CSS position: sticky silently failed for reasons that were never fully isolated. A scroll-listener plus position: fixed rewrite worked functionally but rendered the sidebar in the wrong horizontal position. The root cause turned out to be window.innerWidth including the browser's scrollbar width, while getBoundingClientRect() does not. Swapping to document.documentElement.clientWidth fixed it.
 
-<div align="center">
-  <img src="public/screenshots/profile.png" width="320" alt="Profile page with Genre DNA and Vibe DNA radar charts" />
-</div>
+**The Supabase auth.identities gap:** Seeding realistic demo and friend accounts by inserting directly into auth.users produced accounts that existed but silently failed to authenticate (a 500 error, not the expected 400 for a nonexistent user). Modern Supabase also requires a matching row in auth.identities for email/password auth to work, which isn't obvious from the table schema alone. This was diagnosed by comparing direct API calls against a broken seeded account and a genuinely nonexistent one, which surfaced the 500 vs. 400 distinction and pointed at the real cause.
 
----
+**Deprecated Spotify endpoint:** Spotify permanently deprecated the /v1/recommendations endpoint for all apps created after November 2024, meaning the original recommendation feature was quietly broken for every user. The recommendation logic was rebuilt on top of the still-supported search endpoint, using a user's top genres and most-rated artists as the seed instead of Spotify's now-defunct collaborative filtering.
 
-**Album tracking**
-Rate songs from an album and Noted tracks your progress automatically. Finish every track and you get a full celebration moment — green flash, drum roll, rolling score counter. Feels earned.
+## Limitations
+Custom moods currently persist to local storage rather than the database, so they don't carry across devices. This was a scope decision for the demo rather than an oversight. The recommendation engine, since it can no longer use Spotify's own collaborative filtering, is a heuristic built on genre and artist overlap rather than true collaborative recommendations, so its suggestions are weaker than what Spotify's original endpoint would have produced. The social graph currently only supports one-directional following with no mutual friend or discovery beyond suggestions mechanism.
 
-<div align="center">
-  <img src="public/screenshots/album.png" width="320" alt="Album detail page" />
-</div>
+## What I'd Build Next
+- Export a Mood directly to a real Spotify playlist
+- An onboarding flow for first-time users ("rate 5 songs to get started")
+- Move custom Moods from local storage into the database so they persist across devices
+- A more robust recommendation model, potentially using a collaborative-filtering approach built on the app's own rating data rather than genre/artist heuristics
 
----
+## Tech Stack
+Next.js 14 · Supabase (PostgreSQL, Auth, RLS) · Spotify Web API · Tailwind CSS · Vercel
 
-**Library**
-Every song you've rated, organized in one place. Sort by score, date, or ELO rank. Filter by genre, vibe, or album. It's your personal music database.
-
-<div align="center">
-  <img src="public/screenshots/library.png" width="320" alt="Library page" />
-</div>
-
----
-
-**Recommended songs**
-The home screen surfaces tracks you haven't heard based on your top-rated songs. Powered by the Spotify recommendations API seeded with your highest scores. Tap Rate directly from the card to log it without leaving the page.
-
-<div align="center">
-  <img src="public/screenshots/home.png" width="320" alt="Home screen with recommended songs" />
-</div>
-
----
-
-**Community feed**
-See what other people are rating and follow along. Leave comments on any song. The feed updates in real time and pulls in your friends' activity alongside your own recent logs.
-
----
-
-## Tech stack
-
-- **Next.js 14** — App Router, server + client components
-- **Supabase** — PostgreSQL database, auth, real-time
-- **Spotify Web API** — search, track metadata, recommendations
-- **Tailwind CSS** — styling
-- **Vercel** — deployment
-
----
-
-## Live app
-
-[noted-app-eight.vercel.app](https://noted-app-eight.vercel.app)
+## Project Structure
+```
+app/page.tsx                        → home feed (Everyone / My Ratings / Friends tabs)
+app/profile/page.tsx                → profile page, taste stats, Genre/Vibe DNA
+app/library/page.tsx                → library, songs/albums views, sort and filter
+app/moods/page.tsx                  → mood collections, including custom mood creation
+app/battle/page.tsx                 → ELO-based Battle Mode
+app/demo/page.tsx                   → read-only public demo profile
+components/StickySidebar.tsx        → sticky positioning for the sidebar
+components/SuggestedFriendsSidebar.tsx → suggested friends, follow/unfollow logic
+components/RatingComments.tsx       → comment thread on a rating
+supabase/                            → SQL migrations and seed scripts
+```
