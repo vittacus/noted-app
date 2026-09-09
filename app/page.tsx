@@ -11,6 +11,7 @@ import NewRatingHighlight from "@/components/NewRatingHighlight";
 import SuggestedFriendsSidebar from "@/components/SuggestedFriendsSidebar";
 import StickySidebar from "@/components/StickySidebar";
 import AlbumArtImage from "@/components/AlbumArtImage";
+import DemoLoginButton from "@/components/DemoLoginButton";
 
 export const dynamic = "force-dynamic";
 
@@ -115,6 +116,7 @@ export default async function HomePage({
                   Sign in
                 </Link>
               </div>
+              <DemoLoginButton />
             </div>
           </div>
           <div className="text-center py-5 bg-[#161616]/60 border-y border-white/8">

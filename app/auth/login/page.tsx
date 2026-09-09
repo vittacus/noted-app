@@ -12,7 +12,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [demoLoading, setDemoLoading] = useState(false);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -83,36 +82,6 @@ export default function LoginPage() {
           </Link>
         </p>
 
-        <div className="relative mt-5">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-white/8" />
-          </div>
-          <div className="relative flex justify-center">
-            <span className="bg-[#0d0d0f] px-3 text-xs text-white/30">or</span>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          disabled={demoLoading}
-          onClick={async () => {
-            setDemoLoading(true);
-            const { error } = await supabase.auth.signInWithPassword({
-              email: process.env.NEXT_PUBLIC_DEMO_EMAIL!,
-              password: process.env.NEXT_PUBLIC_DEMO_PASSWORD!,
-            });
-            if (error) {
-              setDemoLoading(false);
-            } else {
-              router.push("/");
-              router.refresh();
-            }
-          }}
-          className="w-full h-11 mt-4 rounded-2xl border border-[#117ACA]/30 bg-[#117ACA]/8 text-[#117ACA] font-semibold text-sm hover:bg-[#117ACA]/15 hover:border-[#117ACA]/55 transition-all duration-200 disabled:opacity-50"
-        >
-          {demoLoading ? "Loading demo…" : "Try Demo Account"}
-        </button>
-        <p className="text-center text-xs text-white/30 mt-2">Explore as a sample user — no sign-up needed</p>
       </div>
     </div>
   );
