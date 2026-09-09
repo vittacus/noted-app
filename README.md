@@ -18,7 +18,7 @@ Noted is built around three ideas: rating should be multi-dimensional instead of
 **1. Three-dimensional rating system:** Every song is scored on Replay Value, Lyrics, and Production. It also includes a quick vibe check (whether the user loved, liked, didn't like) and a mood tag. This is the input that makes the taste profile visualizations below meaningful, rather than a single flattened score.
 
 **2. ELO-based Battle Mode:** Users can re-rank their library by pitting two previously rated songs head to head, tournament style. An entry point for it sits on the Profile page ("Battle your top picks") to give people a reason to revisit their rankings as their taste changes.
-<img width="697" height="393" alt="Battle Mode screenshot" src="PLACEHOLDER_URL" />
+<![Uploading Screenshot 2026-09-09 at 1.13.44 AM.png…]()/>
 
 **3. Genre DNA and Vibe DNA:** A user's rating history is aggregated into two radar charts on their profile. First, a genre breakdown of what they actually rate highly, and not just what they listen to. Second, a mood/vibe breakdown pulled from their tags. Auto generated one-line taste summaries sit alongside the charts following a users input (ex: "Low scores are rare for you, you know what you like and stick to it!")
 <img width="697" height="393" alt="Genre DNA radar chart screenshot" src="PLACEHOLDER_URL" />
